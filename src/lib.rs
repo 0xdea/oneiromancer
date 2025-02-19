@@ -66,6 +66,25 @@
 
 use std::path::Path;
 
+use serde::{Deserialize, Serialize};
+
+/// TODO
+const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
+const OLLAMA_MODEL: &str = "aidapal";
+
+#[derive(Serialize, Debug)]
+struct OllamaRequest {
+    model: String,
+    prompt: String,
+    stream: bool,
+    format: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct OllamaResponse {
+    response: String,
+}
+
 /// TODO
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Open target source code file - TODO not needed? Open error handling should be enough
@@ -73,11 +92,29 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     if !filepath.is_file() {
         return Err(anyhow::anyhow!("invalid file path"));
     }
-    // TODO
+    // TODO - file open logic (to be checked also on windows)
     println!("[+] Successfully opened source code file");
     println!();
 
-    todo!();
+    // TODO add new() and maybe other methods to my type
+    let send_body = OllamaRequest {
+        model: OLLAMA_MODEL.into(),
+        prompt: "int main() { printf(\"hello world\")".into(),
+        stream: false,
+        format: "json".into(),
+    };
+
+    println!("[*] Querying the local LLM: {OLLAMA_MODEL}");
+    let recv_body = ureq::post(OLLAMA_URL)
+        .send_json(&send_body)?
+        .body_mut()
+        .read_json::<OllamaResponse>()?;
+
+    dbg!(recv_body);
+
+    // TODO - spinners
+
+    Ok(())
 }
 
 #[cfg(test)]
