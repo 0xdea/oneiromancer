@@ -104,6 +104,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         format: "json".into(),
     };
 
+    // TODO - spinners, see jiggy
+
     println!("[*] Querying the local LLM: {OLLAMA_MODEL}");
     let recv_body = ureq::post(OLLAMA_URL)
         .send_json(&send_body)?
@@ -112,10 +114,14 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 
     dbg!(recv_body);
 
-    // TODO - spinners
+    // TODO - parse LLM output
+    // TODO - terminal output
+    // TODO - file output (version? other solution?)
 
     Ok(())
 }
+
+// TODO - pub library fn analyze_code
 
 #[cfg(test)]
 mod tests {
