@@ -1,0 +1,62 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxdo-dev
+      - name: rustfmt
+        run: cargo fmt --check
+      - name: clippy
+        run: cargo clippy -- -D warnings
+      - name: test
+        run: xvfb-run cargo test
+      - name: build
+        run: cargo build
+
+  build-macos:
+    runs-on: macOS-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: rustfmt
+        run: cargo fmt --check
+      - name: clippy
+        run: cargo clippy -- -D warnings
+      - name: test
+        run: cargo test
+      - name: build
+        run: cargo build
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: rustfmt
+        run: cargo fmt --check
+      - name: clippy
+        run: cargo clippy -- -D warnings
+      - name: test
+        run: cargo test
+      - name: build
+        run: cargo build
