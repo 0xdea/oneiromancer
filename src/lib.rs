@@ -53,6 +53,9 @@
 //! ## Changelog
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
 //!
+//! ## Credits
+//! * TODO
+//!
 //! ## TODO
 //! * TODO
 //!

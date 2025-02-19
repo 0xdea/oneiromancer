@@ -37,5 +37,5 @@ cargo = { level = "warn", priority = -1 }
 strip = true
 # opt-level = "z"
 lto = true
-# codegen-units = 1
+codegen-units = 1
 panic = "abort"
