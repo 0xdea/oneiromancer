@@ -14,7 +14,7 @@
 > -- John Carmack
 
 Oneiromancer is a research engineering assistant that uses a locally running LLM that has been fine-tuned for Hex-Rays
-pseudo-code, to assist with code analysis.
+pseudo-code, to aid with code analysis.
 
 TODO: improve description, add screenshot
 

@@ -1,23 +1,12 @@
-// Standard library imports
 use std::env;
 use std::path::Path;
 use std::process;
-
-// External crate imports
-// use ...;
-
-// Internal imports
-// use ...;
-
-// const NAME: type = ...;
-
-// static NAME: type = ...;
 
 const PROGRAM: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() {
-    println!("{PROGRAM} {VERSION} - Reverse engineering assistant that uses a locally running LLM to assist with code analysis.");
+    println!("{PROGRAM} {VERSION} - Intelligent code analysis assistant");
     println!("Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>");
     println!();
 
@@ -30,17 +19,16 @@ fn main() {
         .to_str()
         .unwrap_or(PROGRAM);
 
-    let action = match args.len() {
-        1 => "default",
-        2 => &args[1].clone(),
+    let filename = match args.len() {
+        2 => &args[1],
         _ => "-",
     };
-    if action.starts_with('-') {
+    if filename.starts_with('-') {
         usage(prog);
     }
 
     // Let's do it
-    match oneiromancer::run(action) {
+    match oneiromancer::run(Path::new(filename)) {
         Ok(()) => (),
         Err(err) => {
             eprintln!("[!] Error: {err}");
@@ -52,10 +40,7 @@ fn main() {
 /// Print usage information and exit
 fn usage(prog: &str) {
     println!("Usage:");
-    println!("$ {prog} TODO");
-    println!("\nExamples:");
-    println!("$ {prog}");
-    println!("$ {prog} TODO");
+    println!("$ {prog} <source_code_file>");
 
     process::exit(1);
 }

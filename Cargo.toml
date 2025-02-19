@@ -3,7 +3,7 @@ name = "oneiromancer"
 version = "0.1.0"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2021"
-description = "Reverse engineering assistant that uses a locally running LLM to assist with code analysis."
+description = "Reverse engineering assistant that uses a locally running LLM to aid with code analysis."
 homepage = "https://0xdeadbeef.info/"
 repository = "https://github.com/0xdea/oneiromancer"
 license = "MIT"
@@ -14,7 +14,7 @@ exclude = [".cargo/*", ".github/*", ".img/*", "tests/*"]
 [dependencies]
 anyhow = "1.0"
 
-# [build-dependencies]
+# [dev-dependencies]
 
 # [[test]]
 # name = "tests"
@@ -26,7 +26,7 @@ all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
 cargo = { level = "warn", priority = -1 }
-# missing_errors_doc = "allow"
+missing_errors_doc = "allow"
 # multiple_crate_versions = "allow"
 # significant_drop_tightening = "allow"
 # doc_markdown = "allow"

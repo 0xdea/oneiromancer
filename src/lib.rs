@@ -8,7 +8,7 @@
 //! > -- John Carmack
 //!
 //! Oneiromancer is a research engineering assistant that uses a locally running LLM that has been
-//! fine-tuned for Hex-Rays pseudo-code, to assist with code analysis.
+//! fine-tuned for Hex-Rays pseudo-code, to aid with code analysis.
 //!
 //! ## Features
 //! * TODO
@@ -64,33 +64,21 @@
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
-// Standard library imports
-// use ...;
+use std::path::Path;
 
-// External crate imports
-// use ...;
-
-// Internal imports
-// use ...;
-
-// const NAME: type = ...;
-
-// static NAME: type = ...;
-
-/// Dispatch to function implementing the selected action
-pub fn run(action: &str) -> anyhow::Result<()> {
-    todo!();
-    /*
-    match action {
-        "action1" => func1()?,
-        _ => func2(action)?,
+/// TODO
+pub fn run(filepath: &Path) -> anyhow::Result<()> {
+    // Open target source code file - TODO not needed? Open error handling should be enough
+    println!("[*] Trying to analyze source code file {filepath:?}");
+    if !filepath.is_file() {
+        return Err(anyhow::anyhow!("invalid file path"));
     }
+    // TODO
+    println!("[+] Successfully opened source code file");
+    println!();
 
-    Ok(())
-    */
+    todo!();
 }
-
-// Other functions ...
 
 #[cfg(test)]
 mod tests {
