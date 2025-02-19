@@ -17,7 +17,9 @@
 //! * TODO
 //!
 //! ## See also
-//! * TODO
+//! * <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>
+//! * <https://huggingface.co/AverageBusinessUser/aidapal>
+//! * <https://github.com/atredispartners/aidapal>
 //!
 //! ## Installing
 //! The easiest way to get the latest release is via [crates.io](https://crates.io/crates/oneiromancer):

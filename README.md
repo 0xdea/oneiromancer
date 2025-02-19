@@ -30,7 +30,9 @@ TODO: improve description, add screenshot
 
 ## See also
 
-* TODO
+* <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>
+* <https://huggingface.co/AverageBusinessUser/aidapal>
+* <https://github.com/atredispartners/aidapal>
 
 ## Installing
 
