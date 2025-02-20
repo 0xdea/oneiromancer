@@ -64,16 +64,15 @@
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
+use std::fs::File;
+use std::io::{BufReader, Read};
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
-
-/// TODO
-const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
-const OLLAMA_MODEL: &str = "aidapal";
+use thiserror::Error;
 
 #[derive(Serialize, Debug)]
-struct OllamaRequest {
+pub struct OllamaRequest {
     model: String,
     prompt: String,
     stream: bool,
@@ -81,38 +80,38 @@ struct OllamaRequest {
 }
 
 #[derive(Deserialize, Debug)]
-struct OllamaResponse {
+pub struct OllamaResponse {
     response: String,
+}
+
+#[derive(Debug, Error)]
+pub enum OneiromancerError {
+    #[error(transparent)]
+    FileReadFailed(#[from] std::io::Error),
+    #[error(transparent)]
+    OllamaQueryFailed(#[from] ureq::Error),
 }
 
 /// TODO
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Open target source code file - TODO not needed? Open error handling should be enough
-    println!("[*] Trying to analyze source code file {filepath:?}");
+    println!("[*] Analyzing source code file {filepath:?}");
+
+    // TODO - spinners, see jiggy
+
+    // TODO - better handling of default parameters?
+    let result = analyze_code(filepath, "", "")?;
+
+    dbg!(result);
+
+    /*
     if !filepath.is_file() {
         return Err(anyhow::anyhow!("invalid file path"));
     }
     // TODO - file open logic (to be checked also on windows)
     println!("[+] Successfully opened source code file");
     println!();
-
-    // TODO add new() and maybe other methods to my type
-    let send_body = OllamaRequest {
-        model: OLLAMA_MODEL.into(),
-        prompt: "int main() { printf(\"hello world\")".into(),
-        stream: false,
-        format: "json".into(),
-    };
-
-    // TODO - spinners, see jiggy
-
-    println!("[*] Querying the local LLM: {OLLAMA_MODEL}");
-    let recv_body = ureq::post(OLLAMA_URL)
-        .send_json(&send_body)?
-        .body_mut()
-        .read_json::<OllamaResponse>()?;
-
-    dbg!(recv_body);
+    */
 
     // TODO - parse LLM output
     // TODO - terminal output
@@ -122,6 +121,37 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 }
 
 // TODO - pub library fn analyze_code
+// TODO - implement better types for url, model, etc.
+pub fn analyze_code(
+    filepath: &Path,
+    url: &str,
+    model: &str,
+) -> Result<OllamaResponse, OneiromancerError> {
+    // Default ollama URL and model
+    const URL: &str = "http://127.0.0.1:11434/api/generate";
+    const MODEL: &str = "aidapal";
+
+    let file = File::open(filepath)?;
+    let mut reader = BufReader::new(file);
+    let mut buffer = String::new();
+    reader.read_to_string(&mut buffer)?;
+
+    let url = if url.is_empty() { URL } else { url };
+    let model = if model.is_empty() { MODEL } else { model };
+
+    // TODO add new() and maybe other methods to my type
+    let send_body = OllamaRequest {
+        model: model.into(),
+        prompt: buffer,
+        stream: false,
+        format: "json".into(),
+    };
+
+    Ok(ureq::post(url)
+        .send_json(&send_body)?
+        .body_mut()
+        .read_json::<OllamaResponse>()?)
+}
 
 #[cfg(test)]
 mod tests {

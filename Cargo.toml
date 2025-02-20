@@ -13,6 +13,7 @@ exclude = [".cargo/*", ".github/*", ".img/*", "tests/*"]
 
 [dependencies]
 anyhow = "1.0"
+thiserror = "2.0"
 ureq = { version = "3.0", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 
