@@ -78,7 +78,7 @@ pub const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
 pub const OLLAMA_MODEL: &str = "aidapal";
 
 /// Ollama API request content
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Serialize)]
 struct OllamaRequest<'a> {
     model: &'a str,
     prompt: &'a str,
@@ -87,7 +87,7 @@ struct OllamaRequest<'a> {
 }
 
 impl<'a> OllamaRequest<'a> {
-    fn new(model: &'a str, prompt: &'a str) -> Self {
+    const fn new(model: &'a str, prompt: &'a str) -> Self {
         Self {
             model,
             prompt,
@@ -99,7 +99,7 @@ impl<'a> OllamaRequest<'a> {
 
 /// Ollama API response content
 // TODO - use a reference instead of an owned type?
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
 pub struct OllamaResponse {
     response: String,
 }
