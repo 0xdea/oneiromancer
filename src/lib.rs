@@ -71,15 +71,17 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-#[derive(Serialize, Debug)]
-pub struct OllamaRequest {
-    model: String,
-    prompt: String,
+/// Ollama API request content
+#[derive(Debug, Serialize)]
+struct OllamaRequest<'a> {
+    model: &'a str,
+    prompt: &'a str,
     stream: bool,
-    format: String,
+    format: &'a str,
 }
 
-#[derive(Deserialize, Debug)]
+/// Ollama API response content
+#[derive(Debug, Deserialize)]
 pub struct OllamaResponse {
     response: String,
 }
@@ -94,13 +96,13 @@ pub enum OneiromancerError {
 
 /// TODO
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Open target source code file - TODO not needed? Open error handling should be enough
+    // Analyze target source code file
     println!("[*] Analyzing source code file {filepath:?}");
 
     // TODO - spinners, see jiggy
 
     // TODO - better handling of default parameters?
-    let result = analyze_code(filepath, "", "")?;
+    let result = analyze_this(filepath, None, None)?;
 
     dbg!(result);
 
@@ -122,29 +124,31 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 
 // TODO - pub library fn analyze_code
 // TODO - implement better types for url, model, etc.
-pub fn analyze_code(
+pub fn analyze_this(
     filepath: &Path,
-    url: &str,
-    model: &str,
+    url: Option<&str>,
+    model: Option<&str>,
 ) -> Result<OllamaResponse, OneiromancerError> {
     // Default ollama URL and model
-    const URL: &str = "http://127.0.0.1:11434/api/generate";
-    const MODEL: &str = "aidapal";
+    const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
+    const OLLAMA_MODEL: &str = "aidapal";
 
+    // Open target source code file for reading
     let file = File::open(filepath)?;
     let mut reader = BufReader::new(file);
-    let mut buffer = String::new();
-    reader.read_to_string(&mut buffer)?;
+    let mut prompt = String::new();
+    reader.read_to_string(&mut prompt)?;
 
-    let url = if url.is_empty() { URL } else { url };
-    let model = if model.is_empty() { MODEL } else { model };
+    let url = url.unwrap_or(OLLAMA_URL);
+    let model = model.unwrap_or(OLLAMA_MODEL);
+    let stream = false;
+    let format = "json";
 
-    // TODO add new() and maybe other methods to my type
     let send_body = OllamaRequest {
-        model: model.into(),
-        prompt: buffer,
-        stream: false,
-        format: "json".into(),
+        model,
+        prompt: &prompt,
+        stream,
+        format,
     };
 
     Ok(ureq::post(url)
