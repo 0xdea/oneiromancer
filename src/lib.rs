@@ -69,6 +69,7 @@ use std::io::{BufReader, Read};
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
+use spinners::{Spinner, Spinners};
 use thiserror::Error;
 
 /// Ollama API request content
@@ -98,23 +99,22 @@ pub enum OneiromancerError {
 
 /// TODO
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Analyze target source code file
+    // Check target source code file
     println!("[*] Analyzing source code file {filepath:?}");
-
-    // TODO - spinners, see jiggy
-
-    let result = analyze_this(filepath, None, None)?;
-
-    dbg!(result);
-
-    /*
     if !filepath.is_file() {
         return Err(anyhow::anyhow!("invalid file path"));
     }
-    // TODO - file open logic (to be checked also on windows)
-    println!("[+] Successfully opened source code file");
-    println!();
-    */
+
+    // Analyze the target source code file
+    let mut sp = Spinner::new(
+        Spinners::SimpleDotsScrolling,
+        "Querying the Oneiromancer".into(),
+    );
+    let result = analyze_this(filepath, None, None)?;
+    sp.stop_with_message("[+] Done".into());
+    println!("[+] Successfully analyzed source code file");
+
+    dbg!(result);
 
     // TODO - parse LLM output
     // TODO - terminal output
