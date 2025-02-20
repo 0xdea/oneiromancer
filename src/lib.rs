@@ -72,6 +72,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 /// Ollama API request content
+// TODO - implement better types for url, model, etc.?
 #[derive(Debug, Serialize)]
 struct OllamaRequest<'a> {
     model: &'a str,
@@ -81,6 +82,7 @@ struct OllamaRequest<'a> {
 }
 
 /// Ollama API response content
+// TODO - use a reference instead of an owned type?
 #[derive(Debug, Deserialize)]
 pub struct OllamaResponse {
     response: String,
@@ -101,7 +103,6 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 
     // TODO - spinners, see jiggy
 
-    // TODO - better handling of default parameters?
     let result = analyze_this(filepath, None, None)?;
 
     dbg!(result);
@@ -122,36 +123,34 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-// TODO - pub library fn analyze_code
-// TODO - implement better types for url, model, etc.
+/// Submit code in `filepath` to the local LLM via the Ollama API using the specified `url` and `model`.
+///
+/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
 pub fn analyze_this(
     filepath: &Path,
     url: Option<&str>,
     model: Option<&str>,
 ) -> Result<OllamaResponse, OneiromancerError> {
-    // Default ollama URL and model
+    // Default Ollama URL and model
     const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
     const OLLAMA_MODEL: &str = "aidapal";
 
     // Open target source code file for reading
     let file = File::open(filepath)?;
     let mut reader = BufReader::new(file);
-    let mut prompt = String::new();
-    reader.read_to_string(&mut prompt)?;
+    let mut source_code = String::new();
+    reader.read_to_string(&mut source_code)?;
 
-    let url = url.unwrap_or(OLLAMA_URL);
-    let model = model.unwrap_or(OLLAMA_MODEL);
-    let stream = false;
-    let format = "json";
-
+    // Build Ollama API request
     let send_body = OllamaRequest {
-        model,
-        prompt: &prompt,
-        stream,
-        format,
+        model: model.unwrap_or(OLLAMA_MODEL),
+        prompt: &source_code,
+        stream: false,
+        format: "json",
     };
 
-    Ok(ureq::post(url)
+    // Send Ollama API request
+    Ok(ureq::post(url.unwrap_or(OLLAMA_URL))
         .send_json(&send_body)?
         .body_mut()
         .read_json::<OllamaResponse>()?)
