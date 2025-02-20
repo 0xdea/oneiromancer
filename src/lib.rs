@@ -115,18 +115,18 @@ pub enum OneiromancerError {
 /// TODO
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Check target source code file
-    println!("[*] Analyzing source code file {filepath:?}");
+    println!("[*] Analyzing source code in {filepath:?}");
     if !filepath.is_file() {
         return Err(anyhow::anyhow!("invalid file path"));
     }
 
-    // Analyze the target source code file
+    // Analyze source code
     let mut sp = Spinner::new(
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
     let result = analyze_this(filepath, None, None)?;
-    sp.stop_with_message("[+] Successfully analyzed source code file".into());
+    sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
     dbg!(result);
