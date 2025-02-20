@@ -1,5 +1,5 @@
 //!
-//! oneiromancer - Reverse engineering assistant that uses a locally running LLM to assist with code analysis.
+//! oneiromancer - Reverse engineering assistant that uses a locally running LLM to aid with code analysis.
 //! Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>
 //!
 //! > "A large fraction of the flaws in software development are due to programmers not fully
