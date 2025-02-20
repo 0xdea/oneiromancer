@@ -16,7 +16,9 @@ anyhow = "1.0"
 thiserror = "2.0"
 ureq = { version = "3.0", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 spinners = "4.1"
+textwrap = { version = "0.16", features = ["smawk"] }
 
 # [dev-dependencies]
 

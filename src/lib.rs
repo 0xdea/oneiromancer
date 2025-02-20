@@ -78,7 +78,7 @@ pub const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
 pub const OLLAMA_MODEL: &str = "aidapal";
 
 /// Ollama API request content
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Serialize)]
+#[derive(Serialize, Debug)]
 struct OllamaRequest<'a> {
     model: &'a str,
     prompt: &'a str,
@@ -98,13 +98,28 @@ impl<'a> OllamaRequest<'a> {
 }
 
 /// Ollama API response content
-// TODO - use a reference instead of an owned type?
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct OllamaResponse {
-    response: String,
+    pub response: String,
 }
 
-#[derive(Debug, Error)]
+/// Code analysis results
+// TODO - What happens if we have less or more than one function?
+#[derive(Deserialize, Debug)]
+pub struct AnalysisResults {
+    pub function_name: String,
+    pub comment: String,
+    pub variables: Vec<Variable>,
+}
+
+/// Variable renaming suggestions
+#[derive(Deserialize, Debug)]
+pub struct Variable {
+    pub original_name: String,
+    pub new_name: String,
+}
+
+#[derive(Error, Debug)]
 pub enum OneiromancerError {
     #[error(transparent)]
     FileReadFailed(#[from] std::io::Error),
@@ -125,14 +140,29 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let result = analyze_this(filepath, None, None)?;
+    let ollama_response = analyze_this(filepath, None, None)?;
     sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
-    dbg!(result);
+    let analysis_results: AnalysisResults = serde_json::from_str(&ollama_response.response)?;
 
-    // TODO - parse LLM output
-    // TODO - terminal output
+    // Print comment in Phrack-style wrapping to 76 columns
+    let options = textwrap::Options::new(76)
+        .initial_indent(" * ")
+        .subsequent_indent(" * ");
+    let comment = textwrap::fill(&analysis_results.comment, &options);
+    println!("/*\n{comment}\n */\n");
+
+    // Print function and variable renaming suggestions
+    println!(
+        "[-] Suggested function name:\n    {}\n",
+        &analysis_results.function_name
+    );
+    println!("[-] Variable renaming suggestions:");
+    for variable in &analysis_results.variables {
+        println!("    {}\t-> {}", variable.original_name, variable.new_name);
+    }
+
     // TODO - file output (version? other solution?)
 
     Ok(())
