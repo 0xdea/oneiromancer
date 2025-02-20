@@ -6,7 +6,7 @@ const PROGRAM: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() {
-    println!("{PROGRAM} {VERSION} - Intelligent code analysis assistant");
+    println!("{PROGRAM} {VERSION} - Pseudo-code analysis LLM assistant");
     println!("Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>");
     println!();
 
