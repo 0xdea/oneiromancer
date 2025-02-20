@@ -72,14 +72,29 @@ use serde::{Deserialize, Serialize};
 use spinners::{Spinner, Spinners};
 use thiserror::Error;
 
+/// Default Ollama URL
+pub const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
+/// Default Ollama model
+pub const OLLAMA_MODEL: &str = "aidapal";
+
 /// Ollama API request content
-// TODO - implement better types for url, model, etc.?
 #[derive(Debug, Serialize)]
 struct OllamaRequest<'a> {
     model: &'a str,
     prompt: &'a str,
     stream: bool,
     format: &'a str,
+}
+
+impl<'a> OllamaRequest<'a> {
+    fn new(model: &'a str, prompt: &'a str) -> Self {
+        Self {
+            model,
+            prompt,
+            stream: false,
+            format: "json",
+        }
+    }
 }
 
 /// Ollama API response content
@@ -111,8 +126,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         "Querying the Oneiromancer".into(),
     );
     let result = analyze_this(filepath, None, None)?;
-    sp.stop_with_message("[+] Done".into());
-    println!("[+] Successfully analyzed source code file");
+    sp.stop_with_message("[+] Successfully analyzed source code file".into());
+    println!();
 
     dbg!(result);
 
@@ -131,10 +146,6 @@ pub fn analyze_this(
     url: Option<&str>,
     model: Option<&str>,
 ) -> Result<OllamaResponse, OneiromancerError> {
-    // Default Ollama URL and model
-    const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
-    const OLLAMA_MODEL: &str = "aidapal";
-
     // Open target source code file for reading
     let file = File::open(filepath)?;
     let mut reader = BufReader::new(file);
@@ -142,16 +153,18 @@ pub fn analyze_this(
     reader.read_to_string(&mut source_code)?;
 
     // Build Ollama API request
-    let send_body = OllamaRequest {
-        model: model.unwrap_or(OLLAMA_MODEL),
-        prompt: &source_code,
-        stream: false,
-        format: "json",
-    };
+    let send_body = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), &source_code);
 
     // Send Ollama API request
-    Ok(ureq::post(url.unwrap_or(OLLAMA_URL))
-        .send_json(&send_body)?
+    query_ollama(url.unwrap_or(OLLAMA_URL), &send_body)
+}
+
+/// Send an `OllamaRequest`.
+///
+/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+fn query_ollama(url: &str, send_body: &OllamaRequest) -> Result<OllamaResponse, OneiromancerError> {
+    Ok(ureq::post(url)
+        .send_json(send_body)?
         .body_mut()
         .read_json::<OllamaResponse>()?)
 }
@@ -161,7 +174,52 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn query_ollama_works() {
+        let url = OLLAMA_URL;
+        let model = OLLAMA_MODEL;
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let send_body = OllamaRequest::new(model, source_code);
+        let result = query_ollama(url, &send_body);
+
+        assert!(result.is_ok());
+        assert!(!result.unwrap().response.is_empty());
+    }
+
+    #[test]
+    fn query_ollama_with_wrong_url_fails() {
+        let url = "http://127.0.0.1:6666";
+        let model = OLLAMA_MODEL;
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let send_body = OllamaRequest::new(model, source_code);
+        let result = query_ollama(url, &send_body);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn query_ollama_with_wrong_model_fails() {
+        let url = OLLAMA_URL;
+        let model = "doesntexist";
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let send_body = OllamaRequest::new(model, source_code);
+        let result = query_ollama(url, &send_body);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn query_ollama_with_empty_prompt_returns_an_empty_response() {
+        let url = OLLAMA_URL;
+        let model = OLLAMA_MODEL;
+        let source_code = "";
+
+        let send_body = OllamaRequest::new(model, source_code);
+        let result = query_ollama(url, &send_body);
+
+        assert!(result.is_ok());
+        assert!(result.unwrap().response.is_empty());
     }
 }
