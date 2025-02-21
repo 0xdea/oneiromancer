@@ -44,7 +44,7 @@ TODO: add screenshot
 The easiest way to get the latest release is via [crates.io](https://crates.io/crates/oneiromancer):
 
 ```sh
-TODO
+$ cargo install oneiromancer
 ```
 
 ## Compiling
@@ -52,32 +52,26 @@ TODO
 Alternatively, you can build from [source](https://github.com/0xdea/oneiromancer):
 
 ```sh
-TODO
+$ git clone https://github.com/0xdea/oneiromancer
+$ cd oneiromancer
+$ cargo build --release
 ```
 
 ## Usage
 
-```sh
-TODO
-```
+1. Run oneiromancer as follows:
+    ```sh
+    $ oneiromancer <source_code_file>.c
+    ```
+2. Find the extracted pseudo-code of each decompiled function in `source_code_file.out.c`:
+    ```sh
+    $ vim <source_code_file>.out.c
+    $ code <source_code_file>.out.c
+    ```
 
-## Examples
+## Tested on
 
-TODO:
-
-```sh
-TODO
-```
-
-TODO:
-
-```sh
-TODO
-```
-
-## Tested on/with
-
-* TODO
+* Apple macOS Sequoia 15.2 with ollama 0.5.11
 
 ## Changelog
 
@@ -89,6 +83,7 @@ TODO
 
 ## TODO
 
+* Improve output file handling with versioning and/or an output directory.
 * Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
 * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 * Implement a "minority report" protocol (i.e., make three queries and select the best ones).
