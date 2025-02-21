@@ -65,9 +65,10 @@
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
 use std::fs::File;
-use std::io::{BufReader, Read};
+use std::io::{BufReader, BufWriter, Read, Write};
 use std::path::Path;
 
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use spinners::{Spinner, Spinners};
 use thiserror::Error;
@@ -155,11 +156,12 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     let options = textwrap::Options::new(76)
         .initial_indent(" * ")
         .subsequent_indent(" * ");
-    println!(
-        "/*\n * {}()\n *\n{}\n */\n",
+    let comment = format!(
+        "/*\n * {}()\n *\n{}\n */\n\n",
         &analysis_results.function_name,
         textwrap::fill(&analysis_results.comment, &options)
     );
+    print!("{comment}");
 
     // Print variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
@@ -167,9 +169,34 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         println!("    {}\t-> {}", variable.original_name, variable.new_name);
     }
 
-    // Apply suggested variable renaming
+    // Add description and apply suggested variable renaming
+    // TODO - add version number for better scalability?
+    let outfilepath = filepath.with_extension("out.c");
+    println!();
+    println!("[*] Applying suggestions into {outfilepath:?}...");
 
-    // TODO - file output (version? other solution?)
+    // Open target source code file for reading
+    // TODO - remove this repeated code
+    let file = File::open(filepath)?;
+    let mut reader = BufReader::new(file);
+    let mut source_code = String::new();
+    reader.read_to_string(&mut source_code)?;
+
+    // TODO - move above to avoid code duplication
+    for variable in &analysis_results.variables {
+        let re = Regex::new(&format!(r"\b{}\b", variable.original_name))?;
+        source_code = re
+            .replace_all(&source_code, variable.new_name.as_str())
+            .into();
+    }
+
+    // TODO Write pseudo-code to output file
+    let mut writer = BufWriter::new(File::create_new(&outfilepath)?);
+    writer.write_all(comment.as_bytes())?;
+    writer.write_all(source_code.as_bytes())?;
+    writer.flush()?;
+
+    println!("[+] Done analyzing source code");
 
     Ok(())
 }
@@ -258,4 +285,6 @@ mod tests {
         assert!(result.is_ok());
         assert!(result.unwrap().response.is_empty());
     }
+
+    // TODO - add other tests (e.g. file i/o, see other tools)
 }
