@@ -13,7 +13,7 @@
 >
 > -- John Carmack
 
-Oneiromancer is a research engineering assistant that uses a locally running LLM that has been fine-tuned for Hex-Rays
+Oneiromancer is a reverse engineering assistant that uses a locally running LLM that has been fine-tuned for Hex-Rays
 pseudo-code, to aid with code analysis. It can analyze a function or a smaller code snippet, returning a high-level
 description of what the code does, a suggested name for the function, and variable renaming suggestions, based on the
 results of the analysis.
@@ -94,13 +94,13 @@ $ cargo build --release
 
 ## Credits
 
-* Chris (`@AverageBusinessUser`) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+* Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 
 ## TODO
 
 * Improve output file handling with versioning and/or an output directory.
 * Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
-* Implement other features of the Python `aidapal` IDA Pro plugin (e.g., context).
+* Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 * Implement a "minority report" protocol (i.e., make three queries and select the best ones).
 * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
 * Investigate other use cases for the `aidapal` LLM, implement a modular LLM architecture to plug in custom local LLMs.

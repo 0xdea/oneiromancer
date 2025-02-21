@@ -1,5 +1,5 @@
 //!
-//! oneiromancer - Code analysis assistant that uses a locally running LLM
+//! oneiromancer - GenAI assistant for C code analysis
 //! Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>
 //!
 //! > "A large fraction of the flaws in software development are due to programmers not fully
@@ -7,7 +7,7 @@
 //! >
 //! > -- John Carmack
 //!
-//! Oneiromancer is a research engineering assistant that uses a locally running LLM that has been
+//! Oneiromancer is a reverse engineering assistant that uses a locally running LLM that has been
 //! fine-tuned for Hex-Rays pseudo-code, to aid with code analysis. It can analyze a function or a
 //! smaller code snippet, returning a high-level description of what the code does, a suggested name
 //! for the function, and variable renaming suggestions, based on the results of the analysis.
@@ -72,12 +72,12 @@
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
 //!
 //! ## Credits
-//! * Chris (`@AverageBusinessUser`) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+//! * Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 //!
 //! ## TODO
 //! * Improve output file handling with versioning and/or an output directory.
 //! * Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
-//! * Implement other features of the Python `aidapal` IDA Pro plugin (e.g., context).
+//! * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 //! * Implement a "minority report" protocol (i.e., make three queries and select the best ones).
 //! * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
 //! * Investigate other use cases for the `aidapal` LLM, implement a modular LLM architecture to plug in custom local LLMs.
@@ -111,6 +111,7 @@ struct OllamaRequest<'a> {
 }
 
 impl<'a> OllamaRequest<'a> {
+    /// Create a new `OllamaRequest`
     const fn new(model: &'a str, prompt: &'a str) -> Self {
         Self {
             model,
@@ -118,6 +119,16 @@ impl<'a> OllamaRequest<'a> {
             stream: false,
             format: "json",
         }
+    }
+
+    /// Send an `OllamaRequest`.
+    ///
+    /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+    fn send(&self, url: &str) -> Result<OllamaResponse, OneiromancerError> {
+        Ok(ureq::post(url)
+            .send_json(self)?
+            .body_mut()
+            .read_json::<OllamaResponse>()?)
     }
 }
 
@@ -241,21 +252,9 @@ pub fn analyze_code(
     url: Option<&str>,
     model: Option<&str>,
 ) -> Result<OllamaResponse, OneiromancerError> {
-    // Build Ollama API request
-    let send_body = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), source_code);
-
     // Send Ollama API request
-    query_ollama(url.unwrap_or(OLLAMA_URL), &send_body)
-}
-
-/// Send an `OllamaRequest`.
-///
-/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
-fn query_ollama(url: &str, send_body: &OllamaRequest) -> Result<OllamaResponse, OneiromancerError> {
-    Ok(ureq::post(url)
-        .send_json(send_body)?
-        .body_mut()
-        .read_json::<OllamaResponse>()?)
+    let request = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), source_code);
+    request.send(url.unwrap_or(OLLAMA_URL))
 }
 
 #[cfg(test)]
@@ -263,50 +262,50 @@ mod tests {
     use super::*;
 
     #[test]
-    fn query_ollama_works() {
+    fn ollama_request_works() {
         let url = OLLAMA_URL;
         let model = OLLAMA_MODEL;
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let send_body = OllamaRequest::new(model, source_code);
-        let result = query_ollama(url, &send_body);
+        let request = OllamaRequest::new(model, source_code);
+        let result = request.send(url);
 
         assert!(result.is_ok());
         assert!(!result.unwrap().response.is_empty());
     }
 
     #[test]
-    fn query_ollama_with_wrong_url_fails() {
+    fn ollama_request_with_wrong_url_fails() {
         let url = "http://127.0.0.1:6666";
         let model = OLLAMA_MODEL;
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let send_body = OllamaRequest::new(model, source_code);
-        let result = query_ollama(url, &send_body);
+        let request = OllamaRequest::new(model, source_code);
+        let result = request.send(url);
 
         assert!(result.is_err());
     }
 
     #[test]
-    fn query_ollama_with_wrong_model_fails() {
+    fn ollama_request_with_wrong_model_fails() {
         let url = OLLAMA_URL;
         let model = "doesntexist";
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let send_body = OllamaRequest::new(model, source_code);
-        let result = query_ollama(url, &send_body);
+        let request = OllamaRequest::new(model, source_code);
+        let result = request.send(url);
 
         assert!(result.is_err());
     }
 
     #[test]
-    fn query_ollama_with_empty_prompt_returns_an_empty_response() {
+    fn ollama_request_with_empty_prompt_returns_an_empty_response() {
         let url = OLLAMA_URL;
         let model = OLLAMA_MODEL;
         let source_code = "";
 
-        let send_body = OllamaRequest::new(model, source_code);
-        let result = query_ollama(url, &send_body);
+        let request = OllamaRequest::new(model, source_code);
+        let result = request.send(url);
 
         assert!(result.is_ok());
         assert!(result.unwrap().response.is_empty());

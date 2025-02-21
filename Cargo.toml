@@ -30,6 +30,7 @@ pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
 cargo = { level = "warn", priority = -1 }
 missing_errors_doc = "allow"
+doc_markdown = "allow"
 multiple_crate_versions = "allow"
 
 [profile.release]
