@@ -15,7 +15,7 @@
 //! ## Features
 //! * Easy integration with pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, suggested function name, and variable renaming suggestions are printed to the terminal.
-//! * Modified pseudo-code of each analyzed function is stored in a separated file for easy inspection.
+//! * Improved pseudo-code of each analyzed function is stored in a separated file for easy inspection.
 //! * External crates can invoke `analyze_file` or `analyze_code` to analyze pseudo-code and process analysis results.
 //!
 //! ## Blog post
@@ -58,12 +58,12 @@
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
 //!
 //! ## Credits
-//! * Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+//! * Chris (`@AverageBusinessUser`) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 //!
 //! ## TODO
 //! * Improve output file handling with versioning and/or an output directory.
 //! * Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
-//! * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
+//! * Implement other features of the Python `aidapal` IDA Pro plugin (e.g., context).
 //! * Implement a "minority report" protocol (i.e., make three queries and select the best ones).
 //! * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
 //! * Investigate other use cases for the `aidapal` LLM, implement a modular LLM architecture to plug in custom local LLMs.
@@ -114,7 +114,6 @@ pub struct OllamaResponse {
 }
 
 /// Code analysis results
-// TODO - What happens if we have less or more than one function?
 #[derive(Deserialize, Debug)]
 pub struct AnalysisResults {
     /// Suggested function name
@@ -142,7 +141,10 @@ pub enum OneiromancerError {
     OllamaQueryFailed(#[from] ureq::Error),
 }
 
-/// TODO
+/// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
+/// and save improved pseudo-code in `filepath` with a modified extension `out.c`.
+///
+/// Return success or an error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Open target source code file for reading
     println!("[*] Analyzing source code in {filepath:?}");
@@ -185,10 +187,9 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     }
 
     // Write modified source code to output file
-    // TODO - add version number for better scalability?
     let outfilepath = filepath.with_extension("out.c");
     println!();
-    println!("[*] Applying suggestions into {outfilepath:?}...");
+    println!("[*] Applying suggestions into {outfilepath:?}");
 
     let mut writer = BufWriter::new(File::create_new(&outfilepath)?);
     writer.write_all(comment.as_bytes())?;
