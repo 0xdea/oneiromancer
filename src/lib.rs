@@ -135,24 +135,26 @@ pub enum OneiromancerError {
 
 /// TODO
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Check target source code file
+    // Open target source code file for reading
     println!("[*] Analyzing source code in {filepath:?}");
-    if !filepath.is_file() {
-        return Err(anyhow::anyhow!("invalid file path"));
-    }
+    let file = File::open(filepath)?;
+    let mut reader = BufReader::new(file);
+    let mut source_code = String::new();
+    reader.read_to_string(&mut source_code)?;
 
-    // Analyze source code
+    // Submit source code to local LLM for analysis
     let mut sp = Spinner::new(
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let ollama_response = analyze_this(filepath, None, None)?;
+    let ollama_response = analyze_code(&source_code, None, None)?;
+
+    // Parse Ollama response
+    let analysis_results: AnalysisResults = serde_json::from_str(&ollama_response.response)?;
     sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
-    let analysis_results: AnalysisResults = serde_json::from_str(&ollama_response.response)?;
-
-    // Print function description in Phrack-style, wrapping to 76 columns
+    // Create function description in Phrack-style, wrapping to 76 columns
     let options = textwrap::Options::new(76)
         .initial_indent(" * ")
         .subsequent_indent(" * ");
@@ -163,34 +165,22 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     );
     print!("{comment}");
 
-    // Print variable renaming suggestions
+    // Apply variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
     for variable in &analysis_results.variables {
         println!("    {}\t-> {}", variable.original_name, variable.new_name);
-    }
-
-    // Add description and apply suggested variable renaming
-    // TODO - add version number for better scalability?
-    let outfilepath = filepath.with_extension("out.c");
-    println!();
-    println!("[*] Applying suggestions into {outfilepath:?}...");
-
-    // Open target source code file for reading
-    // TODO - remove this repeated code
-    let file = File::open(filepath)?;
-    let mut reader = BufReader::new(file);
-    let mut source_code = String::new();
-    reader.read_to_string(&mut source_code)?;
-
-    // TODO - move above to avoid code duplication
-    for variable in &analysis_results.variables {
         let re = Regex::new(&format!(r"\b{}\b", variable.original_name))?;
         source_code = re
             .replace_all(&source_code, variable.new_name.as_str())
             .into();
     }
 
-    // TODO Write pseudo-code to output file
+    // Write modified source code to output file
+    // TODO - add version number for better scalability?
+    let outfilepath = filepath.with_extension("out.c");
+    println!();
+    println!("[*] Applying suggestions into {outfilepath:?}...");
+
     let mut writer = BufWriter::new(File::create_new(&outfilepath)?);
     writer.write_all(comment.as_bytes())?;
     writer.write_all(source_code.as_bytes())?;
@@ -204,7 +194,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// Submit code in `filepath` to the local LLM via the Ollama API using the specified `url` and `model`.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
-pub fn analyze_this(
+pub fn analyze_file(
     filepath: &Path,
     url: Option<&str>,
     model: Option<&str>,
@@ -215,8 +205,20 @@ pub fn analyze_this(
     let mut source_code = String::new();
     reader.read_to_string(&mut source_code)?;
 
+    // Analyze `source_code`
+    analyze_code(&source_code, model, url)
+}
+
+/// Submit `source_code` to the local LLM via the Ollama API using the specified `url` and `model`.
+///
+/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+pub fn analyze_code(
+    source_code: &str,
+    url: Option<&str>,
+    model: Option<&str>,
+) -> Result<OllamaResponse, OneiromancerError> {
     // Build Ollama API request
-    let send_body = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), &source_code);
+    let send_body = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), source_code);
 
     // Send Ollama API request
     query_ollama(url.unwrap_or(OLLAMA_URL), &send_body)
@@ -286,5 +288,5 @@ mod tests {
         assert!(result.unwrap().response.is_empty());
     }
 
-    // TODO - add other tests (e.g. file i/o, see other tools)
+    // TODO - add other tests (e.g. analyze_code, analyze_file, run, file i/o, see other tools)
 }
