@@ -230,7 +230,7 @@ pub fn analyze_file(
     reader.read_to_string(&mut source_code)?;
 
     // Analyze `source_code`
-    analyze_code(&source_code, model, url)
+    analyze_code(&source_code, url, model)
 }
 
 /// Submit `source_code` to the local LLM via the Ollama API using the specified `url` and `model`.
@@ -312,5 +312,74 @@ mod tests {
         assert!(result.unwrap().response.is_empty());
     }
 
-    // TODO - add other tests (e.g. analyze_code, analyze_file, run, file i/o, see other tools)
+    #[test]
+    fn analyze_code_works() {
+        let url = OLLAMA_URL;
+        let model = OLLAMA_MODEL;
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let result = analyze_code(source_code, Some(url), Some(model));
+
+        assert!(result.is_ok());
+        assert!(!result.unwrap().response.is_empty());
+    }
+
+    #[test]
+    fn analyze_code_with_default_parameters_works() {
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let result = analyze_code(source_code, None, None);
+
+        assert!(result.is_ok());
+        assert!(!result.unwrap().response.is_empty());
+    }
+
+    #[test]
+    fn analyze_file_works() {
+        let url = OLLAMA_URL;
+        let model = OLLAMA_MODEL;
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        let mut tmpfile = File::create(&filepath).unwrap();
+        writeln!(tmpfile, "{source_code}").unwrap();
+
+        let result = analyze_file(&filepath, Some(url), Some(model));
+
+        assert!(result.is_ok());
+        assert!(!result.unwrap().response.is_empty());
+    }
+
+    #[test]
+    fn analyze_file_with_default_parameters_works() {
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        let mut tmpfile = File::create(&filepath).unwrap();
+        writeln!(tmpfile, "{source_code}").unwrap();
+
+        let result = analyze_file(&filepath, None, None);
+
+        assert!(result.is_ok());
+        assert!(!result.unwrap().response.is_empty());
+    }
+
+    #[test]
+    fn run_works() {
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        let mut tmpfile = File::create(&filepath).unwrap();
+        writeln!(tmpfile, "{source_code}").unwrap();
+
+        let result = run(&filepath);
+        let outfile = tmpdir.path().join("test.out.c");
+
+        assert!(result.is_ok());
+        assert!(outfile.exists());
+        assert_ne!(outfile.metadata().unwrap().len(), 0);
+    }
 }

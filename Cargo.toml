@@ -21,12 +21,8 @@ spinners = "4.1"
 textwrap = { version = "0.16", features = ["smawk"] }
 regex = "1.11"
 
-# [dev-dependencies]
-
-# [[test]]
-# name = "tests"
-# path = "tests/main.rs"
-# harness = false
+[dev-dependencies]
+tempfile = "3.17"
 
 [lints.clippy]
 all = { level = "warn", priority = -1 }
@@ -34,10 +30,7 @@ pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
 cargo = { level = "warn", priority = -1 }
 missing_errors_doc = "allow"
-# multiple_crate_versions = "allow"
-# significant_drop_tightening = "allow"
-# doc_markdown = "allow"
-# wildcard_imports = "allow"
+multiple_crate_versions = "allow"
 
 [profile.release]
 # see https://github.com/johnthagen/min-sized-rust
