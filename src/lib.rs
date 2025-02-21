@@ -107,15 +107,20 @@ pub struct OllamaResponse {
 // TODO - What happens if we have less or more than one function?
 #[derive(Deserialize, Debug)]
 pub struct AnalysisResults {
+    /// Suggested function name
     pub function_name: String,
+    /// Function description
     pub comment: String,
+    /// Variable renaming suggestions
     pub variables: Vec<Variable>,
 }
 
-/// Variable renaming suggestions
+/// Variable renaming suggestion
 #[derive(Deserialize, Debug)]
 pub struct Variable {
+    /// Original name of the variable
     pub original_name: String,
+    /// Suggested new name of the variable
     pub new_name: String,
 }
 
@@ -146,22 +151,23 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 
     let analysis_results: AnalysisResults = serde_json::from_str(&ollama_response.response)?;
 
-    // Print comment in Phrack-style wrapping to 76 columns
+    // Print function description in Phrack-style, wrapping to 76 columns
     let options = textwrap::Options::new(76)
         .initial_indent(" * ")
         .subsequent_indent(" * ");
-    let comment = textwrap::fill(&analysis_results.comment, &options);
-    println!("/*\n{comment}\n */\n");
-
-    // Print function and variable renaming suggestions
     println!(
-        "[-] Suggested function name:\n    {}\n",
-        &analysis_results.function_name
+        "/*\n * {}()\n *\n{}\n */\n",
+        &analysis_results.function_name,
+        textwrap::fill(&analysis_results.comment, &options)
     );
+
+    // Print variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
     for variable in &analysis_results.variables {
         println!("    {}\t-> {}", variable.original_name, variable.new_name);
     }
+
+    // Apply suggested variable renaming
 
     // TODO - file output (version? other solution?)
 
