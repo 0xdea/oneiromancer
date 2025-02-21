@@ -27,12 +27,12 @@ TODO: add screenshot
 * Support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal).
 * Easy integration with pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 * Code description, suggested function name, and variable renaming suggestions are printed to the terminal.
-* Improved pseudo-code of each analyzed function is stored in a separated file for easy inspection.
+* Improved pseudo-code of each analyzed function is saved in a separated file for easy inspection.
 * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and process analysis results.
 
 ## Blog post
 
-* TODO
+* TODO (*coming soon*)
 
 ## See also
 
@@ -83,6 +83,8 @@ $ cargo build --release
    $ vim <source_code_file>.out.c
    $ code <source_code_file>.out.c
    ```
+
+*Note: for best results, you shouldn't submit for analysis to the LLM more than a function at once.*
 
 ## Tested on
 

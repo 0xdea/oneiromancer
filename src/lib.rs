@@ -16,11 +16,11 @@
 //! * Support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal).
 //! * Easy integration with pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, suggested function name, and variable renaming suggestions are printed to the terminal.
-//! * Improved pseudo-code of each analyzed function is stored in a separated file for easy inspection.
+//! * Improved pseudo-code of each analyzed function is saved in a separated file for easy inspection.
 //! * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and process analysis results.
 //!
 //! ## Blog post
-//! * TODO
+//! * TODO (*coming soon*)
 //!
 //! ## See also
 //! * <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>
@@ -64,6 +64,7 @@
 //!     $ vim <source_code_file>.out.c
 //!     $ code <source_code_file>.out.c
 //!     ```
+//! *Note: for best results, you shouldn't submit for analysis to the LLM more than a function at once.*
 //!
 //! ## Tested on
 //! * Apple macOS Sequoia 15.2 with ollama 0.5.11
@@ -154,7 +155,7 @@ pub struct AnalysisResults {
 pub struct Variable {
     /// Original name of the variable
     pub original_name: String,
-    /// Suggested new name of the variable
+    /// Suggested name for the variable
     pub new_name: String,
 }
 
@@ -167,7 +168,7 @@ pub enum OneiromancerError {
 }
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
-/// and save improved pseudo-code in `filepath` with a modified extension `out.c`.
+/// and save improved pseudo-code in `filepath` with a modified `out.c` extension.
 ///
 /// Return success or an error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
@@ -194,12 +195,12 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     let options = textwrap::Options::new(76)
         .initial_indent(" * ")
         .subsequent_indent(" * ");
-    let comment = format!(
+    let function_description = format!(
         "/*\n * {}()\n *\n{}\n */\n\n",
         &analysis_results.function_name,
         textwrap::fill(&analysis_results.comment, &options)
     );
-    print!("{comment}");
+    print!("{function_description}");
 
     // Apply variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
@@ -211,18 +212,17 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
             .into();
     }
 
-    // Write modified source code to output file
+    // Save improved source code to output file
     let outfilepath = filepath.with_extension("out.c");
     println!();
-    println!("[*] Applying suggestions into {outfilepath:?}");
+    println!("[*] Saving improved source code in {outfilepath:?}");
 
     let mut writer = BufWriter::new(File::create_new(&outfilepath)?);
-    writer.write_all(comment.as_bytes())?;
+    writer.write_all(function_description.as_bytes())?;
     writer.write_all(source_code.as_bytes())?;
     writer.flush()?;
 
     println!("[+] Done analyzing source code");
-
     Ok(())
 }
 
