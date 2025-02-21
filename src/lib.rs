@@ -1,5 +1,5 @@
 //!
-//! oneiromancer - Reverse engineering assistant that uses a locally running LLM to aid with code analysis.
+//! oneiromancer - Code analysis assistant that uses a locally running LLM
 //! Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>
 //!
 //! > "A large fraction of the flaws in software development are due to programmers not fully
@@ -13,10 +13,11 @@
 //! for the function, and variable renaming suggestions, based on the results of the analysis.
 //!
 //! ## Features
+//! * Support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal).
 //! * Easy integration with pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, suggested function name, and variable renaming suggestions are printed to the terminal.
 //! * Improved pseudo-code of each analyzed function is stored in a separated file for easy inspection.
-//! * External crates can invoke `analyze_file` or `analyze_code` to analyze pseudo-code and process analysis results.
+//! * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and process analysis results.
 //!
 //! ## Blog post
 //! * TODO
@@ -39,6 +40,19 @@
 //! $ cd oneiromancer
 //! $ cargo build --release
 //! ```
+//!
+//! ## Configuration
+//! 1. Download and install [ollama](https://ollama.com/).
+//! 2. Download the fine-tuned weights and Ollama modelfile from [huggingface](https://huggingface.co/):
+//!     ```sh
+//!     $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
+//!     $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
+//!     ```
+//! 3. Configure Ollama by running the following within the directory in which you downloaded the weights and modelfile:
+//!     ```sh
+//!     $ ollama create aidapal -f aidapal.modelfile
+//!     $ ollama list
+//!     ```
 //!
 //! ## Usage
 //! 1. Run oneiromancer as follows:
@@ -88,7 +102,7 @@ pub const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
 pub const OLLAMA_MODEL: &str = "aidapal";
 
 /// Ollama API request content
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone)]
 struct OllamaRequest<'a> {
     model: &'a str,
     prompt: &'a str,
@@ -108,13 +122,13 @@ impl<'a> OllamaRequest<'a> {
 }
 
 /// Ollama API response content
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct OllamaResponse {
     pub response: String,
 }
 
 /// Code analysis results
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct AnalysisResults {
     /// Suggested function name
     pub function_name: String,
@@ -125,7 +139,7 @@ pub struct AnalysisResults {
 }
 
 /// Variable renaming suggestion
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Variable {
     /// Original name of the variable
     pub original_name: String,

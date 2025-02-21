@@ -24,10 +24,11 @@ TODO: add screenshot
 
 ## Features
 
+* Support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal).
 * Easy integration with pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 * Code description, suggested function name, and variable renaming suggestions are printed to the terminal.
 * Improved pseudo-code of each analyzed function is stored in a separated file for easy inspection.
-* External crates can invoke `analyze_file` or `analyze_code` to analyze pseudo-code and process analysis results.
+* External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and process analysis results.
 
 ## Blog post
 
@@ -57,17 +58,31 @@ $ cd oneiromancer
 $ cargo build --release
 ```
 
+## Configuration
+
+1. Download and install [ollama](https://ollama.com/).
+2. Download the fine-tuned weights and Ollama modelfile from [huggingface](https://huggingface.co/):
+   ```sh
+   $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
+   $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
+   ```
+3. Configure Ollama by running the following within the directory in which you downloaded the weights and modelfile:
+   ```sh
+   $ ollama create aidapal -f aidapal.modelfile
+   $ ollama list
+   ```
+
 ## Usage
 
 1. Run oneiromancer as follows:
-    ```sh
-    $ oneiromancer <source_code_file>.c
-    ```
+   ```sh
+   $ oneiromancer <source_code_file>.c
+   ```
 2. Find the extracted pseudo-code of each decompiled function in `source_code_file.out.c`:
-    ```sh
-    $ vim <source_code_file>.out.c
-    $ code <source_code_file>.out.c
-    ```
+   ```sh
+   $ vim <source_code_file>.out.c
+   $ code <source_code_file>.out.c
+   ```
 
 ## Tested on
 
