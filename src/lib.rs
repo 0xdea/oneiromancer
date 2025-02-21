@@ -8,10 +8,15 @@
 //! > -- John Carmack
 //!
 //! Oneiromancer is a research engineering assistant that uses a locally running LLM that has been
-//! fine-tuned for Hex-Rays pseudo-code, to aid with code analysis.
+//! fine-tuned for Hex-Rays pseudo-code, to aid with code analysis. It can analyze a function or a
+//! smaller code snippet, returning a high-level description of what the code does, a suggested name
+//! for the function, and variable renaming suggestions, based on the results of the analysis.
 //!
 //! ## Features
-//! * TODO
+//! * Easy integration with pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
+//! * Code description, suggested function name, and variable renaming suggestions are printed to the terminal.
+//! * Modified pseudo-code of each analyzed function is stored in a separated file for easy inspection.
+//! * External crates can invoke `analyze_file` or `analyze_code` to analyze pseudo-code and process analysis results.
 //!
 //! ## Blog post
 //! * TODO
@@ -56,10 +61,16 @@
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
 //!
 //! ## Credits
-//! * TODO
+//! * Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 //!
 //! ## TODO
-//! * TODO
+//! * Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
+//! * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
+//! * Implement a "minority report" protocol (i.e., make three queries and select the best ones).
+//! * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
+//! * Investigate other use cases for the `aidapal` LLM, implement a modular LLM architecture to plug in custom local LLMs.
+//! * Consider pulling in [ollama-rs](https://lib.rs/crates/ollama-rs) or a similar crate for more advanced features.
+//! * Consider improving variable renaming logic with a custom C parser...
 //!
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
@@ -191,7 +202,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submit code in `filepath` to the local LLM via the Ollama API using the specified `url` and `model`.
+/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `url` and `model`.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
 pub fn analyze_file(
