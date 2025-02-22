@@ -17,8 +17,6 @@ pseudo-code, to aid with code analysis. It can analyze a function or a smaller c
 description of what the code does, a recommended name for the function, and variable renaming suggestions, based on the
 results of the analysis.
 
-TODO: add screenshot
-
 ![](https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/screen01.png)
 
 ## Features
