@@ -104,9 +104,9 @@ $ cargo build --release
 
 ## TODO
 
-* Improve output file handling with versioning and/or an output directory.
 * Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
 * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
+* Improve output file handling with versioning and/or an output directory.
 * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
 * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
 * Investigate other use cases for the `aidapal` LLM and implement a modular LLM architecture to plug in custom LLMs.
