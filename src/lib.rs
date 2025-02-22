@@ -20,7 +20,7 @@
 //! * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and then process analysis results.
 //!
 //! ## Blog post
-//! * TODO (*coming soon*)
+//! * <https://security.humanativaspa.it/aiding-reverse-engineering-with-rust-and-a-local-llm> (*coming soon*)
 //!
 //! ## See also
 //! * <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>

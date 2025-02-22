@@ -32,7 +32,7 @@ TODO: add screenshot
 
 ## Blog post
 
-* TODO (*coming soon*)
+* <https://security.humanativaspa.it/aiding-reverse-engineering-with-rust-and-a-local-llm> (*coming soon*)
 
 ## See also
 
