@@ -72,8 +72,7 @@ $ cargo build --release
    $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
    $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
    ```
-3. Configure Ollama by running the following commands within the directory in which you downloaded the weights and
-   modelfile:
+3. Configure Ollama by running the following commands within the directory in which you downloaded the files:
    ```sh
    $ ollama create aidapal -f aidapal.modelfile
    $ ollama list
