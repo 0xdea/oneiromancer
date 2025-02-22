@@ -8,9 +8,9 @@
 [![build](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml/badge.svg)](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml)
 
 > "A large fraction of the flaws in software development are due to programmers not fully understanding all the possible
-> states their code may execute in."
->
-> -- John Carmack
+> states their code may execute in." -- John Carmack
+
+> "Can it run Doom?" -- https://www.canitrundoom.org/
 
 Oneiromancer is a reverse engineering assistant that uses a locally running LLM that has been fine-tuned for Hex-Rays
 pseudo-code, to aid with code analysis. It can analyze a function or a smaller code snippet, returning a high-level
