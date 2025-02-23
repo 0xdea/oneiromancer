@@ -138,13 +138,22 @@ impl<'a> OllamaRequest<'a> {
 
 /// Ollama API response content
 #[derive(Deserialize, Debug, Clone)]
-pub struct OllamaResponse {
-    pub response: String,
+struct OllamaResponse {
+    response: String,
+}
+
+impl OllamaResponse {
+    /// Parse an `OllamaResponse` into an `OneiromancerResults` struct.
+    ///
+    /// Return `OneiromancerResults` or the appropriate `OneiromancerError` in case something goes wrong.
+    fn parse(&self) -> Result<OneiromancerResults, OneiromancerError> {
+        Ok(serde_json::from_str(&self.response)?)
+    }
 }
 
 /// Code analysis results
 #[derive(Deserialize, Debug, Clone)]
-pub struct AnalysisResults {
+pub struct OneiromancerResults {
     /// Recommended function name
     pub function_name: String,
     /// Function description
@@ -168,6 +177,8 @@ pub enum OneiromancerError {
     FileReadFailed(#[from] std::io::Error),
     #[error(transparent)]
     OllamaQueryFailed(#[from] ureq::Error),
+    #[error(transparent)]
+    ResponseParseFailed(#[from] serde_json::Error),
 }
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
@@ -187,10 +198,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let ollama_response = analyze_code(&source_code, None, None)?;
-
-    // Parse Ollama response
-    let analysis_results: AnalysisResults = serde_json::from_str(&ollama_response.response)?;
+    let analysis_results = analyze_code(&source_code, None, None)?;
     sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
@@ -236,10 +244,10 @@ pub fn analyze_code(
     source_code: &str,
     url: Option<&str>,
     model: Option<&str>,
-) -> Result<OllamaResponse, OneiromancerError> {
-    // Send Ollama API request
+) -> Result<OneiromancerResults, OneiromancerError> {
+    // Send Ollama API request and parse response
     let request = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), source_code);
-    request.send(url.unwrap_or(OLLAMA_URL))
+    request.send(url.unwrap_or(OLLAMA_URL))?.parse()
 }
 
 /// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `url` and `model`.
@@ -249,7 +257,7 @@ pub fn analyze_file(
     filepath: &Path,
     url: Option<&str>,
     model: Option<&str>,
-) -> Result<OllamaResponse, OneiromancerError> {
+) -> Result<OneiromancerResults, OneiromancerError> {
     // Open target source file for reading
     let file = File::open(filepath)?;
     let mut reader = BufReader::new(file);
@@ -323,7 +331,7 @@ mod tests {
         let result = analyze_code(source_code, Some(url), Some(model));
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().response.is_empty());
+        assert!(!result.unwrap().comment.is_empty());
     }
 
     #[test]
@@ -333,7 +341,7 @@ mod tests {
         let result = analyze_code(source_code, None, None);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().response.is_empty());
+        assert!(!result.unwrap().comment.is_empty());
     }
 
     #[test]
@@ -350,7 +358,7 @@ mod tests {
         let result = analyze_file(&filepath, Some(url), Some(model));
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().response.is_empty());
+        assert!(!result.unwrap().comment.is_empty());
     }
 
     #[test]
@@ -365,7 +373,7 @@ mod tests {
         let result = analyze_file(&filepath, None, None);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().response.is_empty());
+        assert!(!result.unwrap().comment.is_empty());
     }
 
     #[test]
