@@ -86,7 +86,7 @@
 //! * Improve output file handling with versioning and/or an output directory.
 //! * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
 //! * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
-//! * Investigate other use cases for the `aidapal` LLM and implement a modular LLM architecture to plug in custom LLMs.
+//! * Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.
 //!
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
@@ -171,11 +171,11 @@ pub enum OneiromancerError {
 }
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
-/// and save improved pseudo-code in `filepath` with a modified `out.c` extension.
+/// and save improved pseudo-code in `filepath` with an `out.c` extension.
 ///
 /// Return success or an error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Open target source code file for reading
+    // Open target source file for reading
     println!("[*] Analyzing source code in {filepath:?}");
     let file = File::open(filepath)?;
     let mut reader = BufReader::new(file);
@@ -229,24 +229,6 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `url` and `model`.
-///
-/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
-pub fn analyze_file(
-    filepath: &Path,
-    url: Option<&str>,
-    model: Option<&str>,
-) -> Result<OllamaResponse, OneiromancerError> {
-    // Open target source code file for reading
-    let file = File::open(filepath)?;
-    let mut reader = BufReader::new(file);
-    let mut source_code = String::new();
-    reader.read_to_string(&mut source_code)?;
-
-    // Analyze `source_code`
-    analyze_code(&source_code, url, model)
-}
-
 /// Submit `source_code` to the local LLM via the Ollama API using the specified `url` and `model`.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
@@ -258,6 +240,24 @@ pub fn analyze_code(
     // Send Ollama API request
     let request = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), source_code);
     request.send(url.unwrap_or(OLLAMA_URL))
+}
+
+/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `url` and `model`.
+///
+/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+pub fn analyze_file(
+    filepath: &Path,
+    url: Option<&str>,
+    model: Option<&str>,
+) -> Result<OllamaResponse, OneiromancerError> {
+    // Open target source file for reading
+    let file = File::open(filepath)?;
+    let mut reader = BufReader::new(file);
+    let mut source_code = String::new();
+    reader.read_to_string(&mut source_code)?;
+
+    // Analyze `source_code`
+    analyze_code(&source_code, url, model)
 }
 
 #[cfg(test)]
