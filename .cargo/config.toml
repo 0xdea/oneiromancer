@@ -1,4 +1,6 @@
 [env]
+OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+OLLAMA_MODEL = "aidapal"
 RUST_TEST_THREADS = "1"
 
 [build]

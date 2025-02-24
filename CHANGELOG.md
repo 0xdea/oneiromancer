@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Add support for `OLLAMA_URL` and `OLLAMA_MODEL` environment variables.
+
 ### Changed
 
 * Implement `OllamaResponse` parsing into an `OneiromancerResults` struct.

@@ -93,6 +93,7 @@ $ cargo build --release
 ## Tested on
 
 * Apple macOS Sequoia 15.2 with ollama 0.5.11
+* Ubuntu Linux 24.04.2 LTS with ollama 0.5.11
 
 ## Changelog
 

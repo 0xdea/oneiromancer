@@ -91,6 +91,7 @@
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
+use std::env;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
 use std::path::Path;
@@ -186,6 +187,10 @@ pub enum OneiromancerError {
 ///
 /// Return success or an error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
+    // Check the environment for Ollama URL and model
+    let url = env::var("OLLAMA_URL").ok();
+    let model = env::var("OLLAMA_MODEL").ok();
+
     // Open target source file for reading
     println!("[*] Analyzing source code in {filepath:?}");
     let file = File::open(filepath)?;
@@ -198,7 +203,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let analysis_results = analyze_code(&source_code, None, None)?;
+    let analysis_results = analyze_code(&source_code, url.as_deref(), model.as_deref())?;
     sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
