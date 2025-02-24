@@ -75,6 +75,7 @@
 //!
 //! ## Tested on
 //! * Apple macOS Sequoia 15.2 with ollama 0.5.11
+//! * Ubuntu Linux 24.04.2 LTS with ollama 0.5.11
 //!
 //! ## Changelog
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
@@ -241,7 +242,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 }
 
 /// Submit `source_code` to the local LLM via the Ollama API using the specified `url` and `model`.
-/// Argument priority: function args -> environment vars -> hardcoded defaults
+/// Argument priority: function args -> environment vars -> hardcoded defaults.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
 pub fn analyze_code(
@@ -288,12 +289,12 @@ mod tests {
 
     #[test]
     fn ollama_request_works() {
-        let url = OLLAMA_URL;
-        let model = OLLAMA_MODEL;
+        let url = env::var("OLLAMA_URL");
+        let model = env::var("OLLAMA_MODEL");
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let request = OllamaRequest::new(model, source_code);
-        let result = request.send(url);
+        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
+        let result = request.send(url.as_deref().unwrap_or(OLLAMA_URL));
 
         assert!(result.is_ok());
         assert!(!result.unwrap().response.is_empty());
@@ -302,10 +303,10 @@ mod tests {
     #[test]
     fn ollama_request_with_wrong_url_fails() {
         let url = "http://127.0.0.1:6666";
-        let model = OLLAMA_MODEL;
+        let model = env::var("OLLAMA_MODEL");
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let request = OllamaRequest::new(model, source_code);
+        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
         let result = request.send(url);
 
         assert!(result.is_err());
@@ -313,24 +314,24 @@ mod tests {
 
     #[test]
     fn ollama_request_with_wrong_model_fails() {
-        let url = OLLAMA_URL;
+        let url = env::var("OLLAMA_URL");
         let model = "doesntexist";
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
         let request = OllamaRequest::new(model, source_code);
-        let result = request.send(url);
+        let result = request.send(url.as_deref().unwrap_or(OLLAMA_URL));
 
         assert!(result.is_err());
     }
 
     #[test]
     fn ollama_request_with_empty_prompt_returns_an_empty_response() {
-        let url = OLLAMA_URL;
-        let model = OLLAMA_MODEL;
+        let url = env::var("OLLAMA_URL");
+        let model = env::var("OLLAMA_MODEL");
         let source_code = "";
 
-        let request = OllamaRequest::new(model, source_code);
-        let result = request.send(url);
+        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
+        let result = request.send(url.as_deref().unwrap_or(OLLAMA_URL));
 
         assert!(result.is_ok());
         assert!(result.unwrap().response.is_empty());
@@ -338,11 +339,11 @@ mod tests {
 
     #[test]
     fn analyze_code_works() {
-        let url = OLLAMA_URL;
-        let model = OLLAMA_MODEL;
+        let url = env::var("OLLAMA_URL").ok();
+        let model = env::var("OLLAMA_MODEL").ok();
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = analyze_code(source_code, Some(url), Some(model));
+        let result = analyze_code(source_code, url.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
         assert!(!result.unwrap().comment.is_empty());
@@ -360,8 +361,8 @@ mod tests {
 
     #[test]
     fn analyze_file_works() {
-        let url = OLLAMA_URL;
-        let model = OLLAMA_MODEL;
+        let url = env::var("OLLAMA_URL").ok();
+        let model = env::var("OLLAMA_MODEL").ok();
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
         let tmpdir = tempfile::tempdir().unwrap();
@@ -369,7 +370,7 @@ mod tests {
         let mut tmpfile = File::create(&filepath).unwrap();
         writeln!(tmpfile, "{source_code}").unwrap();
 
-        let result = analyze_file(&filepath, Some(url), Some(model));
+        let result = analyze_file(&filepath, url.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
         assert!(!result.unwrap().comment.is_empty());
