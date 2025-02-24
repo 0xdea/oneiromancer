@@ -96,6 +96,7 @@ $ cargo build --release
 
 * Apple macOS Sequoia 15.2 with ollama 0.5.11
 * Ubuntu Linux 24.04.2 LTS with ollama 0.5.11
+* Microsoft Windows 11 23H2 with ollama 0.5.11
 
 ## Changelog
 
@@ -107,7 +108,6 @@ $ cargo build --release
 
 ## TODO
 
-* Extensive testing on the `windows` target family to confirm that it works properly even in edge cases.
 * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 * Improve output file handling with versioning and/or an output directory.
 * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
