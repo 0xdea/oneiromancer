@@ -62,6 +62,8 @@
 //! ## Usage
 //! 1. Run oneiromancer as follows:
 //!     ```sh
+//!     $ export OLLAMA_URL=custom_url/api/generate # if not set, the default will be used
+//!     $ export OLLAMA_MODEL=custom_model # if not set, the default will be used
 //!     $ oneiromancer <source_file>.c
 //!     ```
 //! 2. Find the extracted pseudo-code of each decompiled function in `source_file.out.c`:
@@ -187,10 +189,6 @@ pub enum OneiromancerError {
 ///
 /// Return success or an error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Check the environment for Ollama URL and model
-    let url = env::var("OLLAMA_URL").ok();
-    let model = env::var("OLLAMA_MODEL").ok();
-
     // Open target source file for reading
     println!("[*] Analyzing source code in {filepath:?}");
     let file = File::open(filepath)?;
@@ -203,7 +201,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let analysis_results = analyze_code(&source_code, url.as_deref(), model.as_deref())?;
+    let analysis_results = analyze_code(&source_code, None, None)?;
     sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
@@ -243,6 +241,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 }
 
 /// Submit `source_code` to the local LLM via the Ollama API using the specified `url` and `model`.
+/// Argument priority: function args -> environment vars -> hardcoded defaults
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
 pub fn analyze_code(
@@ -250,9 +249,18 @@ pub fn analyze_code(
     url: Option<&str>,
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
+    // Check environment variables
+    let env_url = env::var("OLLAMA_URL");
+    let env_model = env::var("OLLAMA_MODEL");
+
     // Send Ollama API request and parse response
-    let request = OllamaRequest::new(model.unwrap_or(OLLAMA_MODEL), source_code);
-    request.send(url.unwrap_or(OLLAMA_URL))?.parse()
+    let request = OllamaRequest::new(
+        model.unwrap_or_else(|| env_model.as_deref().unwrap_or(OLLAMA_MODEL)),
+        source_code,
+    );
+    request
+        .send(url.unwrap_or_else(|| env_url.as_deref().unwrap_or(OLLAMA_URL)))?
+        .parse()
 }
 
 /// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `url` and `model`.

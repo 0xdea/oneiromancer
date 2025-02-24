@@ -80,6 +80,8 @@ $ cargo build --release
 
 1. Run oneiromancer as follows:
    ```sh
+   $ export OLLAMA_URL=custom_url/api/generate # if not set, the default will be used
+   $ export OLLAMA_MODEL=custom_model # if not set, the default will be used
    $ oneiromancer <source_file>.c
    ```
 2. Find the extracted pseudo-code of each decompiled function in `source_file.out.c`:
