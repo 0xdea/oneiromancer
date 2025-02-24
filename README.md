@@ -80,7 +80,7 @@ $ cargo build --release
 
 1. Run oneiromancer as follows:
    ```sh
-   $ export OLLAMA_URL=custom_url/api/generate # if not set, the default will be used
+   $ export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
    $ export OLLAMA_MODEL=custom_model # if not set, the default will be used
    $ oneiromancer <source_file>.c
    ```

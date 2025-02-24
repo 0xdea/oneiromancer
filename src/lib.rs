@@ -62,7 +62,7 @@
 //! ## Usage
 //! 1. Run oneiromancer as follows:
 //!     ```sh
-//!     $ export OLLAMA_URL=custom_url/api/generate # if not set, the default will be used
+//!     $ export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
 //!     $ export OLLAMA_MODEL=custom_model # if not set, the default will be used
 //!     $ oneiromancer <source_file>.c
 //!     ```
@@ -105,7 +105,7 @@ use spinners::{Spinner, Spinners};
 use thiserror::Error;
 
 /// Default Ollama URL
-pub const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
+pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
 /// Default Ollama model
 pub const OLLAMA_MODEL: &str = "aidapal";
 
@@ -129,10 +129,11 @@ impl<'a> OllamaRequest<'a> {
         }
     }
 
-    /// Send an `OllamaRequest`.
+    /// Send an `OllamaRequest` to the `/api/generate` endpoint at `baseurl`.
     ///
     /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
-    fn send(&self, url: &str) -> Result<OllamaResponse, OneiromancerError> {
+    fn send(&self, baseurl: &str) -> Result<OllamaResponse, OneiromancerError> {
+        let url = format!("{}{}", baseurl.trim_end_matches('/'), "/api/generate");
         Ok(ureq::post(url)
             .send_json(self)?
             .body_mut()
@@ -241,17 +242,17 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submit `source_code` to the local LLM via the Ollama API using the specified `url` and `model`.
+/// Submit `source_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`.
 /// Argument priority: function args -> environment vars -> hardcoded defaults.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
 pub fn analyze_code(
     source_code: &str,
-    url: Option<&str>,
+    baseurl: Option<&str>,
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
     // Check environment variables
-    let env_url = env::var("OLLAMA_URL");
+    let env_baseurl = env::var("OLLAMA_BASEURL");
     let env_model = env::var("OLLAMA_MODEL");
 
     // Send Ollama API request and parse response
@@ -260,16 +261,16 @@ pub fn analyze_code(
         source_code,
     );
     request
-        .send(url.unwrap_or_else(|| env_url.as_deref().unwrap_or(OLLAMA_URL)))?
+        .send(baseurl.unwrap_or_else(|| env_baseurl.as_deref().unwrap_or(OLLAMA_BASEURL)))?
         .parse()
 }
 
-/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `url` and `model`.
+/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `baseurl` and `model`.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
 pub fn analyze_file(
     filepath: &Path,
-    url: Option<&str>,
+    baseurl: Option<&str>,
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
     // Open target source file for reading
@@ -280,7 +281,7 @@ pub fn analyze_file(
     reader.read_to_string(&mut source_code)?;
 
     // Analyze `source_code`
-    analyze_code(&source_code, url, model)
+    analyze_code(&source_code, baseurl, model)
 }
 
 #[cfg(test)]
@@ -289,12 +290,12 @@ mod tests {
 
     #[test]
     fn ollama_request_works() {
-        let url = env::var("OLLAMA_URL");
+        let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
-        let result = request.send(url.as_deref().unwrap_or(OLLAMA_URL));
+        let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.is_ok());
         assert!(!result.unwrap().response.is_empty());
@@ -302,36 +303,36 @@ mod tests {
 
     #[test]
     fn ollama_request_with_wrong_url_fails() {
-        let url = "http://127.0.0.1:6666";
+        let baseurl = "http://127.0.0.1:6666";
         let model = env::var("OLLAMA_MODEL");
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
-        let result = request.send(url);
+        let result = request.send(baseurl);
 
         assert!(result.is_err());
     }
 
     #[test]
     fn ollama_request_with_wrong_model_fails() {
-        let url = env::var("OLLAMA_URL");
+        let baseurl = env::var("OLLAMA_BASEURL");
         let model = "doesntexist";
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
         let request = OllamaRequest::new(model, source_code);
-        let result = request.send(url.as_deref().unwrap_or(OLLAMA_URL));
+        let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.is_err());
     }
 
     #[test]
     fn ollama_request_with_empty_prompt_returns_an_empty_response() {
-        let url = env::var("OLLAMA_URL");
+        let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
         let source_code = "";
 
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
-        let result = request.send(url.as_deref().unwrap_or(OLLAMA_URL));
+        let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.is_ok());
         assert!(result.unwrap().response.is_empty());
@@ -339,11 +340,11 @@ mod tests {
 
     #[test]
     fn analyze_code_works() {
-        let url = env::var("OLLAMA_URL").ok();
+        let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = analyze_code(source_code, url.as_deref(), model.as_deref());
+        let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
         assert!(!result.unwrap().comment.is_empty());
@@ -361,7 +362,7 @@ mod tests {
 
     #[test]
     fn analyze_file_works() {
-        let url = env::var("OLLAMA_URL").ok();
+        let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
@@ -370,7 +371,7 @@ mod tests {
         let mut tmpfile = File::create(&filepath).unwrap();
         writeln!(tmpfile, "{source_code}").unwrap();
 
-        let result = analyze_file(&filepath, url.as_deref(), model.as_deref());
+        let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
         assert!(!result.unwrap().comment.is_empty());
