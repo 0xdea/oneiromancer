@@ -259,6 +259,7 @@ pub fn analyze_file(
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
     // Open target source file for reading
+    // Note: for easier testing, we could use a generic function together with `std::io::Cursor`
     let file = File::open(filepath)?;
     let mut reader = BufReader::new(file);
     let mut source_code = String::new();
