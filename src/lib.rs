@@ -86,10 +86,10 @@
 //! * Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 //!
 //! ## TODO
-//! * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 //! * Improve output file handling with versioning and/or an output directory.
-//! * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
+//! * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 //! * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
+//! * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
 //! * Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.
 //!
 
