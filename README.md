@@ -37,6 +37,7 @@ results of the analysis.
 * <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>
 * <https://huggingface.co/AverageBusinessUser/aidapal>
 * <https://github.com/atredispartners/aidapal>
+* <https://plugins.hex-rays.com/aidapal>
 
 ## Installing
 
