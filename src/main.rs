@@ -31,7 +31,7 @@ fn main() {
     match oneiromancer::run(Path::new(filename)) {
         Ok(()) => (),
         Err(err) => {
-            eprintln!("[!] Error: {err}");
+            eprintln!("\n[!] Error: {err:#}");
             process::exit(1);
         }
     }

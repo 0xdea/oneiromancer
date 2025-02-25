@@ -100,6 +100,7 @@ use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
 use std::path::Path;
 
+use anyhow::Context;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use spinners::{Spinner, Spinners};
@@ -194,17 +195,20 @@ pub enum OneiromancerError {
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Open target source file for reading
     println!("[*] Analyzing source code in {filepath:?}");
-    let file = File::open(filepath)?;
+    let file = File::open(filepath).with_context(|| format!("Failed to open {filepath:?}"))?;
     let mut reader = BufReader::new(file);
     let mut source_code = String::new();
-    reader.read_to_string(&mut source_code)?;
+    reader
+        .read_to_string(&mut source_code)
+        .with_context(|| format!("Failed to read from {filepath:?}"))?;
 
     // Submit source code to local LLM for analysis
     let mut sp = Spinner::new(
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let analysis_results = analyze_code(&source_code, None, None)?;
+    let analysis_results =
+        analyze_code(&source_code, None, None).context("Failed to analyze source code")?;
     sp.stop_with_message("[+] Successfully analyzed source code".into());
     println!();
 
@@ -223,7 +227,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     println!("[-] Variable renaming suggestions:");
     for variable in &analysis_results.variables {
         println!("    {}\t-> {}", variable.original_name, variable.new_name);
-        let re = Regex::new(&format!(r"\b{}\b", variable.original_name))?;
+        let re = Regex::new(&format!(r"\b{}\b", variable.original_name))
+            .context("Failed to compile regex")?;
         source_code = re
             .replace_all(&source_code, variable.new_name.as_str())
             .into();
@@ -234,7 +239,10 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     println!();
     println!("[*] Saving improved source code in {outfilepath:?}");
 
-    let mut writer = BufWriter::new(File::create_new(&outfilepath)?);
+    let mut writer = BufWriter::new(
+        File::create_new(&outfilepath)
+            .with_context(|| format!("Failed to create {outfilepath:?}"))?,
+    );
     writer.write_all(function_description.as_bytes())?;
     writer.write_all(source_code.as_bytes())?;
     writer.flush()?;
@@ -299,7 +307,7 @@ mod tests {
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().response.is_empty());
+        assert!(!result.unwrap().response.is_empty(), "response is empty");
     }
 
     #[test]
@@ -336,7 +344,7 @@ mod tests {
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.is_ok());
-        assert!(result.unwrap().response.is_empty());
+        assert!(result.unwrap().response.is_empty(), "response is not empty");
     }
 
     #[test]
@@ -348,7 +356,7 @@ mod tests {
         let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty());
+        assert!(!result.unwrap().comment.is_empty(), "description is empty");
     }
 
     #[test]
@@ -358,7 +366,7 @@ mod tests {
         let result = analyze_code(source_code, None, None);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty());
+        assert!(!result.unwrap().comment.is_empty(), "description is empty");
     }
 
     #[test]
@@ -375,7 +383,7 @@ mod tests {
         let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty());
+        assert!(!result.unwrap().comment.is_empty(), "description is empty");
     }
 
     #[test]
@@ -390,7 +398,7 @@ mod tests {
         let result = analyze_file(&filepath, None, None);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty());
+        assert!(!result.unwrap().comment.is_empty(), "description is empty");
     }
 
     #[test]
@@ -406,7 +414,11 @@ mod tests {
         let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_ok());
-        assert!(outfile.exists());
-        assert_ne!(outfile.metadata().unwrap().len(), 0);
+        assert!(outfile.exists(), "output file {outfile:?} does not exist");
+        assert_ne!(
+            outfile.metadata().unwrap().len(),
+            0,
+            "output file {outfile:?} is empty"
+        );
     }
 }
