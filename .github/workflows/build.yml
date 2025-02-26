@@ -16,6 +16,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt, clippy
       - name: rustfmt
         run: cargo fmt --check
       - name: clippy
@@ -32,6 +36,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: build
         run: cargo build
 
@@ -42,5 +48,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: build
         run: cargo build
