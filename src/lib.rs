@@ -415,9 +415,8 @@ mod tests {
 
         assert!(result.is_ok());
         assert!(outfile.exists(), "output file {outfile:?} does not exist");
-        assert_ne!(
-            outfile.metadata().unwrap().len(),
-            0,
+        assert!(
+            outfile.metadata().unwrap().len() > 0,
             "output file {outfile:?} is empty"
         );
     }
