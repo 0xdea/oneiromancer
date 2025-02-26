@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2025-02-26
 
+### Added
+
+* Add `semver-checks` in CI.
+
 ### Changed
 
 * Replace `OLLAMA_URL` with `OLLAMA_BASEURL`.
 * Improve documentation.
+* Improve CI speed by removing redundant tasks.
 
 ## [0.2.0] - 2025-02-24
 
