@@ -172,20 +172,37 @@ impl OllamaResponse {
 #[derive(Deserialize, Debug, Clone)]
 pub struct OneiromancerResults {
     /// Recommended function name
-    pub function_name: String,
+    function_name: String,
     /// Function description
-    pub comment: String,
+    comment: String,
     /// Variable renaming suggestions
-    pub variables: Vec<Variable>,
+    variables: Vec<Variable>,
+}
+
+impl OneiromancerResults {
+    /// Get recommended function name
+    pub fn function_name(&self) -> &str {
+        &self.function_name
+    }
+
+    /// Get function description
+    pub fn comment(&self) -> &str {
+        &self.comment
+    }
+
+    /// Get variable renaming suggestions
+    pub fn variables(&self) -> &[Variable] {
+        &self.variables
+    }
 }
 
 /// Variable renaming suggestion
 #[derive(Deserialize, Debug, Clone)]
 pub struct Variable {
     /// Original name of the variable
-    pub original_name: String,
+    original_name: String,
     /// Suggested name for the variable
-    pub new_name: String,
+    new_name: String,
 }
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
@@ -218,14 +235,14 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         .subsequent_indent(" * ");
     let function_description = format!(
         "/*\n * {}()\n *\n{}\n */\n\n",
-        &analysis_results.function_name,
-        textwrap::fill(&analysis_results.comment, &options)
+        analysis_results.function_name(),
+        textwrap::fill(analysis_results.comment(), &options)
     );
     print!("{function_description}");
 
     // Apply variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
-    for variable in &analysis_results.variables {
+    for variable in analysis_results.variables() {
         println!("    {}\t-> {}", variable.original_name, variable.new_name);
         let re = Regex::new(&format!(r"\b{}\b", variable.original_name))
             .context("Failed to compile regex")?;
@@ -356,7 +373,10 @@ mod tests {
         let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty(), "description is empty");
+        assert!(
+            !result.unwrap().comment().is_empty(),
+            "description is empty"
+        );
     }
 
     #[test]
@@ -366,7 +386,10 @@ mod tests {
         let result = analyze_code(source_code, None, None);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty(), "description is empty");
+        assert!(
+            !result.unwrap().comment().is_empty(),
+            "description is empty"
+        );
     }
 
     #[test]
@@ -383,7 +406,10 @@ mod tests {
         let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty(), "description is empty");
+        assert!(
+            !result.unwrap().comment().is_empty(),
+            "description is empty"
+        );
     }
 
     #[test]
@@ -398,7 +424,10 @@ mod tests {
         let result = analyze_file(&filepath, None, None);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap().comment.is_empty(), "description is empty");
+        assert!(
+            !result.unwrap().comment().is_empty(),
+            "description is empty"
+        );
     }
 
     #[test]
