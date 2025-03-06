@@ -111,6 +111,16 @@ pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
 /// Default Ollama model
 pub const OLLAMA_MODEL: &str = "aidapal";
 
+#[derive(Error, Debug)]
+pub enum OneiromancerError {
+    #[error(transparent)]
+    FileReadFailed(#[from] std::io::Error),
+    #[error(transparent)]
+    OllamaQueryFailed(#[from] ureq::Error),
+    #[error(transparent)]
+    ResponseParseFailed(#[from] serde_json::Error),
+}
+
 /// Ollama API request content
 #[derive(Serialize, Debug, Clone)]
 struct OllamaRequest<'a> {
@@ -176,16 +186,6 @@ pub struct Variable {
     pub original_name: String,
     /// Suggested name for the variable
     pub new_name: String,
-}
-
-#[derive(Error, Debug)]
-pub enum OneiromancerError {
-    #[error(transparent)]
-    FileReadFailed(#[from] std::io::Error),
-    #[error(transparent)]
-    OllamaQueryFailed(#[from] ureq::Error),
-    #[error(transparent)]
-    ResponseParseFailed(#[from] serde_json::Error),
 }
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
