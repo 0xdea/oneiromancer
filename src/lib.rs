@@ -205,6 +205,18 @@ pub struct Variable {
     new_name: String,
 }
 
+impl Variable {
+    /// Get original name of the variable
+    pub fn original_name(&self) -> &str {
+        &self.original_name
+    }
+
+    /// Get suggested name for the variable
+    pub fn new_name(&self) -> &str {
+        &self.new_name
+    }
+}
+
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
 /// and save improved pseudo-code in `filepath` with an `out.c` extension.
 ///
@@ -243,12 +255,12 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Apply variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
     for variable in analysis_results.variables() {
-        println!("    {}\t-> {}", variable.original_name, variable.new_name);
-        let re = Regex::new(&format!(r"\b{}\b", variable.original_name))
-            .context("Failed to compile regex")?;
-        source_code = re
-            .replace_all(&source_code, variable.new_name.as_str())
-            .into();
+        let original_name = variable.original_name();
+        let new_name = variable.new_name();
+        println!("    {original_name}\t-> {new_name}");
+
+        let re = Regex::new(&format!(r"\b{original_name}\b")).context("Failed to compile regex")?;
+        source_code = re.replace_all(&source_code, new_name).into();
     }
 
     // Save improved source code to output file
