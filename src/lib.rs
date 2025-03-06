@@ -102,120 +102,15 @@ use std::path::Path;
 
 use anyhow::Context;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
 use spinners::{Spinner, Spinners};
-use thiserror::Error;
 
-/// Default Ollama URL
-pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
-/// Default Ollama model
-pub const OLLAMA_MODEL: &str = "aidapal";
+use crate::ollama::OllamaRequest;
+pub use crate::oneiromancer::{
+    OLLAMA_BASEURL, OLLAMA_MODEL, OneiromancerError, OneiromancerResults,
+};
 
-#[derive(Error, Debug)]
-pub enum OneiromancerError {
-    #[error(transparent)]
-    FileReadFailed(#[from] std::io::Error),
-    #[error(transparent)]
-    OllamaQueryFailed(#[from] ureq::Error),
-    #[error(transparent)]
-    ResponseParseFailed(#[from] serde_json::Error),
-}
-
-/// Ollama API request content
-#[derive(Serialize, Debug, Clone)]
-struct OllamaRequest<'a> {
-    model: &'a str,
-    prompt: &'a str,
-    stream: bool,
-    format: &'a str,
-}
-
-impl<'a> OllamaRequest<'a> {
-    /// Create a new `OllamaRequest`
-    const fn new(model: &'a str, prompt: &'a str) -> Self {
-        Self {
-            model,
-            prompt,
-            stream: false,
-            format: "json",
-        }
-    }
-
-    /// Send an `OllamaRequest` to the `/api/generate` endpoint at `baseurl`.
-    ///
-    /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
-    fn send(&self, baseurl: &str) -> Result<OllamaResponse, OneiromancerError> {
-        let url = format!("{}{}", baseurl.trim_end_matches('/'), "/api/generate");
-        Ok(ureq::post(url)
-            .send_json(self)?
-            .body_mut()
-            .read_json::<OllamaResponse>()?)
-    }
-}
-
-/// Ollama API response content
-#[derive(Deserialize, Debug, Clone)]
-struct OllamaResponse {
-    response: String,
-}
-
-impl OllamaResponse {
-    /// Parse an `OllamaResponse` into an `OneiromancerResults` struct.
-    ///
-    /// Return `OneiromancerResults` or the appropriate `OneiromancerError` in case something goes wrong.
-    fn parse(&self) -> Result<OneiromancerResults, OneiromancerError> {
-        Ok(serde_json::from_str(&self.response)?)
-    }
-}
-
-/// Code analysis results
-#[derive(Deserialize, Debug, Clone)]
-pub struct OneiromancerResults {
-    /// Recommended function name
-    function_name: String,
-    /// Function description
-    comment: String,
-    /// Variable renaming suggestions
-    variables: Vec<Variable>,
-}
-
-impl OneiromancerResults {
-    /// Get recommended function name
-    pub fn function_name(&self) -> &str {
-        &self.function_name
-    }
-
-    /// Get function description
-    pub fn comment(&self) -> &str {
-        &self.comment
-    }
-
-    /// Get variable renaming suggestions
-    pub fn variables(&self) -> &[Variable] {
-        &self.variables
-    }
-}
-
-/// Variable renaming suggestion
-#[derive(Deserialize, Debug, Clone)]
-pub struct Variable {
-    /// Original name of the variable
-    original_name: String,
-    /// Suggested name for the variable
-    new_name: String,
-}
-
-impl Variable {
-    /// Get original name of the variable
-    pub fn original_name(&self) -> &str {
-        &self.original_name
-    }
-
-    /// Get suggested name for the variable
-    pub fn new_name(&self) -> &str {
-        &self.new_name
-    }
-}
+pub mod ollama;
+pub mod oneiromancer;
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
 /// and save improved pseudo-code in `filepath` with an `out.c` extension.
