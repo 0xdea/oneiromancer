@@ -104,10 +104,8 @@ use anyhow::Context;
 use regex::Regex;
 use spinners::{Spinner, Spinners};
 
-use crate::ollama::OllamaRequest;
-pub use crate::oneiromancer::{
-    OLLAMA_BASEURL, OLLAMA_MODEL, OneiromancerError, OneiromancerResults,
-};
+use crate::ollama::{OLLAMA_BASEURL, OLLAMA_MODEL, OllamaRequest};
+pub use crate::oneiromancer::{OneiromancerError, OneiromancerResults};
 
 pub mod ollama;
 pub mod oneiromancer;

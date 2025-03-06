@@ -1,11 +1,6 @@
 use serde::Deserialize;
 use thiserror::Error;
 
-/// Default Ollama URL
-pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
-/// Default Ollama model
-pub const OLLAMA_MODEL: &str = "aidapal";
-
 #[derive(Error, Debug)]
 pub enum OneiromancerError {
     #[error(transparent)]
