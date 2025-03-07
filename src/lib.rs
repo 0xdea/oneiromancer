@@ -108,10 +108,10 @@ use regex::Regex;
 use spinners::{Spinner, Spinners};
 
 use crate::ollama::{OLLAMA_BASEURL, OLLAMA_MODEL, OllamaRequest};
-pub use crate::oneiromancer::{OneiromancerError, OneiromancerResults};
+pub use crate::oneiromancer::{OneiromancerError, OneiromancerResults, Variable};
 
-pub mod ollama;
-pub mod oneiromancer;
+mod ollama;
+mod oneiromancer;
 
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
 /// and save improved pseudo-code in `filepath` with an `out.c` extension.

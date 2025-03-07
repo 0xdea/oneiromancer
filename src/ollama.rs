@@ -5,13 +5,13 @@ use serde::{Deserialize, Serialize};
 use crate::{OneiromancerError, OneiromancerResults};
 
 /// Default Ollama URL
-pub(crate) const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
+pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
 /// Default Ollama model
-pub(crate) const OLLAMA_MODEL: &str = "aidapal";
+pub const OLLAMA_MODEL: &str = "aidapal";
 
 /// Ollama API request content
 #[derive(Serialize, Debug, Clone)]
-pub(crate) struct OllamaRequest<'a> {
+pub struct OllamaRequest<'a> {
     model: &'a str,
     prompt: &'a str,
     stream: bool,
@@ -43,7 +43,7 @@ impl<'a> OllamaRequest<'a> {
 
 /// Ollama API response content
 #[derive(Deserialize, Debug, Clone)]
-pub(crate) struct OllamaResponse {
+pub struct OllamaResponse {
     pub(crate) response: String,
 }
 
