@@ -177,6 +177,22 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// Argument priority: function args -> environment vars -> hardcoded defaults.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+///
+/// ## Examples
+///
+/// Basic usage (default Ollama base URL and model):
+/// ```
+/// let source_code = r#"int main() { printf("Hello, world!"); }"#;
+/// let result = oneiromancer::analyze_code(source_code, None, None);
+/// ```
+///
+/// Advanced usage (explicit Ollama base URL and model):
+/// ```
+/// let base_url = "http://127.0.0.1:11434";
+/// let source_code = r#"int main() { printf("Hello, world!"); }"#;
+/// let result = oneiromancer::analyze_code(source_code, Some(base_url), Some("aidapal"));
+/// ```
+///
 pub fn analyze_code(
     source_code: &str,
     baseurl: Option<&str>,
@@ -199,6 +215,38 @@ pub fn analyze_code(
 /// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `baseurl` and `model`.
 ///
 /// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+///
+/// ## Examples
+///
+/// Basic usage (default Ollama base URL and model):
+/// ```
+/// # fn main() -> anyhow::Result<()> {
+/// # use std::io::Write;
+/// # let source_code = r#"int main() { printf("Hello, world!"); }"#;
+/// # let tmpdir = tempfile::tempdir()?;
+/// let filepath = tmpdir.path().join("test.c");
+/// # let mut tmpfile = std::fs::File::create(&filepath)?;
+/// # writeln!(tmpfile, "{source_code}")?;
+/// let result = oneiromancer::analyze_file(&filepath, None, None);
+/// # Ok(())
+/// # }
+/// ```
+///
+/// Advanced usage (explicit Ollama base URL and model):
+/// ```
+/// # fn main() -> anyhow::Result<()> {
+/// let base_url = "http://127.0.0.1:11434";
+/// # use std::io::Write;
+/// # let source_code = r#"int main() { printf("Hello, world!"); }"#;
+/// # let tmpdir = tempfile::tempdir()?;
+/// let filepath = tmpdir.path().join("test.c");
+/// # let mut tmpfile = std::fs::File::create(&filepath)?;
+/// # writeln!(tmpfile, "{source_code}")?;
+/// let result = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"));
+/// # Ok(())
+/// # }
+/// ```
+///
 pub fn analyze_file(
     filepath: &Path,
     baseurl: Option<&str>,
