@@ -17,7 +17,10 @@
 //! * Easy integration with the pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, recommended function name, and variable renaming suggestions are printed to the terminal.
 //! * Improved pseudo-code of each analyzed function is saved in a separated file for easy inspection.
-//! * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and then process analysis results.
+//! * External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudo-code and then process analysis results.
+//!
+//! [`analyze_code`]: analyze_code
+//! [`analyze_file`]: analyze_file
 //!
 //! ## Blog post
 //! * <https://security.humanativaspa.it/aiding-reverse-engineering-with-rust-and-a-local-llm> (*coming soon*)
@@ -113,7 +116,9 @@ pub mod oneiromancer;
 /// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
 /// and save improved pseudo-code in `filepath` with an `out.c` extension.
 ///
-/// Return success or an error in case something goes wrong.
+/// ## Errors
+///
+/// Returns success or a generic error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Open target source file for reading
     println!("[*] Analyzing source code in {filepath:?}");
@@ -174,23 +179,45 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 }
 
 /// Submit `source_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`.
+///
 /// Argument priority: function args -> environment vars -> hardcoded defaults.
 ///
-/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+/// ## Errors
+///
+/// Return [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
+///
+/// [`OneiromancerResults`]: OneiromancerResults
+/// [`OneiromancerError`]: OneiromancerError
 ///
 /// ## Examples
 ///
 /// Basic usage (default Ollama base URL and model):
 /// ```
+/// # fn main() -> anyhow::Result<()> {
 /// let source_code = r#"int main() { printf("Hello, world!"); }"#;
-/// let result = oneiromancer::analyze_code(source_code, None, None);
+///
+/// let results = oneiromancer::analyze_code(source_code, None, None)?;
+///
+/// dbg!(results.function_name());
+/// dbg!(results.comment());
+/// dbg!(results.variables());
+/// # Ok(())
+/// # }
 /// ```
 ///
 /// Advanced usage (explicit Ollama base URL and model):
 /// ```
+/// # fn main() -> anyhow::Result<()> {
 /// let base_url = "http://127.0.0.1:11434";
 /// let source_code = r#"int main() { printf("Hello, world!"); }"#;
-/// let result = oneiromancer::analyze_code(source_code, Some(base_url), Some("aidapal"));
+///
+/// let results = oneiromancer::analyze_code(source_code, Some(base_url), Some("aidapal"))?;
+///
+/// dbg!(results.function_name());
+/// dbg!(results.comment());
+/// dbg!(results.variables());
+/// # Ok(())
+/// # }
 /// ```
 ///
 pub fn analyze_code(
@@ -214,7 +241,14 @@ pub fn analyze_code(
 
 /// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `baseurl` and `model`.
 ///
-/// Return an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+/// Argument priority: function args -> environment vars -> hardcoded defaults.
+///
+/// ## Errors
+///
+/// Return [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
+///
+/// [`OneiromancerResults`]: OneiromancerResults
+/// [`OneiromancerError`]: OneiromancerError
 ///
 /// ## Examples
 ///
@@ -227,7 +261,12 @@ pub fn analyze_code(
 /// let filepath = tmpdir.path().join("test.c");
 /// # let mut tmpfile = std::fs::File::create(&filepath)?;
 /// # writeln!(tmpfile, "{source_code}")?;
-/// let result = oneiromancer::analyze_file(&filepath, None, None);
+///
+/// let results = oneiromancer::analyze_file(&filepath, None, None)?;
+///
+/// dbg!(results.function_name());
+/// dbg!(results.comment());
+/// dbg!(results.variables());
 /// # Ok(())
 /// # }
 /// ```
@@ -242,7 +281,12 @@ pub fn analyze_code(
 /// let filepath = tmpdir.path().join("test.c");
 /// # let mut tmpfile = std::fs::File::create(&filepath)?;
 /// # writeln!(tmpfile, "{source_code}")?;
-/// let result = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"));
+///
+/// let results = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"))?;
+///
+/// dbg!(results.function_name());
+/// dbg!(results.comment());
+/// dbg!(results.variables());
 /// # Ok(())
 /// # }
 /// ```
