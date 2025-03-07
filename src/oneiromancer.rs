@@ -1,12 +1,18 @@
+//! Collect code analysis results and handle errors
+
 use serde::Deserialize;
 use thiserror::Error;
 
+/// Oneiromancer error type
 #[derive(Error, Debug)]
 pub enum OneiromancerError {
+    /// Failure in reading input file
     #[error(transparent)]
     FileReadFailed(#[from] std::io::Error),
+    /// Failure in querying Ollama API
     #[error(transparent)]
     OllamaQueryFailed(#[from] ureq::Error),
+    /// Failure in parsing Ollama response
     #[error(transparent)]
     ResponseParseFailed(#[from] serde_json::Error),
 }

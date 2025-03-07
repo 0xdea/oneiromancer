@@ -24,6 +24,10 @@ regex = "1.11"
 [dev-dependencies]
 tempfile = "3.17"
 
+[lints.rust]
+missing_docs = { level = "warn" }
+# missing_doc_code_examples = { level = "warn" }
+
 [lints.clippy]
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }

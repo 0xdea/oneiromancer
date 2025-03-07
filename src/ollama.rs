@@ -1,3 +1,5 @@
+//! Handle interactions with the Ollama API
+
 use serde::{Deserialize, Serialize};
 
 use crate::{OneiromancerError, OneiromancerResults};

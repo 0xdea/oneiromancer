@@ -1,6 +1,7 @@
-use std::env;
+//! main.rs
+
 use std::path::Path;
-use std::process;
+use std::{env, process};
 
 const PROGRAM: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
