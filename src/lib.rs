@@ -274,13 +274,13 @@ pub fn analyze_code(
 /// Advanced usage (explicit Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// let base_url = "http://127.0.0.1:11434";
 /// # use std::io::Write;
 /// # let source_code = r#"int main() { printf("Hello, world!"); }"#;
 /// # let tmpdir = tempfile::tempdir()?;
 /// let filepath = tmpdir.path().join("test.c");
 /// # let mut tmpfile = std::fs::File::create(&filepath)?;
 /// # writeln!(tmpfile, "{source_code}")?;
+/// let base_url = "http://127.0.0.1:11434";
 ///
 /// let results = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"))?;
 ///
