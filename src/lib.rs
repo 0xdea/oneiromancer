@@ -19,9 +19,6 @@
 //! * Improved pseudo-code of each analyzed function is saved in a separated file for easy inspection.
 //! * External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudo-code and then process analysis results.
 //!
-//! [`analyze_code`]: analyze_code
-//! [`analyze_file`]: analyze_file
-//!
 //! ## Blog post
 //! * <https://security.humanativaspa.it/aiding-reverse-engineering-with-rust-and-a-local-llm> (*coming soon*)
 //!
@@ -184,10 +181,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 ///
 /// ## Errors
 ///
-/// Return [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
-///
-/// [`OneiromancerResults`]: OneiromancerResults
-/// [`OneiromancerError`]: OneiromancerError
+/// Returns [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
 ///
 /// ## Examples
 ///
@@ -245,10 +239,7 @@ pub fn analyze_code(
 ///
 /// ## Errors
 ///
-/// Return [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
-///
-/// [`OneiromancerResults`]: OneiromancerResults
-/// [`OneiromancerError`]: OneiromancerError
+/// Returns [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
 ///
 /// ## Examples
 ///
