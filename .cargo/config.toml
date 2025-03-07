@@ -2,6 +2,3 @@
 OLLAMA_BASEURL = "http://127.0.0.1:11434"
 OLLAMA_MODEL = "aidapal"
 RUST_TEST_THREADS = "1"
-
-[build]
-rustdocflags = ["--document-private-items"]

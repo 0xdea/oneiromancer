@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Update dependencies.
 * Add doc-tests for functions `analyze_code` and `analyze_file`.
 * Add `missing_docs` lint and improve documentation.
+* Avoid generating documentation for private items.
 
 ## [0.4.0] - 2025-03-06
 
