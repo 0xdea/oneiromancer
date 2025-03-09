@@ -21,9 +21,9 @@ jobs:
         with:
           components: rustfmt, clippy
       - name: rustfmt
-        run: cargo fmt --check
+        run: cargo fmt --all --check
       - name: clippy
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --all-targets -- -D warnings
       - name: build
         run: cargo build
       - name: semver-checks
