@@ -1,6 +1,6 @@
 [package]
 name = "oneiromancer"
-version = "0.5.0"
+version = "0.5.1-alpha"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2024"
 description = "Reverse engineering assistant that uses a locally running LLM to aid with source code analysis."
@@ -22,7 +22,7 @@ textwrap = { version = "0.16", features = ["smawk"] }
 regex = "1.11"
 
 [dev-dependencies]
-tempfile = "3.17"
+tempfile = "3.19"
 
 [lints.clippy]
 all = { level = "warn", priority = -1 }
