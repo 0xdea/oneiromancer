@@ -44,13 +44,13 @@ results of the analysis.
 The easiest way to get the latest release is via [crates.io](https://crates.io/crates/oneiromancer):
 
 ```sh
-$ cargo install oneiromancer
+cargo install oneiromancer
 ```
 
 To install as a library, run the following command in your project directory:
 
 ```sh
-$ cargo add oneiromancer
+cargo add oneiromancer
 ```
 
 ## Compiling
@@ -58,9 +58,9 @@ $ cargo add oneiromancer
 Alternatively, you can build from [source](https://github.com/0xdea/oneiromancer):
 
 ```sh
-$ git clone https://github.com/0xdea/oneiromancer
-$ cd oneiromancer
-$ cargo build --release
+git clone https://github.com/0xdea/oneiromancer
+cd oneiromancer
+cargo build --release
 ```
 
 ## Configuration
@@ -68,27 +68,27 @@ $ cargo build --release
 1. Download and install [ollama](https://ollama.com/).
 2. Download the fine-tuned weights and Ollama modelfile from [huggingface](https://huggingface.co/):
    ```sh
-   $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
-   $ wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
+   wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
+   wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
    ```
 3. Configure Ollama by running the following commands within the directory in which you downloaded the files:
    ```sh
-   $ ollama create aidapal -f aidapal.modelfile
-   $ ollama list
+   ollama create aidapal -f aidapal.modelfile
+   ollama list
    ```
 
 ## Usage
 
 1. Run oneiromancer as follows:
    ```sh
-   $ export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
-   $ export OLLAMA_MODEL=custom_model # if not set, the default will be used
-   $ oneiromancer <source_file>.c
+   export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
+   export OLLAMA_MODEL=custom_model # if not set, the default will be used
+   oneiromancer <source_file>.c
    ```
 2. Find the extracted pseudo-code of each decompiled function in `source_file.out.c`:
    ```sh
-   $ vim <source_file>.out.c
-   $ code <source_file>.out.c
+   vim <source_file>.out.c
+   code <source_file>.out.c
    ```
 
 *Note: for best results, you shouldn't submit for analysis to the LLM more than one function at a time.*
