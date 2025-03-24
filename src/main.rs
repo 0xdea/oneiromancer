@@ -12,7 +12,7 @@ fn main() {
     println!();
 
     // Parse command line arguments
-    let args: Vec<String> = env::args().collect();
+    let args = env::args().collect::<Vec<_>>();
 
     let prog = Path::new(&args[0])
         .file_name()
