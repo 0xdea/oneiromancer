@@ -381,6 +381,17 @@ mod tests {
     }
 
     #[test]
+    fn analyze_code_with_empty_source_code_string_fails() {
+        let baseurl = env::var("OLLAMA_BASEURL").ok();
+        let model = env::var("OLLAMA_MODEL").ok();
+        let source_code = "";
+
+        let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
+
+        assert!(result.is_err());
+    }
+
+    #[test]
     fn analyze_file_works() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
@@ -419,6 +430,33 @@ mod tests {
     }
 
     #[test]
+    fn analyze_file_with_empty_input_file_fails() {
+        let baseurl = env::var("OLLAMA_BASEURL").ok();
+        let model = env::var("OLLAMA_MODEL").ok();
+
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        File::create(&filepath).unwrap();
+
+        let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn analyze_file_with_invalid_input_filepath_fails() {
+        let baseurl = env::var("OLLAMA_BASEURL").ok();
+        let model = env::var("OLLAMA_MODEL").ok();
+
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+
+        let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
+
+        assert!(result.is_err());
+    }
+
+    #[test]
     fn run_works() {
         let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
@@ -436,5 +474,30 @@ mod tests {
             outfile.metadata().unwrap().len() > 0,
             "output file {outfile:?} is empty"
         );
+    }
+
+    #[test]
+    fn run_with_empty_file_fails() {
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        File::create(&filepath).unwrap();
+
+        let result = run(&filepath);
+        let outfile = tmpdir.path().join("test.out.c");
+
+        assert!(result.is_err());
+        assert!(!outfile.exists());
+    }
+
+    #[test]
+    fn run_with_invalid_input_filepath_fails() {
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+
+        let result = run(&filepath);
+        let outfile = tmpdir.path().join("test.out.c");
+
+        assert!(result.is_err());
+        assert!(!outfile.exists());
     }
 }

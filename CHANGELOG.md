@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Add some filesystem unit tests that explicitly test for failures.
+
 ### Changed
 
 * Update dependencies.
