@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Refactor tests to remove `tempfile` dependency.
 * Update dependencies.
 
 ## [0.5.1] - 2025-03-20

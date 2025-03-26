@@ -246,12 +246,7 @@ pub fn analyze_code(
 /// Basic usage (default Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// # use std::io::Write;
-/// # let source_code = r#"int main() { printf("Hello, world!"); }"#;
-/// # let tmpdir = tempfile::tempdir()?;
-/// let filepath = tmpdir.path().join("test.c");
-/// # let mut tmpfile = std::fs::File::create(&filepath)?;
-/// # writeln!(tmpfile, "{source_code}")?;
+/// let filepath = std::path::Path::new("./tests/data/hello.c");
 ///
 /// let results = oneiromancer::analyze_file(&filepath, None, None)?;
 ///
@@ -265,13 +260,8 @@ pub fn analyze_code(
 /// Advanced usage (explicit Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// # use std::io::Write;
-/// # let source_code = r#"int main() { printf("Hello, world!"); }"#;
-/// # let tmpdir = tempfile::tempdir()?;
-/// let filepath = tmpdir.path().join("test.c");
-/// # let mut tmpfile = std::fs::File::create(&filepath)?;
-/// # writeln!(tmpfile, "{source_code}")?;
 /// let base_url = "http://127.0.0.1:11434";
+/// let filepath = std::path::Path::new("./tests/data/hello.c");
 ///
 /// let results = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"))?;
 ///
@@ -300,6 +290,8 @@ pub fn analyze_file(
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
     use super::*;
 
     #[test]
@@ -395,14 +387,9 @@ mod tests {
     fn analyze_file_works() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let filepath = Path::new("./tests/data/hello.c");
 
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
-        let mut tmpfile = File::create(&filepath).unwrap();
-        writeln!(tmpfile, "{source_code}").unwrap();
-
-        let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
+        let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_ok());
         assert!(
@@ -413,14 +400,9 @@ mod tests {
 
     #[test]
     fn analyze_file_with_default_parameters_works() {
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let filepath = Path::new("./tests/data/hello.c");
 
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
-        let mut tmpfile = File::create(&filepath).unwrap();
-        writeln!(tmpfile, "{source_code}").unwrap();
-
-        let result = analyze_file(&filepath, None, None);
+        let result = analyze_file(filepath, None, None);
 
         assert!(result.is_ok());
         assert!(
@@ -433,12 +415,9 @@ mod tests {
     fn analyze_file_with_empty_input_file_fails() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
+        let filepath = Path::new("./tests/data/empty.c");
 
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
-        File::create(&filepath).unwrap();
-
-        let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
+        let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_err());
     }
@@ -447,26 +426,20 @@ mod tests {
     fn analyze_file_with_invalid_input_filepath_fails() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
+        let filepath = Path::new("./tests/data/invalid.c");
 
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
-
-        let result = analyze_file(&filepath, baseurl.as_deref(), model.as_deref());
+        let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_err());
     }
 
     #[test]
     fn run_works() {
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let filepath = Path::new("./tests/data/hello.c");
+        let outfile = Path::new("./tests/data/hello.out.c");
+        let _ = fs::remove_file(outfile);
 
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
-        let mut tmpfile = File::create(&filepath).unwrap();
-        writeln!(tmpfile, "{source_code}").unwrap();
-
-        let result = run(&filepath);
-        let outfile = tmpdir.path().join("test.out.c");
+        let result = run(filepath);
 
         assert!(result.is_ok());
         assert!(outfile.exists(), "output file {outfile:?} does not exist");
@@ -474,30 +447,35 @@ mod tests {
             outfile.metadata().unwrap().len() > 0,
             "output file {outfile:?} is empty"
         );
+
+        let _ = fs::remove_file(outfile);
     }
 
     #[test]
     fn run_with_empty_file_fails() {
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
-        File::create(&filepath).unwrap();
+        let filepath = Path::new("./tests/data/empty.c");
+        let outfile = Path::new("./tests/data/empty.out.c");
+        let _ = fs::remove_file(outfile);
 
-        let result = run(&filepath);
-        let outfile = tmpdir.path().join("test.out.c");
+        let result = run(filepath);
 
         assert!(result.is_err());
         assert!(!outfile.exists());
+
+        let _ = fs::remove_file(outfile);
     }
 
     #[test]
     fn run_with_invalid_input_filepath_fails() {
-        let tmpdir = tempfile::tempdir().unwrap();
-        let filepath = tmpdir.path().join("test.c");
+        let filepath = Path::new("./tests/data/invalid.c");
+        let outfile = Path::new("./tests/data/invalid.out.c");
+        let _ = fs::remove_file(outfile);
 
-        let result = run(&filepath);
-        let outfile = tmpdir.path().join("test.out.c");
+        let result = run(filepath);
 
         assert!(result.is_err());
         assert!(!outfile.exists());
+
+        let _ = fs::remove_file(outfile);
     }
 }
