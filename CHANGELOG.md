@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+* Use `impl AsRef<Path>` as `filepath` type in `analyze_file` to simplify API.
+
 ### Removed
 
 * Remove useless `assert!` calls in tests.

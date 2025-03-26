@@ -246,7 +246,7 @@ pub fn analyze_code(
 /// Basic usage (default Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// let filepath = std::path::Path::new("./tests/data/hello.c");
+/// let filepath = "./tests/data/hello.c";
 ///
 /// let results = oneiromancer::analyze_file(&filepath, None, None)?;
 ///
@@ -261,7 +261,7 @@ pub fn analyze_code(
 /// ```
 /// # fn main() -> anyhow::Result<()> {
 /// let base_url = "http://127.0.0.1:11434";
-/// let filepath = std::path::Path::new("./tests/data/hello.c");
+/// let filepath = "./tests/data/hello.c";
 ///
 /// let results = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"))?;
 ///
@@ -273,7 +273,7 @@ pub fn analyze_code(
 /// ```
 ///
 pub fn analyze_file(
-    filepath: &Path,
+    filepath: impl AsRef<Path>,
     baseurl: Option<&str>,
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
@@ -383,7 +383,7 @@ mod tests {
     fn analyze_file_works() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
-        let filepath = Path::new("./tests/data/hello.c");
+        let filepath = "./tests/data/hello.c";
 
         let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
@@ -395,7 +395,7 @@ mod tests {
 
     #[test]
     fn analyze_file_with_default_parameters_works() {
-        let filepath = Path::new("./tests/data/hello.c");
+        let filepath = "./tests/data/hello.c";
 
         let result = analyze_file(filepath, None, None);
 
@@ -409,7 +409,7 @@ mod tests {
     fn analyze_file_with_empty_input_file_fails() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
-        let filepath = Path::new("./tests/data/empty.c");
+        let filepath = "./tests/data/empty.c";
 
         let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
@@ -420,7 +420,7 @@ mod tests {
     fn analyze_file_with_invalid_input_filepath_fails() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
-        let filepath = Path::new("./tests/data/invalid.c");
+        let filepath = "./tests/data/invalid.c";
 
         let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
