@@ -290,6 +290,8 @@ pub fn analyze_file(
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
     use super::*;
 
     #[test]
@@ -427,12 +429,9 @@ mod tests {
 
     #[test]
     fn run_works() {
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
-
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
-        let mut tmpfile = File::create(&filepath).unwrap();
-        writeln!(tmpfile, "{source_code}").unwrap();
+        fs::copy("./tests/data/hello.c", &filepath).unwrap();
 
         let result = run(&filepath);
         let outfile = tmpdir.path().join("test.out.c");

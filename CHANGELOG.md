@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Use `impl AsRef<Path>` as `filepath` type in `analyze_file` to simplify API.
+* Simplify unit tests that deal with the filesystem.
 * Update dependencies.
 
 ### Removed
@@ -28,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Refactor tests to remove `tempfile` dependency.
+* Refactor unit tests to remove the `tempfile` dependency.
 * Update dependencies.
 
 ## [0.5.1] - 2025-03-20
