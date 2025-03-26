@@ -303,7 +303,6 @@ mod tests {
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
-        assert!(result.is_ok());
         assert!(!result.unwrap().response.is_empty(), "response is empty");
     }
 
@@ -340,7 +339,6 @@ mod tests {
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
-        assert!(result.is_ok());
         assert!(result.unwrap().response.is_empty(), "response is not empty");
     }
 
@@ -352,7 +350,6 @@ mod tests {
 
         let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
 
-        assert!(result.is_ok());
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -365,7 +362,6 @@ mod tests {
 
         let result = analyze_code(source_code, None, None);
 
-        assert!(result.is_ok());
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -391,7 +387,6 @@ mod tests {
 
         let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
 
-        assert!(result.is_ok());
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -404,7 +399,6 @@ mod tests {
 
         let result = analyze_file(filepath, None, None);
 
-        assert!(result.is_ok());
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -448,6 +442,7 @@ mod tests {
             "output file {outfile:?} is empty"
         );
 
+        // Beware of concurrent tests that involve the same `outfile`
         let _ = fs::remove_file(outfile);
     }
 
@@ -462,6 +457,7 @@ mod tests {
         assert!(result.is_err());
         assert!(!outfile.exists());
 
+        // Beware of concurrent tests that involve the same `outfile`
         let _ = fs::remove_file(outfile);
     }
 
@@ -476,6 +472,7 @@ mod tests {
         assert!(result.is_err());
         assert!(!outfile.exists());
 
+        // Beware of concurrent tests that involve the same `outfile`
         let _ = fs::remove_file(outfile);
     }
 }
