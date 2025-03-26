@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Add back the `tempfile` dependency to make `run` testing more robust.
+
 ### Changed
 
 * Use `impl AsRef<Path>` as `filepath` type in `analyze_file` to simplify API.

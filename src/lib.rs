@@ -290,8 +290,6 @@ pub fn analyze_file(
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-
     use super::*;
 
     #[test]
@@ -429,11 +427,15 @@ mod tests {
 
     #[test]
     fn run_works() {
-        let filepath = Path::new("./tests/data/hello.c");
-        let outfile = Path::new("./tests/data/hello.out.c");
-        let _ = fs::remove_file(outfile);
+        let source_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = run(filepath);
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        let mut tmpfile = File::create(&filepath).unwrap();
+        writeln!(tmpfile, "{source_code}").unwrap();
+
+        let result = run(&filepath);
+        let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_ok());
         assert!(outfile.exists(), "output file {outfile:?} does not exist");
@@ -441,38 +443,30 @@ mod tests {
             outfile.metadata().unwrap().len() > 0,
             "output file {outfile:?} is empty"
         );
-
-        // Beware of concurrent tests that involve the same `outfile`
-        let _ = fs::remove_file(outfile);
     }
 
     #[test]
     fn run_with_empty_file_fails() {
-        let filepath = Path::new("./tests/data/empty.c");
-        let outfile = Path::new("./tests/data/empty.out.c");
-        let _ = fs::remove_file(outfile);
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
+        File::create(&filepath).unwrap();
 
-        let result = run(filepath);
+        let result = run(&filepath);
+        let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_err());
         assert!(!outfile.exists());
-
-        // Beware of concurrent tests that involve the same `outfile`
-        let _ = fs::remove_file(outfile);
     }
 
     #[test]
     fn run_with_invalid_input_filepath_fails() {
-        let filepath = Path::new("./tests/data/invalid.c");
-        let outfile = Path::new("./tests/data/invalid.out.c");
-        let _ = fs::remove_file(outfile);
+        let tmpdir = tempfile::tempdir().unwrap();
+        let filepath = tmpdir.path().join("test.c");
 
-        let result = run(filepath);
+        let result = run(&filepath);
+        let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_err());
         assert!(!outfile.exists());
-
-        // Beware of concurrent tests that involve the same `outfile`
-        let _ = fs::remove_file(outfile);
     }
 }

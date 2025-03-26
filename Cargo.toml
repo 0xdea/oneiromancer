@@ -21,6 +21,9 @@ spinners = "4.1"
 textwrap = { version = "0.16", features = ["smawk"] }
 regex = "1.11"
 
+[dev-dependencies]
+tempfile = "3.19"
+
 [lints.clippy]
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
