@@ -83,7 +83,7 @@
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
 //!
 //! ## Credits
-//! * Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+//! * Chris Bellows (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 //!
 //! ## TODO
 //! * Improve output file handling with versioning and/or an output directory.

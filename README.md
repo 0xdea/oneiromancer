@@ -105,7 +105,7 @@ cargo build --release
 
 ## Credits
 
-* Chris (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+* Chris Bellows (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 
 ## TODO
 
