@@ -16,7 +16,7 @@
 //! * Support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on `mistral-7b-instruct`.
 //! * Easy integration with the pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, recommended function name, and variable renaming suggestions are printed to the terminal.
-//! * Improved pseudo-code of each analyzed function is saved in a separated file for easy inspection.
+//! * Improved pseudo-code of each analyzed function is saved in a separate file for easy inspection.
 //! * External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudo-code and then process analysis results.
 //!
 //! ## Blog post
@@ -175,7 +175,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submit `source_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`.
+/// Submit `source_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`
+/// (or [`None`] to use default values).
 ///
 /// Argument priority: function args -> environment vars -> hardcoded defaults.
 ///
@@ -233,7 +234,8 @@ pub fn analyze_code(
         .parse()
 }
 
-/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `baseurl` and `model`.
+/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `baseurl` and `model`
+/// (or [`None`] to use default values).
 ///
 /// Argument priority: function args -> environment vars -> hardcoded defaults.
 ///

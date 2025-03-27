@@ -25,7 +25,7 @@ results of the analysis.
   `mistral-7b-instruct`.
 * Easy integration with the pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 * Code description, recommended function name, and variable renaming suggestions are printed to the terminal.
-* Improved pseudo-code of each analyzed function is saved in a separated file for easy inspection.
+* Improved pseudo-code of each analyzed function is saved in a separate file for easy inspection.
 * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and then process analysis results.
 
 ## Blog post
