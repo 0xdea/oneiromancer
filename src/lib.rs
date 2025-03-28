@@ -48,8 +48,8 @@
 //! ```
 //!
 //! ## Configuration
-//! 1. Download and install [ollama](https://ollama.com/).
-//! 2. Download the fine-tuned weights and Ollama modelfile from [huggingface](https://huggingface.co/):
+//! 1. Download and install [Ollama](https://ollama.com/).
+//! 2. Download the fine-tuned weights and Ollama modelfile from [Hugging Face](https://huggingface.co/):
 //!     ```sh
 //!     wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
 //!     wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
@@ -75,9 +75,9 @@
 //! *Note: for best results, you shouldn't submit for analysis to the LLM more than one function at a time.*
 //!
 //! ## Tested on
-//! * Apple macOS Sequoia 15.2 with ollama 0.5.11
-//! * Ubuntu Linux 24.04.2 LTS with ollama 0.5.11
-//! * Microsoft Windows 11 23H2 with ollama 0.5.11
+//! * Apple macOS Sequoia 15.2 with Ollama 0.5.11
+//! * Ubuntu Linux 24.04.2 LTS with Ollama 0.5.11
+//! * Microsoft Windows 11 23H2 with Ollama 0.5.11
 //!
 //! ## Changelog
 //! * <https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md>
