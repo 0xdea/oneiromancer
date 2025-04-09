@@ -28,6 +28,7 @@ pub struct OneiromancerResults {
     variables: Vec<Variable>,
 }
 
+#[allow(clippy::missing_const_for_fn)]
 impl OneiromancerResults {
     /// Get recommended function name
     pub fn function_name(&self) -> &str {
@@ -54,6 +55,7 @@ pub struct Variable {
     new_name: String,
 }
 
+#[allow(clippy::missing_const_for_fn)]
 impl Variable {
     /// Get original name of the variable
     pub fn original_name(&self) -> &str {
