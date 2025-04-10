@@ -31,16 +31,19 @@ pub struct OneiromancerResults {
 #[allow(clippy::missing_const_for_fn)]
 impl OneiromancerResults {
     /// Get recommended function name
+    #[must_use]
     pub fn function_name(&self) -> &str {
         &self.function_name
     }
 
     /// Get function description
+    #[must_use]
     pub fn comment(&self) -> &str {
         &self.comment
     }
 
     /// Get variable renaming suggestions
+    #[must_use]
     pub fn variables(&self) -> &[Variable] {
         &self.variables
     }
@@ -58,11 +61,13 @@ pub struct Variable {
 #[allow(clippy::missing_const_for_fn)]
 impl Variable {
     /// Get original name of the variable
+    #[must_use]
     pub fn original_name(&self) -> &str {
         &self.original_name
     }
 
     /// Get suggested name for the variable
+    #[must_use]
     pub fn new_name(&self) -> &str {
         &self.new_name
     }
