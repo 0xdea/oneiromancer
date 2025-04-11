@@ -13,7 +13,7 @@
 //! name for the function, and variable renaming suggestions, based on the results of the analysis.
 //!
 //! ## Features
-//! * Support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on `mistral-7b-instruct`.
+//! * Cross-platform support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on `mistral-7b-instruct`.
 //! * Easy integration with the pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, recommended function name, and variable renaming suggestions are printed to the terminal.
 //! * Improved pseudo-code of each analyzed function is saved in a separate file for easy inspection.
