@@ -66,7 +66,7 @@ cargo build --release
 ## Configuration
 
 1. Download and install [Ollama](https://ollama.com/).
-2. Download the fine-tuned weights and Ollama modelfile from [Hugging Face](https://huggingface.co/):
+2. Download the fine-tuned weights and the Ollama modelfile from [Hugging Face](https://huggingface.co/):
    ```sh
    wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal-8k.Q4_K_M.gguf
    wget https://huggingface.co/AverageBusinessUser/aidapal/resolve/main/aidapal.modelfile
