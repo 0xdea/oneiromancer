@@ -30,7 +30,7 @@ results of the analysis.
 
 ## Blog post
 
-* <https://security.humanativaspa.it/aiding-reverse-engineering-with-rust-and-a-local-llm> (*coming soon*)
+* <https://security.humanativaspa.it/aiding-reverse-engineering-with-rust-and-a-local-llm>
 
 ## See also
 
