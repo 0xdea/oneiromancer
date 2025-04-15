@@ -41,7 +41,7 @@ fn main() {
 /// Print usage information and exit
 fn usage(prog: &str) {
     println!("Usage:");
-    println!("{prog} <source_file>.c");
+    println!("{prog} <target_file>.c");
 
     process::exit(0);
 }

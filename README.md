@@ -83,12 +83,12 @@ cargo build --release
    ```sh
    export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
    export OLLAMA_MODEL=custom_model # if not set, the default will be used
-   oneiromancer <source_file>.c
+   oneiromancer <target_file>.c
    ```
-2. Find the extracted pseudo-code of each decompiled function in `source_file.out.c`:
+2. Find the extracted pseudo-code of each decompiled function in `<target_file>.out.c`:
    ```sh
-   vim <source_file>.out.c
-   code <source_file>.out.c
+   vim <target_file>.out.c
+   code <target_file>.out.c
    ```
 
 *Note: for best results, you shouldn't submit for analysis to the LLM more than one function at a time.*

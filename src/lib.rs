@@ -65,12 +65,12 @@
 //!     ```sh
 //!     export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
 //!     export OLLAMA_MODEL=custom_model # if not set, the default will be used
-//!     oneiromancer <source_file>.c
+//!     oneiromancer <target_file>.c
 //!     ```
-//! 2. Find the extracted pseudo-code of each decompiled function in `source_file.out.c`:
+//! 2. Find the extracted pseudo-code of each decompiled function in `<target_file>.out.c`:
 //!     ```sh
-//!     vim <source_file>.out.c
-//!     code <source_file>.out.c
+//!     vim <target_file>.out.c
+//!     code <target_file>.out.c
 //!     ```
 //! *Note: for best results, you shouldn't submit for analysis to the LLM more than one function at a time.*
 //!
@@ -118,23 +118,23 @@ mod oneiromancer;
 ///
 /// Returns success or a generic error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Open target source file for reading
-    println!("[*] Analyzing source code in {filepath:?}");
+    // Open target pseudo-code file for reading
+    println!("[*] Analyzing pseudo-code in {filepath:?}");
     let file = File::open(filepath).with_context(|| format!("Failed to open {filepath:?}"))?;
     let mut reader = BufReader::new(file);
-    let mut source_code = String::new();
+    let mut pseudo_code = String::new();
     reader
-        .read_to_string(&mut source_code)
+        .read_to_string(&mut pseudo_code)
         .with_context(|| format!("Failed to read from {filepath:?}"))?;
 
-    // Submit source code to local LLM for analysis
+    // Submit pseudo-code to local LLM for analysis
     let mut sp = Spinner::new(
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
     let analysis_results =
-        analyze_code(&source_code, None, None).context("Failed to analyze source code")?;
-    sp.stop_with_message("[+] Successfully analyzed source code".into());
+        analyze_code(&pseudo_code, None, None).context("Failed to analyze pseudo-code")?;
+    sp.stop_with_message("[+] Successfully analyzed pseudo-code".into());
     println!();
 
     // Create function description in Phrack-style, wrapping to 76 columns
@@ -156,27 +156,27 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         println!("    {original_name}\t-> {new_name}");
 
         let re = Regex::new(&format!(r"\b{original_name}\b")).context("Failed to compile regex")?;
-        source_code = re.replace_all(&source_code, new_name).into();
+        pseudo_code = re.replace_all(&pseudo_code, new_name).into();
     }
 
-    // Save improved source code to output file
+    // Save improved pseudo-code to output file
     let outfilepath = filepath.with_extension("out.c");
     println!();
-    println!("[*] Saving improved source code in {outfilepath:?}");
+    println!("[*] Saving improved pseudo-code in {outfilepath:?}");
 
     let mut writer = BufWriter::new(
         File::create_new(&outfilepath)
             .with_context(|| format!("Failed to create {outfilepath:?}"))?,
     );
     writer.write_all(function_description.as_bytes())?;
-    writer.write_all(source_code.as_bytes())?;
+    writer.write_all(pseudo_code.as_bytes())?;
     writer.flush()?;
 
-    println!("[+] Done analyzing source code");
+    println!("[+] Done analyzing pseudo-code");
     Ok(())
 }
 
-/// Submit `source_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`
+/// Submit `pseudo_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`
 /// (or [`None`] to use default values).
 ///
 /// Argument priority: function args -> environment vars -> hardcoded defaults.
@@ -190,9 +190,9 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// Basic usage (default Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// let source_code = r#"int main() { printf("Hello, world!"); }"#;
+/// let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 ///
-/// let results = oneiromancer::analyze_code(source_code, None, None)?;
+/// let results = oneiromancer::analyze_code(pseudo_code, None, None)?;
 ///
 /// dbg!(results.function_name());
 /// dbg!(results.comment());
@@ -205,9 +205,9 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// ```
 /// # fn main() -> anyhow::Result<()> {
 /// let base_url = "http://127.0.0.1:11434";
-/// let source_code = r#"int main() { printf("Hello, world!"); }"#;
+/// let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 ///
-/// let results = oneiromancer::analyze_code(source_code, Some(base_url), Some("aidapal"))?;
+/// let results = oneiromancer::analyze_code(pseudo_code, Some(base_url), Some("aidapal"))?;
 ///
 /// dbg!(results.function_name());
 /// dbg!(results.comment());
@@ -217,7 +217,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// ```
 ///
 pub fn analyze_code(
-    source_code: &str,
+    pseudo_code: &str,
     baseurl: Option<&str>,
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
@@ -228,7 +228,7 @@ pub fn analyze_code(
     // Send Ollama API request and parse response
     let request = OllamaRequest::new(
         model.unwrap_or_else(|| env_model.as_deref().unwrap_or(OLLAMA_MODEL)),
-        source_code,
+        pseudo_code,
     );
     request
         .send(baseurl.unwrap_or_else(|| env_baseurl.as_deref().unwrap_or(OLLAMA_BASEURL)))?
@@ -280,15 +280,15 @@ pub fn analyze_file(
     baseurl: Option<&str>,
     model: Option<&str>,
 ) -> Result<OneiromancerResults, OneiromancerError> {
-    // Open target source file for reading
+    // Open target pseudo-code file for reading
     // Note: for easier testing, we could use a generic function together with `std::io::Cursor`
     let file = File::open(&filepath)?;
     let mut reader = BufReader::new(file);
-    let mut source_code = String::new();
-    reader.read_to_string(&mut source_code)?;
+    let mut pseudo_code = String::new();
+    reader.read_to_string(&mut pseudo_code)?;
 
-    // Analyze `source_code`
-    analyze_code(&source_code, baseurl, model)
+    // Analyze `pseudo_code`
+    analyze_code(&pseudo_code, baseurl, model)
 }
 
 #[cfg(test)]
@@ -301,9 +301,9 @@ mod tests {
     fn ollama_request_works() {
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
+        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudo_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(!result.unwrap().response.is_empty(), "response is empty");
@@ -313,9 +313,9 @@ mod tests {
     fn ollama_request_with_wrong_url_fails() {
         let baseurl = "http://127.0.0.1:6666";
         let model = env::var("OLLAMA_MODEL");
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
+        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudo_code);
         let result = request.send(baseurl);
 
         assert!(result.is_err());
@@ -325,9 +325,9 @@ mod tests {
     fn ollama_request_with_wrong_model_fails() {
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = "doesntexist";
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let request = OllamaRequest::new(model, source_code);
+        let request = OllamaRequest::new(model, pseudo_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.is_err());
@@ -337,9 +337,9 @@ mod tests {
     fn ollama_request_with_empty_prompt_returns_an_empty_response() {
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
-        let source_code = "";
+        let pseudo_code = "";
 
-        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), source_code);
+        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudo_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
         assert!(result.unwrap().response.is_empty(), "response is not empty");
@@ -349,9 +349,9 @@ mod tests {
     fn analyze_code_works() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
+        let result = analyze_code(pseudo_code, baseurl.as_deref(), model.as_deref());
 
         assert!(
             !result.unwrap().comment().is_empty(),
@@ -361,9 +361,9 @@ mod tests {
 
     #[test]
     fn analyze_code_with_default_parameters_works() {
-        let source_code = r#"int main() { printf("Hello, world!"); }"#;
+        let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = analyze_code(source_code, None, None);
+        let result = analyze_code(pseudo_code, None, None);
 
         assert!(
             !result.unwrap().comment().is_empty(),
@@ -372,12 +372,12 @@ mod tests {
     }
 
     #[test]
-    fn analyze_code_with_empty_source_code_string_fails() {
+    fn analyze_code_with_empty_pseudo_code_string_fails() {
         let baseurl = env::var("OLLAMA_BASEURL").ok();
         let model = env::var("OLLAMA_MODEL").ok();
-        let source_code = "";
+        let pseudo_code = "";
 
-        let result = analyze_code(source_code, baseurl.as_deref(), model.as_deref());
+        let result = analyze_code(pseudo_code, baseurl.as_deref(), model.as_deref());
 
         assert!(result.is_err());
     }

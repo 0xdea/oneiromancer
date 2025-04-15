@@ -1,9 +1,9 @@
 [package]
 name = "oneiromancer"
-version = "0.5.5"
+version = "0.5.6-alpha"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2024"
-description = "Reverse engineering assistant that uses a locally running LLM to aid with source code analysis."
+description = "Reverse engineering assistant that uses a locally running LLM to aid with pseudo-code analysis."
 homepage = "https://0xdeadbeef.info/"
 repository = "https://github.com/0xdea/oneiromancer"
 license = "MIT"
