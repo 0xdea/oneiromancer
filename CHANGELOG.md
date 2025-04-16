@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Improve documentation.
 
+### Fixed
+
+* Update `sccache-action` version.
+
 ## [0.5.5] - 2025-04-15
 
 ### Changed

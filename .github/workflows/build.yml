@@ -23,7 +23,7 @@ jobs:
         with:
           components: rustfmt, clippy
       - name: sccache
-        uses: mozilla-actions/sccache-action@v0.0.7
+        uses: mozilla-actions/sccache-action@v0.0.8
       - name: rustfmt
         run: cargo fmt --all --check
       - name: clippy
@@ -43,7 +43,7 @@ jobs:
       - name: toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: sccache
-        uses: mozilla-actions/sccache-action@v0.0.7
+        uses: mozilla-actions/sccache-action@v0.0.8
       - name: build
         run: cargo build
 
@@ -57,6 +57,6 @@ jobs:
       - name: toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: sccache
-        uses: mozilla-actions/sccache-action@v0.0.7
+        uses: mozilla-actions/sccache-action@v0.0.8
       - name: build
         run: cargo build
