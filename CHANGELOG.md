@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Improve public API in `analyze_code` and `analyze_file`.
 * Improve documentation.
 
 ### Fixed

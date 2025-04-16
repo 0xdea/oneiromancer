@@ -96,7 +96,6 @@
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
-use std::env;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
 use std::path::Path;
@@ -105,8 +104,10 @@ use anyhow::Context;
 use regex::Regex;
 use spinners::{Spinner, Spinners};
 
-use crate::ollama::{OLLAMA_BASEURL, OLLAMA_MODEL, OllamaRequest};
-pub use crate::oneiromancer::{OneiromancerError, OneiromancerResults, Variable};
+use crate::ollama::OllamaRequest;
+pub use crate::oneiromancer::{
+    OneiromancerConfig, OneiromancerError, OneiromancerResults, Variable,
+};
 
 mod ollama;
 mod oneiromancer;
@@ -132,8 +133,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let analysis_results =
-        analyze_code(&pseudo_code, None, None).context("Failed to analyze pseudo-code")?;
+    let analysis_results = analyze_code(&pseudo_code, &OneiromancerConfig::default())
+        .context("Failed to analyze pseudo-code")?;
     sp.stop_with_message("[+] Successfully analyzed pseudo-code".into());
     println!();
 
@@ -176,10 +177,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submit `pseudo_code` to the local LLM via the Ollama API using the specified `baseurl` and `model`
-/// (or [`None`] to use default values).
-///
-/// Argument priority: function args -> environment vars -> hardcoded defaults.
+/// Submit `pseudo_code` to the local LLM via the Ollama API using the specified
+/// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
 /// ## Errors
 ///
@@ -190,9 +189,11 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// Basic usage (default Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
+/// use oneiromancer::{OneiromancerConfig, analyze_code};
+///
 /// let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 ///
-/// let results = oneiromancer::analyze_code(pseudo_code, None, None)?;
+/// let results = analyze_code(&pseudo_code, &OneiromancerConfig::default())?;
 ///
 /// dbg!(results.function_name());
 /// dbg!(results.comment());
@@ -204,10 +205,14 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// Advanced usage (explicit Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// let base_url = "http://127.0.0.1:11434";
+/// use oneiromancer::{OneiromancerConfig, analyze_code};
+///
 /// let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 ///
-/// let results = oneiromancer::analyze_code(pseudo_code, Some(base_url), Some("aidapal"))?;
+/// let config = OneiromancerConfig::new()
+///     .with_baseurl("http://127.0.0.1:11434")
+///     .with_model("aidapal");
+/// let results = analyze_code(&pseudo_code, &config)?;
 ///
 /// dbg!(results.function_name());
 /// dbg!(results.comment());
@@ -218,27 +223,15 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 ///
 pub fn analyze_code(
     pseudo_code: &str,
-    baseurl: Option<&str>,
-    model: Option<&str>,
+    config: &OneiromancerConfig,
 ) -> Result<OneiromancerResults, OneiromancerError> {
-    // Check environment variables
-    let env_baseurl = env::var("OLLAMA_BASEURL");
-    let env_model = env::var("OLLAMA_MODEL");
-
     // Send Ollama API request and parse response
-    let request = OllamaRequest::new(
-        model.unwrap_or_else(|| env_model.as_deref().unwrap_or(OLLAMA_MODEL)),
-        pseudo_code,
-    );
-    request
-        .send(baseurl.unwrap_or_else(|| env_baseurl.as_deref().unwrap_or(OLLAMA_BASEURL)))?
-        .parse()
+    let request = OllamaRequest::new(config.model(), pseudo_code);
+    request.send(config.baseurl())?.parse()
 }
 
-/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified `baseurl` and `model`
-/// (or [`None`] to use default values).
-///
-/// Argument priority: function args -> environment vars -> hardcoded defaults.
+/// Submit code in `filepath` file to the local LLM via the Ollama API using the specified
+/// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
 /// ## Errors
 ///
@@ -249,9 +242,11 @@ pub fn analyze_code(
 /// Basic usage (default Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
+/// use oneiromancer::{OneiromancerConfig, analyze_file};
+///
 /// let filepath = "./tests/data/hello.c";
 ///
-/// let results = oneiromancer::analyze_file(&filepath, None, None)?;
+/// let results = analyze_file(&filepath, &OneiromancerConfig::default())?;
 ///
 /// dbg!(results.function_name());
 /// dbg!(results.comment());
@@ -263,10 +258,14 @@ pub fn analyze_code(
 /// Advanced usage (explicit Ollama base URL and model):
 /// ```
 /// # fn main() -> anyhow::Result<()> {
-/// let base_url = "http://127.0.0.1:11434";
+/// use oneiromancer::{OneiromancerConfig, analyze_file};
+///
 /// let filepath = "./tests/data/hello.c";
 ///
-/// let results = oneiromancer::analyze_file(&filepath, Some(base_url), Some("aidapal"))?;
+/// let config = OneiromancerConfig::new()
+///     .with_baseurl("http://127.0.0.1:11434")
+///     .with_model("aidapal");
+/// let results = analyze_file(&filepath, &config)?;
 ///
 /// dbg!(results.function_name());
 /// dbg!(results.comment());
@@ -277,8 +276,7 @@ pub fn analyze_code(
 ///
 pub fn analyze_file(
     filepath: impl AsRef<Path>,
-    baseurl: Option<&str>,
-    model: Option<&str>,
+    config: &OneiromancerConfig,
 ) -> Result<OneiromancerResults, OneiromancerError> {
     // Open target pseudo-code file for reading
     // Note: for easier testing, we could use a generic function together with `std::io::Cursor`
@@ -288,14 +286,15 @@ pub fn analyze_file(
     reader.read_to_string(&mut pseudo_code)?;
 
     // Analyze `pseudo_code`
-    analyze_code(&pseudo_code, baseurl, model)
+    analyze_code(&pseudo_code, config)
 }
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::{env, fs};
 
     use super::*;
+    use crate::oneiromancer::{OLLAMA_BASEURL, OLLAMA_MODEL};
 
     #[test]
     fn ollama_request_works() {
@@ -347,11 +346,14 @@ mod tests {
 
     #[test]
     fn analyze_code_works() {
-        let baseurl = env::var("OLLAMA_BASEURL").ok();
-        let model = env::var("OLLAMA_MODEL").ok();
+        let baseurl = env::var("OLLAMA_BASEURL");
+        let model = env::var("OLLAMA_MODEL");
+        let config = OneiromancerConfig::new()
+            .with_baseurl(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))
+            .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = analyze_code(pseudo_code, baseurl.as_deref(), model.as_deref());
+        let result = analyze_code(pseudo_code, &config);
 
         assert!(
             !result.unwrap().comment().is_empty(),
@@ -363,7 +365,7 @@ mod tests {
     fn analyze_code_with_default_parameters_works() {
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
-        let result = analyze_code(pseudo_code, None, None);
+        let result = analyze_code(pseudo_code, &OneiromancerConfig::default());
 
         assert!(
             !result.unwrap().comment().is_empty(),
@@ -373,22 +375,23 @@ mod tests {
 
     #[test]
     fn analyze_code_with_empty_pseudo_code_string_fails() {
-        let baseurl = env::var("OLLAMA_BASEURL").ok();
-        let model = env::var("OLLAMA_MODEL").ok();
         let pseudo_code = "";
 
-        let result = analyze_code(pseudo_code, baseurl.as_deref(), model.as_deref());
+        let result = analyze_code(pseudo_code, &OneiromancerConfig::default());
 
         assert!(result.is_err());
     }
 
     #[test]
     fn analyze_file_works() {
-        let baseurl = env::var("OLLAMA_BASEURL").ok();
-        let model = env::var("OLLAMA_MODEL").ok();
+        let baseurl = env::var("OLLAMA_BASEURL");
+        let model = env::var("OLLAMA_MODEL");
+        let config = OneiromancerConfig::new()
+            .with_baseurl(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))
+            .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
         let filepath = "./tests/data/hello.c";
 
-        let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
+        let result = analyze_file(filepath, &config);
 
         assert!(
             !result.unwrap().comment().is_empty(),
@@ -400,7 +403,7 @@ mod tests {
     fn analyze_file_with_default_parameters_works() {
         let filepath = "./tests/data/hello.c";
 
-        let result = analyze_file(filepath, None, None);
+        let result = analyze_file(filepath, &OneiromancerConfig::default());
 
         assert!(
             !result.unwrap().comment().is_empty(),
@@ -410,22 +413,18 @@ mod tests {
 
     #[test]
     fn analyze_file_with_empty_input_file_fails() {
-        let baseurl = env::var("OLLAMA_BASEURL").ok();
-        let model = env::var("OLLAMA_MODEL").ok();
         let filepath = "./tests/data/empty.c";
 
-        let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
+        let result = analyze_file(filepath, &OneiromancerConfig::default());
 
         assert!(result.is_err());
     }
 
     #[test]
     fn analyze_file_with_invalid_input_filepath_fails() {
-        let baseurl = env::var("OLLAMA_BASEURL").ok();
-        let model = env::var("OLLAMA_MODEL").ok();
         let filepath = "./tests/data/invalid.c";
 
-        let result = analyze_file(filepath, baseurl.as_deref(), model.as_deref());
+        let result = analyze_file(filepath, &OneiromancerConfig::default());
 
         assert!(result.is_err());
     }

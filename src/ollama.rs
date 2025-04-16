@@ -4,11 +4,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::{OneiromancerError, OneiromancerResults};
 
-/// Default Ollama URL
-pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
-/// Default Ollama model
-pub const OLLAMA_MODEL: &str = "aidapal";
-
 /// Ollama API request content
 #[derive(Serialize, Debug, Clone)]
 pub struct OllamaRequest<'a> {
