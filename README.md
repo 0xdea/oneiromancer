@@ -13,7 +13,7 @@
 > "Can it run Doom?" -- <https://canitrundoom.org/>
 
 Oneiromancer is a reverse engineering assistant that uses a locally running LLM that has been fine-tuned for Hex-Rays
-pseudo-code, to aid with code analysis. It can analyze a function or a smaller code snippet, returning a high-level
+pseudo-code to aid with code analysis. It can analyze a function or a smaller code snippet, returning a high-level
 description of what the code does, a recommended name for the function, and variable renaming suggestions, based on the
 results of the analysis.
 
@@ -24,7 +24,7 @@ results of the analysis.
 * Cross-platform support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on
   `mistral-7b-instruct`.
 * Easy integration with the pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
-* Code description, recommended function name, and variable renaming suggestions are printed to the terminal.
+* Code description, recommended function name, and variable renaming suggestions are printed on the terminal.
 * Improved pseudo-code of each analyzed function is saved in a separate file for easy inspection.
 * External crates can invoke `analyze_code` or `analyze_file` to analyze pseudo-code and then process analysis results.
 

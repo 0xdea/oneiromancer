@@ -13,7 +13,7 @@ pub const OLLAMA_MODEL: &str = "aidapal";
 /// Oneiromancer error type
 #[derive(Error, Debug)]
 pub enum OneiromancerError {
-    /// Failure in reading input file
+    /// Failure in reading the input file
     #[error(transparent)]
     FileReadFailed(#[from] std::io::Error),
     /// Failure in querying Ollama API
@@ -90,7 +90,7 @@ pub struct OneiromancerResults {
 
 #[allow(clippy::missing_const_for_fn)]
 impl OneiromancerResults {
-    /// Get recommended function name
+    /// Get the recommended function name
     #[must_use]
     pub fn function_name(&self) -> &str {
         &self.function_name
@@ -120,13 +120,13 @@ pub struct Variable {
 
 #[allow(clippy::missing_const_for_fn)]
 impl Variable {
-    /// Get original name of the variable
+    /// Get the original name of the variable
     #[must_use]
     pub fn original_name(&self) -> &str {
         &self.original_name
     }
 
-    /// Get suggested name for the variable
+    /// Get the suggested name for the variable
     #[must_use]
     pub fn new_name(&self) -> &str {
         &self.new_name
