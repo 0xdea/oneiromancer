@@ -109,9 +109,9 @@ cargo build --release
 
 ## TODO
 
-* Change the public API to use custom types and implement a provider abstraction.
 * Improve output file handling with versioning and/or an output directory.
 * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
+* Use custom types in the public API and implement a provider abstraction.
 * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
 * Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.

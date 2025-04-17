@@ -1,5 +1,5 @@
 //!
-//! oneiromancer - GenAI assistant for C code analysis
+//! oneiromancer - GenAI tool for pseudo-code analysis
 //! Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>
 //!
 //! > "A large fraction of the flaws in software development are due to programmers not fully
@@ -86,10 +86,10 @@
 //! * Chris Bellows (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 //!
 //! ## TODO
-//! * Change the public API to use custom types and implement a provider abstraction.
 //! * Improve output file handling with versioning and/or an output directory.
 //! * Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
 //! * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
+//! * Use custom types in the public API and implement a provider abstraction.
 //! * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
 //! * Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.
 //!
@@ -112,8 +112,8 @@ pub use crate::oneiromancer::{
 mod ollama;
 mod oneiromancer;
 
-/// Submit code in `filepath` file to local LLM for analysis. Output analysis results to terminal
-/// and save improved pseudo-code in `filepath` with an `out.c` extension.
+/// Submit pseudo-code in `filepath` file to local LLM for analysis. Output analysis results to
+/// terminal and save improved pseudo-code in `filepath` with an `out.c` extension.
 ///
 /// ## Errors
 ///
@@ -222,15 +222,15 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
 /// ```
 ///
 pub fn analyze_code(
-    pseudo_code: &str,
+    pseudo_code: impl AsRef<str>,
     config: &OneiromancerConfig,
 ) -> Result<OneiromancerResults, OneiromancerError> {
     // Send Ollama API request and parse response
-    let request = OllamaRequest::new(config.model(), pseudo_code);
+    let request = OllamaRequest::new(config.model(), pseudo_code.as_ref());
     request.send(config.baseurl())?.parse()
 }
 
-/// Submit code in the `filepath` file to the local LLM via the Ollama API using the specified
+/// Submit pseudo-code in the `filepath` file to the local LLM via the Ollama API using the specified
 /// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
 /// ## Errors
