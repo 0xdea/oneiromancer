@@ -1,6 +1,6 @@
 [package]
 name = "oneiromancer"
-version = "0.6.0"
+version = "0.6.1-alpha"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2024"
 description = "Reverse engineering assistant that uses a locally running LLM to aid with pseudo-code analysis."
@@ -9,7 +9,7 @@ repository = "https://github.com/0xdea/oneiromancer"
 license = "MIT"
 keywords = ["reverse-engineering", "pseudo-code", "vuln-dev", "ollama", "aidapal"]
 categories = ["security", "command-line-utilities"]
-exclude = [".cargo/*", ".github/*", ".img/*", "tests/*"]
+exclude = [".cargo/*", ".github/*", ".img/*", "tests/*", "deny.toml"]
 
 [dependencies]
 anyhow = "1.0"

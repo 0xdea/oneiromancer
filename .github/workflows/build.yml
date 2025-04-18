@@ -32,6 +32,10 @@ jobs:
         run: cargo build
       - name: semver-checks
         uses: obi1kenobi/cargo-semver-checks-action@v2
+      - name: deny
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check advisories bans sources
 
   build-macos:
     runs-on: macOS-latest
