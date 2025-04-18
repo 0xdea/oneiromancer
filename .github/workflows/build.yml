@@ -32,6 +32,10 @@ jobs:
         run: cargo build
       - name: semver-checks
         uses: obi1kenobi/cargo-semver-checks-action@v2
+      - name: audit
+        uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos:
     runs-on: macOS-latest
