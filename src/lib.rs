@@ -120,13 +120,14 @@ mod oneiromancer;
 /// Returns success or a generic error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Open the target pseudo-code file for reading
-    println!("[*] Analyzing pseudo-code in {filepath:?}");
-    let file = File::open(filepath).with_context(|| format!("Failed to open {filepath:?}"))?;
+    println!("[*] Analyzing pseudo-code in `{}`", filepath.display());
+    let file =
+        File::open(filepath).with_context(|| format!("Failed to open `{}`", filepath.display()))?;
     let mut reader = BufReader::new(file);
     let mut pseudo_code = String::new();
     reader
         .read_to_string(&mut pseudo_code)
-        .with_context(|| format!("Failed to read from {filepath:?}"))?;
+        .with_context(|| format!("Failed to read from `{}`", filepath.display()))?;
 
     // Submit pseudo-code to the local LLM for analysis
     let mut sp = Spinner::new(
@@ -163,11 +164,14 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     // Save improved pseudo-code to an output file
     let outfilepath = filepath.with_extension("out.c");
     println!();
-    println!("[*] Saving improved pseudo-code in {outfilepath:?}");
+    println!(
+        "[*] Saving improved pseudo-code in `{}`",
+        outfilepath.display()
+    );
 
     let mut writer = BufWriter::new(
         File::create_new(&outfilepath)
-            .with_context(|| format!("Failed to create {outfilepath:?}"))?,
+            .with_context(|| format!("Failed to create `{}`", outfilepath.display()))?,
     );
     writer.write_all(function_description.as_bytes())?;
     writer.write_all(pseudo_code.as_bytes())?;
