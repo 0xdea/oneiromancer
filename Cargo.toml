@@ -1,6 +1,6 @@
 [package]
 name = "oneiromancer"
-version = "0.6.1"
+version = "0.6.2-alpha"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2024"
 description = "Reverse engineering assistant that uses a locally running LLM to aid with pseudo-code analysis."
@@ -42,3 +42,6 @@ strip = true
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[profile.dev]
+debug = false
