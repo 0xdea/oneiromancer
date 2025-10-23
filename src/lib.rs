@@ -161,7 +161,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         pseudo_code = re.replace_all(&pseudo_code, new_name).into();
     }
 
-    // Save improved pseudocode to an output file
+    // Save the improved pseudocode to an output file
     let outfilepath = filepath.with_extension("out.c");
     println!();
     println!(
