@@ -1,4 +1,4 @@
-//! Collect pseudo-code analysis results and handle errors
+//! Collect pseudocode analysis results and handle errors
 
 use std::env;
 
@@ -77,7 +77,7 @@ impl Default for OneiromancerConfig {
     }
 }
 
-/// Pseudo-code analysis results
+/// Pseudocode analysis results
 #[derive(Deserialize, Debug, Clone)]
 pub struct OneiromancerResults {
     /// Recommended function name

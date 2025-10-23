@@ -1,5 +1,5 @@
 //!
-//! oneiromancer - GenAI tool for pseudo-code analysis
+//! oneiromancer - GenAI tool for pseudocode analysis
 //! Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>
 //!
 //! > "A large fraction of the flaws in software development are due to programmers not fully
@@ -8,16 +8,16 @@
 //! > "Can it run Doom?" -- <https://canitrundoom.org/>
 //!
 //! Oneiromancer is a reverse engineering assistant that uses a locally running LLM that has been
-//! fine-tuned for Hex-Rays pseudo-code to aid with code analysis. It can analyze a function or a
+//! fine-tuned for Hex-Rays pseudocode to aid with code analysis. It can analyze a function or a
 //! smaller code snippet, returning a high-level description of what the code does, a recommended
 //! name for the function, and variable renaming suggestions, based on the results of the analysis.
 //!
 //! ## Features
 //! * Cross-platform support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on `mistral-7b-instruct`.
-//! * Easy integration with the pseudo-code extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
+//! * Easy integration with the pseudocode extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 //! * Code description, recommended function name, and variable renaming suggestions are printed on the terminal.
-//! * Improved pseudo-code of each analyzed function is saved in a separate file for easy inspection.
-//! * External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudo-code and then process analysis results.
+//! * Improved pseudocode of each analyzed function is saved in a separate file for easy inspection.
+//! * External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudocode and then process analysis results.
 //!
 //! ## Blog post
 //! * <https://hnsecurity.it/blog/aiding-reverse-engineering-with-rust-and-a-local-llm>
@@ -67,7 +67,7 @@
 //!     export OLLAMA_MODEL=custom_model # if not set, the default will be used
 //!     oneiromancer <target_file>.c
 //!     ```
-//! 2. Find the extracted pseudo-code of each decompiled function in `<target_file>.out.c`:
+//! 2. Find the extracted pseudocode of each decompiled function in `<target_file>.out.c`:
 //!     ```sh
 //!     vim <target_file>.out.c
 //!     code <target_file>.out.c
@@ -112,15 +112,15 @@ pub use crate::oneiromancer::{
 mod ollama;
 mod oneiromancer;
 
-/// Submit pseudo-code in `filepath` file to local LLM for analysis. Output analysis results to
-/// terminal and save improved pseudo-code in `filepath` with an `out.c` extension.
+/// Submit pseudocode in `filepath` file to local LLM for analysis. Output analysis results to
+/// terminal and save improved pseudocode in `filepath` with an `out.c` extension.
 ///
 /// ## Errors
 ///
 /// Returns success or a generic error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Open the target pseudo-code file for reading
-    println!("[*] Analyzing pseudo-code in `{}`", filepath.display());
+    // Open the target pseudocode file for reading
+    println!("[*] Analyzing pseudocode in `{}`", filepath.display());
     let file =
         File::open(filepath).with_context(|| format!("Failed to open `{}`", filepath.display()))?;
     let mut reader = BufReader::new(file);
@@ -129,14 +129,14 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         .read_to_string(&mut pseudo_code)
         .with_context(|| format!("Failed to read from `{}`", filepath.display()))?;
 
-    // Submit pseudo-code to the local LLM for analysis
+    // Submit pseudocode to the local LLM for analysis
     let mut sp = Spinner::new(
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
     let analysis_results = analyze_code(&pseudo_code, &OneiromancerConfig::default())
-        .context("Failed to analyze pseudo-code")?;
-    sp.stop_with_message("[+] Successfully analyzed pseudo-code".into());
+        .context("Failed to analyze pseudocode")?;
+    sp.stop_with_message("[+] Successfully analyzed pseudocode".into());
     println!();
 
     // Create a function description in Phrack-style, wrapping to 76 columns
@@ -161,11 +161,11 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         pseudo_code = re.replace_all(&pseudo_code, new_name).into();
     }
 
-    // Save improved pseudo-code to an output file
+    // Save improved pseudocode to an output file
     let outfilepath = filepath.with_extension("out.c");
     println!();
     println!(
-        "[*] Saving improved pseudo-code in `{}`",
+        "[*] Saving improved pseudocode in `{}`",
         outfilepath.display()
     );
 
@@ -177,7 +177,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     writer.write_all(pseudo_code.as_bytes())?;
     writer.flush()?;
 
-    println!("[+] Done analyzing pseudo-code");
+    println!("[+] Done analyzing pseudocode");
     Ok(())
 }
 
@@ -234,7 +234,7 @@ pub fn analyze_code(
     request.send(config.baseurl())?.parse()
 }
 
-/// Submit pseudo-code in the `filepath` file to the local LLM via the Ollama API using the specified
+/// Submit pseudocode in the `filepath` file to the local LLM via the Ollama API using the specified
 /// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
 /// ## Errors
@@ -282,7 +282,7 @@ pub fn analyze_file(
     filepath: impl AsRef<Path>,
     config: &OneiromancerConfig,
 ) -> Result<OneiromancerResults, OneiromancerError> {
-    // Open target pseudo-code file for reading
+    // Open target pseudocode file for reading
     // Note: for easier testing, we could use a generic function together with `std::io::Cursor`
     let file = File::open(&filepath)?;
     let mut reader = BufReader::new(file);
