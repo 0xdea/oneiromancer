@@ -11,8 +11,8 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(name = "Oneiromancer", about = "Reverse engineering assistant that uses a locally running LLM to aid with pseudocode analysis.", long_about = None, version)]
 pub struct Args {
-    /// Path to the file containing the pseudocode to analyze.
-    pub binary: PathBuf,
+    /// Path to the file containing the pseudocode to analyze (C file).
+    pub pseudocode: PathBuf,
 
     /// Base URL for the Ollama API.
     ///
