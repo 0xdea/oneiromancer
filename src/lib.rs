@@ -61,17 +61,32 @@
 //!     ```
 //!
 //! ## Usage
-//! 1. Run oneiromancer as follows:
-//!     ```sh
-//!     export OLLAMA_BASEURL=custom_baseurl # if not set, the default will be used
-//!     export OLLAMA_MODEL=custom_model # if not set, the default will be used
-//!     oneiromancer <target_file>.c
-//!     ```
-//! 2. Find the extracted pseudocode of each decompiled function in `<target_file>.out.c`:
-//!     ```sh
-//!     vim <target_file>.out.c
-//!     code <target_file>.out.c
-//!     ```
+//!
+//! 1. Example using environment variables:
+//! ```sh
+//! export OLLAMA_BASEURL=custom_url    # optional, program has a built-in default
+//! export OLLAMA_MODEL=custom_model    # optional, program has a built-in default
+//! oneiromancer <target_file>.c
+//! ```
+//!
+//! 2. Example using command-line arguments (these override environment variables and defaults):
+//! - Long options:
+//! ```sh
+//! oneiromancer --base-url custom_url --model custom_model <target_file>.c
+//! ```
+//! - Short options:
+//! ```sh
+//! oneiromancer -b custom_url -m custom_model <target_file>.c
+//! ```
+//!
+//! 3. Mixing: if an option is omitted on the command line, the corresponding environment variable (if set) or the program default will be used.
+//!
+//! 4. The extracted pseudocode for each analyzed function is written to `<target_file>.out.c`:
+//! ```sh
+//! vim <target_file>.out.c
+//! code <target_file>.out.c
+//! ```
+//!
 //! *Note: for best results, you shouldn't submit for analysis to the LLM more than one function at a time.*
 //!
 //! ## Tested on
