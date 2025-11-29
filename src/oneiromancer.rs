@@ -35,8 +35,11 @@ pub struct OneiromancerConfig {
 impl OneiromancerConfig {
     /// Create a new `OneiromancerConfig` with default values
     #[must_use]
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(base_url: String, model: String) -> Self {
+        Self {
+            baseurl: base_url,
+            model,
+        }
     }
 
     /// Get the configured `baseurl`

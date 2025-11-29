@@ -119,7 +119,7 @@ mod oneiromancer;
 /// ## Errors
 ///
 /// Returns success or a generic error in case something goes wrong.
-pub fn run(filepath: &Path) -> anyhow::Result<()> {
+pub fn run(filepath: &Path, model: String, base_url: String) -> anyhow::Result<()> {
     // Open the target pseudocode file for reading
     println!("[*] Analyzing pseudocode in `{}`", filepath.display());
     let file =
@@ -135,7 +135,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let analysis_results = analyze_code(&pseudo_code, &OneiromancerConfig::default())
+    let analysis_results = analyze_code(&pseudo_code, &OneiromancerConfig::new(base_url, model))
         .context("Failed to analyze pseudocode")?;
     sp.stop_with_message("[+] Successfully analyzed pseudocode".into());
     println!();
@@ -351,11 +351,9 @@ mod tests {
 
     #[test]
     fn analyze_code_works() {
-        let baseurl = env::var("OLLAMA_BASEURL");
-        let model = env::var("OLLAMA_MODEL");
-        let config = OneiromancerConfig::new()
-            .with_baseurl(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))
-            .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let config = OneiromancerConfig::new(baseurl, model);
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
         let result = analyze_code(pseudo_code, &config);
@@ -389,11 +387,9 @@ mod tests {
 
     #[test]
     fn analyze_file_works() {
-        let baseurl = env::var("OLLAMA_BASEURL");
-        let model = env::var("OLLAMA_MODEL");
-        let config = OneiromancerConfig::new()
-            .with_baseurl(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))
-            .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let config = OneiromancerConfig::new(baseurl, model);
         let filepath = "./tests/data/hello.c";
 
         let result = analyze_file(filepath, &config);
@@ -440,7 +436,11 @@ mod tests {
         let filepath = tmpdir.path().join("test.c");
         fs::copy("./tests/data/hello.c", &filepath).unwrap();
 
-        let result = run(&filepath);
+        let result = run(
+            &filepath,
+            OLLAMA_MODEL.to_string(),
+            OLLAMA_BASEURL.to_string(),
+        );
         let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_ok());
@@ -457,7 +457,11 @@ mod tests {
         let filepath = tmpdir.path().join("test.c");
         File::create(&filepath).unwrap();
 
-        let result = run(&filepath);
+        let result = run(
+            &filepath,
+            OLLAMA_MODEL.to_string(),
+            OLLAMA_BASEURL.to_string(),
+        );
         let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_err());
@@ -469,7 +473,11 @@ mod tests {
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
 
-        let result = run(&filepath);
+        let result = run(
+            &filepath,
+            OLLAMA_MODEL.to_string(),
+            OLLAMA_BASEURL.to_string(),
+        );
         let outfile = tmpdir.path().join("test.out.c");
 
         assert!(result.is_err());

@@ -21,7 +21,7 @@ fn main() {
     }
 
     // Let's do it
-    match oneiromancer::run(&args.binary) {
+    match oneiromancer::run(&args.binary, args.base_url, args.model) {
         Ok(()) => (),
         Err(err) => {
             eprintln!("\n[!] Error: {err:#}");
