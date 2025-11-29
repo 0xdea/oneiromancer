@@ -109,6 +109,7 @@ pub use crate::oneiromancer::{
     OneiromancerConfig, OneiromancerError, OneiromancerResults, Variable,
 };
 
+pub mod cli;
 mod ollama;
 mod oneiromancer;
 

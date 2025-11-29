@@ -1,6 +1,7 @@
 //! main.rs
 
-use std::path::Path;
+use clap::Parser;
+use oneiromancer::cli;
 use std::{env, process};
 
 const PROGRAM: &str = env!("CARGO_PKG_NAME");
@@ -12,36 +13,19 @@ fn main() {
     println!();
 
     // Parse command line arguments
-    let args = env::args().collect::<Vec<_>>();
+    let args: cli::Args = cli::Args::parse();
 
-    let prog = Path::new(&args[0])
-        .file_name()
-        .unwrap()
-        .to_str()
-        .unwrap_or(PROGRAM);
-
-    let filename = match args.len() {
-        2 => &args[1],
-        _ => "-",
-    };
-    if filename.starts_with('-') {
-        usage(prog);
+    if !args.binary.exists() {
+        eprintln!("\n[!] Error: the specified file does not exist");
+        process::exit(-1);
     }
 
     // Let's do it
-    match oneiromancer::run(Path::new(filename)) {
+    match oneiromancer::run(&args.binary) {
         Ok(()) => (),
         Err(err) => {
             eprintln!("\n[!] Error: {err:#}");
             process::exit(1);
         }
     }
-}
-
-/// Print usage information and exit
-fn usage(prog: &str) {
-    println!("Usage:");
-    println!("{prog} <target_file>.c");
-
-    process::exit(0);
 }
