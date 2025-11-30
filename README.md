@@ -85,13 +85,13 @@ cargo build --release
    export OLLAMA_MODEL=custom_model # if not set, the default will be used
    oneiromancer <target_file>.c
    ```
-2. Find the extracted pseudocode of each decompiled function in `<target_file>.out.c`:
+2. Find the improved pseudocode in `<target_file>.out.c`:
    ```sh
    vim <target_file>.out.c
    code <target_file>.out.c
    ```
 
-*Note: for best results, you shouldn't submit for analysis to the LLM more than one function at a time.*
+*Note: for best results, submit one function at a time to be analyzed by the LLM.*
 
 ## Tested on
 
