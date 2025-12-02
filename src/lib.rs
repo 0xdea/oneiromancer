@@ -302,54 +302,67 @@ mod tests {
 
     #[test]
     fn ollama_request_works() {
+        // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
+        // Act
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudo_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
+        // Assert
         assert!(!result.unwrap().response.is_empty(), "response is empty");
     }
 
     #[test]
     fn ollama_request_with_wrong_url_fails() {
+        // Arrange
         let baseurl = "http://127.0.0.1:6666";
         let model = env::var("OLLAMA_MODEL");
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
+        // Act
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudo_code);
         let result = request.send(baseurl);
 
-        assert!(result.is_err());
+        // Assert
+        assert!(result.is_err(), "request succeeded unexpectedly");
     }
 
     #[test]
     fn ollama_request_with_wrong_model_fails() {
+        // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = "doesntexist";
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
+        // Act
         let request = OllamaRequest::new(model, pseudo_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
-        assert!(result.is_err());
+        // Assert
+        assert!(result.is_err(), "request succeeded unexpectedly");
     }
 
     #[test]
     fn ollama_request_with_empty_prompt_returns_an_empty_response() {
+        // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
         let pseudo_code = "";
 
+        // Act
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudo_code);
         let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
 
+        // Assert
         assert!(result.unwrap().response.is_empty(), "response is not empty");
     }
 
     #[test]
     fn analyze_code_works() {
+        // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
         let config = OneiromancerConfig::new()
@@ -357,8 +370,10 @@ mod tests {
             .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
+        // Act
         let result = analyze_code(pseudo_code, &config);
 
+        // Assert
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -367,10 +382,13 @@ mod tests {
 
     #[test]
     fn analyze_code_with_default_parameters_works() {
+        // Arrange
         let pseudo_code = r#"int main() { printf("Hello, world!"); }"#;
 
+        // Act
         let result = analyze_code(pseudo_code, &OneiromancerConfig::default());
 
+        // Assert
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -379,15 +397,19 @@ mod tests {
 
     #[test]
     fn analyze_code_with_empty_pseudo_code_string_fails() {
+        // Arrange
         let pseudo_code = "";
 
+        // Act
         let result = analyze_code(pseudo_code, &OneiromancerConfig::default());
 
-        assert!(result.is_err());
+        // Assert
+        assert!(result.is_err(), "analysis succeeded unexpectedly");
     }
 
     #[test]
     fn analyze_file_works() {
+        // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
         let config = OneiromancerConfig::new()
@@ -395,8 +417,10 @@ mod tests {
             .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
         let filepath = "./tests/data/hello.c";
 
+        // Act
         let result = analyze_file(filepath, &config);
 
+        // Assert
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -405,10 +429,13 @@ mod tests {
 
     #[test]
     fn analyze_file_with_default_parameters_works() {
+        // Arrange
         let filepath = "./tests/data/hello.c";
 
+        // Act
         let result = analyze_file(filepath, &OneiromancerConfig::default());
 
+        // Assert
         assert!(
             !result.unwrap().comment().is_empty(),
             "description is empty"
@@ -417,32 +444,41 @@ mod tests {
 
     #[test]
     fn analyze_file_with_empty_input_file_fails() {
+        // Arrange
         let filepath = "./tests/data/empty.c";
 
+        // Act
         let result = analyze_file(filepath, &OneiromancerConfig::default());
 
-        assert!(result.is_err());
+        // Assert
+        assert!(result.is_err(), "analysis succeeded unexpectedly");
     }
 
     #[test]
     fn analyze_file_with_invalid_input_filepath_fails() {
+        // Arrange
         let filepath = "./tests/data/invalid.c";
 
+        // Act
         let result = analyze_file(filepath, &OneiromancerConfig::default());
 
-        assert!(result.is_err());
+        // Assert
+        assert!(result.is_err(), "analysis succeeded unexpectedly");
     }
 
     #[test]
     fn run_works() {
+        // Arrange
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
         fs::copy("./tests/data/hello.c", &filepath).unwrap();
 
+        // Act
         let result = run(&filepath);
         let outfile = tmpdir.path().join("test.out.c");
 
-        assert!(result.is_ok());
+        // Assert
+        assert!(result.is_ok(), "run failed");
         assert!(outfile.exists(), "output file {outfile:?} does not exist");
         assert!(
             outfile.metadata().unwrap().len() > 0,
@@ -452,26 +488,32 @@ mod tests {
 
     #[test]
     fn run_with_empty_file_fails() {
+        // Arrange
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
         File::create(&filepath).unwrap();
 
+        // Act
         let result = run(&filepath);
         let outfile = tmpdir.path().join("test.out.c");
 
-        assert!(result.is_err());
-        assert!(!outfile.exists());
+        // Assert
+        assert!(result.is_err(), "run succeeded unexpectedly");
+        assert!(!outfile.exists(), "output file {outfile:?} exists");
     }
 
     #[test]
     fn run_with_invalid_input_filepath_fails() {
+        // Arrange
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
 
+        // Act
         let result = run(&filepath);
         let outfile = tmpdir.path().join("test.out.c");
 
-        assert!(result.is_err());
-        assert!(!outfile.exists());
+        // Assert
+        assert!(result.is_err(), "run succeeded unexpectedly");
+        assert!(!outfile.exists(), "output file {outfile:?} exists");
     }
 }
