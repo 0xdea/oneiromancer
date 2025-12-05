@@ -26,7 +26,8 @@ results of the analysis.
 * Easy integration with the pseudocode extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 * Code description, recommended function name, and variable renaming suggestions are printed on the terminal.
 * Improved pseudocode of each analyzed function is saved in a separate file for easy inspection.
-* External crates can invoke `analyze_code` or `analyze_file` to analyze pseudocode and then process analysis results.
+* External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudocode and then process analysis
+  results.
 
 ## Blog post
 
@@ -99,13 +100,13 @@ cargo build --release
 * Ubuntu Linux 24.04.2 LTS with Ollama 0.5.11
 * Microsoft Windows 11 23H2 with Ollama 0.5.11
 
-## Changelog
-
-* [CHANGELOG.md](CHANGELOG.md)
-
 ## Credits
 
 * Chris Bellows (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+
+## Changelog
+
+* [CHANGELOG.md](CHANGELOG.md)
 
 ## TODO
 
