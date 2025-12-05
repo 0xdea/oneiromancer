@@ -396,23 +396,24 @@ mod tests {
     }
 
     #[test]
-    fn run_works() {
+    fn run_works() -> anyhow::Result<()> {
         // Arrange
-        let tmpdir = tempfile::tempdir().unwrap();
+        let tmpdir = tempfile::tempdir()?;
         let filepath = tmpdir.path().join("test.c");
-        fs::copy(VALID_PSEUDOCODE_FILEPATH, &filepath).unwrap();
-
-        // Act
-        let result = run(&filepath);
+        fs::copy(VALID_PSEUDOCODE_FILEPATH, &filepath)?;
         let outfile = tmpdir.path().join("test.out.c");
 
+        // Act
+        run(&filepath)?;
+
         // Assert
-        assert!(result.is_ok(), "run failed");
         assert!(outfile.exists(), "output file {outfile:?} does not exist");
         assert!(
-            outfile.metadata().unwrap().len() > 0,
+            outfile.metadata()?.len() > 0,
             "output file {outfile:?} is empty"
         );
+
+        Ok(())
     }
 
     #[test]
@@ -421,10 +422,10 @@ mod tests {
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
         File::create(&filepath).unwrap();
+        let outfile = tmpdir.path().join("test.out.c");
 
         // Act
         let result = run(&filepath);
-        let outfile = tmpdir.path().join("test.out.c");
 
         // Assert
         assert!(result.is_err(), "run succeeded unexpectedly");
@@ -436,10 +437,10 @@ mod tests {
         // Arrange
         let tmpdir = tempfile::tempdir().unwrap();
         let filepath = tmpdir.path().join("test.c");
+        let outfile = tmpdir.path().join("test.out.c");
 
         // Act
         let result = run(&filepath);
-        let outfile = tmpdir.path().join("test.out.c");
 
         // Assert
         assert!(result.is_err(), "run succeeded unexpectedly");
