@@ -237,6 +237,10 @@ mod tests {
 
         // Assert
         assert!(result.is_err(), "request succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
     }
 
     #[test]
@@ -252,6 +256,10 @@ mod tests {
 
         // Assert
         assert!(result.is_err(), "request succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
     }
 
     #[test]
@@ -314,6 +322,10 @@ mod tests {
 
         // Assert
         assert!(result.is_err(), "analysis succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::ResponseParseFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
     }
 
     #[test]
@@ -361,6 +373,10 @@ mod tests {
 
         // Assert
         assert!(result.is_err(), "analysis succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::ResponseParseFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
     }
 
     #[test]
@@ -373,6 +389,10 @@ mod tests {
 
         // Assert
         assert!(result.is_err(), "analysis succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::FileReadFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
     }
 
     #[test]
