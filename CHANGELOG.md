@@ -59,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Create an `OneiromancerConfig` struct to simplify the public API in `analyze_code` and `analyze_file`.
-* Use `impl AsRef<str>` as `pseudo_code` type in `analyze_code`.
+* Use `impl AsRef<str>` as `pseudocode` type in `analyze_code`.
 * Improve documentation.
 
 ### Fixed
