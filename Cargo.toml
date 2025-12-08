@@ -1,6 +1,6 @@
 [package]
 name = "oneiromancer"
-version = "0.6.6"
+version = "0.6.7-alpha"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2024"
 description = "Reverse engineering assistant that uses a locally running LLM to aid with pseudocode analysis."
