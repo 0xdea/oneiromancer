@@ -210,7 +210,7 @@ mod tests {
     const EMPTY_PSEUDOCODE_FILEPATH: &str = "./tests/data/empty.c";
 
     #[test]
-    fn ollama_request_works() {
+    fn ollama_request_works() -> anyhow::Result<()> {
         // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
@@ -218,10 +218,12 @@ mod tests {
 
         // Act
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudocode);
-        let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
+        let response = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))?;
 
         // Assert
-        assert!(!result.unwrap().response.is_empty(), "response is empty");
+        assert!(!response.response.is_empty(), "response is empty");
+
+        Ok(())
     }
 
     #[test]
@@ -263,7 +265,7 @@ mod tests {
     }
 
     #[test]
-    fn ollama_request_with_empty_prompt_returns_an_empty_response() {
+    fn ollama_request_with_empty_prompt_returns_an_empty_response() -> anyhow::Result<()> {
         // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
@@ -271,14 +273,16 @@ mod tests {
 
         // Act
         let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudocode);
-        let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
+        let response = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))?;
 
         // Assert
-        assert!(result.unwrap().response.is_empty(), "response is not empty");
+        assert!(response.response.is_empty(), "response is not empty");
+
+        Ok(())
     }
 
     #[test]
-    fn analyze_code_works() {
+    fn analyze_code_works() -> anyhow::Result<()> {
         // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
@@ -288,28 +292,26 @@ mod tests {
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
-        let result = analyze_code(pseudocode, &config);
+        let results = analyze_code(pseudocode, &config)?;
 
         // Assert
-        assert!(
-            !result.unwrap().comment().is_empty(),
-            "description is empty"
-        );
+        assert!(!results.comment().is_empty(), "description is empty");
+
+        Ok(())
     }
 
     #[test]
-    fn analyze_code_with_default_parameters_works() {
+    fn analyze_code_with_default_parameters_works() -> anyhow::Result<()> {
         // Arrange
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
-        let result = analyze_code(pseudocode, &OneiromancerConfig::default());
+        let results = analyze_code(pseudocode, &OneiromancerConfig::default())?;
 
         // Assert
-        assert!(
-            !result.unwrap().comment().is_empty(),
-            "description is empty"
-        );
+        assert!(!results.comment().is_empty(), "description is empty");
+
+        Ok(())
     }
 
     #[test]
@@ -329,7 +331,7 @@ mod tests {
     }
 
     #[test]
-    fn analyze_file_works() {
+    fn analyze_file_works() -> anyhow::Result<()> {
         // Arrange
         let baseurl = env::var("OLLAMA_BASEURL");
         let model = env::var("OLLAMA_MODEL");
@@ -339,28 +341,26 @@ mod tests {
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
         // Act
-        let result = analyze_file(filepath, &config);
+        let results = analyze_file(filepath, &config)?;
 
         // Assert
-        assert!(
-            !result.unwrap().comment().is_empty(),
-            "description is empty"
-        );
+        assert!(!results.comment().is_empty(), "description is empty");
+
+        Ok(())
     }
 
     #[test]
-    fn analyze_file_with_default_parameters_works() {
+    fn analyze_file_with_default_parameters_works() -> anyhow::Result<()> {
         // Arrange
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
         // Act
-        let result = analyze_file(filepath, &OneiromancerConfig::default());
+        let results = analyze_file(filepath, &OneiromancerConfig::default())?;
 
         // Assert
-        assert!(
-            !result.unwrap().comment().is_empty(),
-            "description is empty"
-        );
+        assert!(!results.comment().is_empty(), "description is empty");
+
+        Ok(())
     }
 
     #[test]
@@ -419,7 +419,7 @@ mod tests {
     #[test]
     fn run_with_empty_file_fails() {
         // Arrange
-        let tmpdir = tempfile::tempdir().unwrap();
+        let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");
         let filepath = tmpdir.path().join("test.c");
         File::create(&filepath).unwrap();
         let outfile = tmpdir.path().join("test.out.c");
@@ -435,7 +435,7 @@ mod tests {
     #[test]
     fn run_with_invalid_input_filepath_fails() {
         // Arrange
-        let tmpdir = tempfile::tempdir().unwrap();
+        let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");
         let filepath = tmpdir.path().join("test.c");
         let outfile = tmpdir.path().join("test.out.c");
 
