@@ -212,13 +212,13 @@ mod tests {
     #[test]
     fn ollama_request_works() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL");
-        let model = env::var("OLLAMA_MODEL");
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
-        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudocode);
-        let response = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))?;
+        let request = OllamaRequest::new(&model, pseudocode);
+        let response = request.send(&baseurl)?;
 
         // Assert
         assert!(!response.response.is_empty(), "response is empty");
@@ -230,11 +230,11 @@ mod tests {
     fn ollama_request_with_wrong_url_fails() {
         // Arrange
         let baseurl = "http://127.0.0.1:6666";
-        let model = env::var("OLLAMA_MODEL");
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
-        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudocode);
+        let request = OllamaRequest::new(&model, pseudocode);
         let result = request.send(baseurl);
 
         // Assert
@@ -248,13 +248,13 @@ mod tests {
     #[test]
     fn ollama_request_with_wrong_model_fails() {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL");
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
         let model = "doesntexist";
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
         let request = OllamaRequest::new(model, pseudocode);
-        let result = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL));
+        let result = request.send(&baseurl);
 
         // Assert
         assert!(result.is_err(), "request succeeded unexpectedly");
@@ -267,13 +267,13 @@ mod tests {
     #[test]
     fn ollama_request_with_empty_prompt_returns_an_empty_response() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL");
-        let model = env::var("OLLAMA_MODEL");
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
         let pseudocode = "";
 
         // Act
-        let request = OllamaRequest::new(model.as_deref().unwrap_or(OLLAMA_MODEL), pseudocode);
-        let response = request.send(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))?;
+        let request = OllamaRequest::new(&model, pseudocode);
+        let response = request.send(&baseurl)?;
 
         // Assert
         assert!(response.response.is_empty(), "response is not empty");
@@ -284,11 +284,11 @@ mod tests {
     #[test]
     fn analyze_code_works() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL");
-        let model = env::var("OLLAMA_MODEL");
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
         let config = OneiromancerConfig::new()
-            .with_baseurl(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))
-            .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
+            .with_baseurl(baseurl)
+            .with_model(model);
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
@@ -333,11 +333,11 @@ mod tests {
     #[test]
     fn analyze_file_works() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL");
-        let model = env::var("OLLAMA_MODEL");
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
         let config = OneiromancerConfig::new()
-            .with_baseurl(baseurl.as_deref().unwrap_or(OLLAMA_BASEURL))
-            .with_model(model.as_deref().unwrap_or(OLLAMA_MODEL));
+            .with_baseurl(baseurl)
+            .with_model(model);
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
         // Act
