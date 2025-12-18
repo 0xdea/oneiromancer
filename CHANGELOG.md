@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Improve the `usage` function.
-* Improve tests.
+* Improve command line parsing, error handling, and usage messages.
+* Improve tests and documentation.
 * Update dependencies.
 
 ## [0.6.6] - 2025-12-06
