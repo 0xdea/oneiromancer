@@ -94,8 +94,9 @@ cargo build --release
 
 *Note: for best results, submit one function at a time to be analyzed by the LLM.*
 
-## Tested on
+## Compatibility
 
+Tested on:
 * Apple macOS Sequoia 15.2 with Ollama 0.5.11
 * Ubuntu Linux 24.04.2 LTS with Ollama 0.5.11
 * Microsoft Windows 11 23H2 with Ollama 0.5.11
