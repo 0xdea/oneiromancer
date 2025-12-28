@@ -3,6 +3,7 @@
 [![](https://img.shields.io/github/stars/0xdea/oneiromancer.svg?style=flat&color=yellow)](https://github.com/0xdea/oneiromancer)
 [![](https://img.shields.io/crates/v/oneiromancer?style=flat&color=green)](https://crates.io/crates/oneiromancer)
 [![](https://img.shields.io/crates/d/oneiromancer?style=flat&color=red)](https://crates.io/crates/oneiromancer)
+[![](https://img.shields.io/badge/ollama-0.5.11-violet)](https://ollama.com/)
 [![](https://img.shields.io/badge/twitter-%400xdea-blue.svg)](https://twitter.com/0xdea)
 [![](https://img.shields.io/badge/mastodon-%40raptor-purple.svg)](https://infosec.exchange/@raptor)
 [![build](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml/badge.svg)](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml)
