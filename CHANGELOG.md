@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Improve command line parsing, error handling, and usage messages.
 * Improve tests and documentation.
+* Update copyright notice.
 * Update dependencies.
 
 ## [0.6.6] - 2025-12-06

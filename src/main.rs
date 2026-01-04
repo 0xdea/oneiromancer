@@ -7,8 +7,8 @@ const PROGRAM: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() {
-    println!("{PROGRAM} {VERSION} - GenAI tool for pseudocode analysis");
-    println!("Copyright (c) 2025 Marco Ivaldi <raptor@0xdeadbeef.info>");
+    println!("{PROGRAM} {VERSION} - GenAI assistant for pseudocode analysis");
+    println!("Copyright (c) 2025-2026 Marco Ivaldi <raptor@0xdeadbeef.info>");
     println!();
 
     // Parse command line arguments
