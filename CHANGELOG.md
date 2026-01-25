@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Introduce the `AUTHORS` constant.
+
 ### Changed
 
 * Improve command line parsing, error handling, and usage messages.

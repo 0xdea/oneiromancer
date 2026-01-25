@@ -5,10 +5,11 @@ use std::{env, process};
 
 const PROGRAM: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 
 fn main() {
     println!("{PROGRAM} {VERSION} - GenAI assistant for pseudocode analysis");
-    println!("Copyright (c) 2025-2026 Marco Ivaldi <raptor@0xdeadbeef.info>");
+    println!("Copyright (c) 2025-2026 {AUTHORS}");
     println!();
 
     // Parse command line arguments
