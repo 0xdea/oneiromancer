@@ -246,10 +246,48 @@ mod tests {
     }
 
     #[test]
+    fn ollama_request_with_empty_url_fails() {
+        // Arrange
+        let baseurl = "";
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let pseudocode = VALID_PSEUDOCODE;
+
+        // Act
+        let request = OllamaRequest::new(&model, pseudocode);
+        let result = request.send(baseurl);
+
+        // Assert
+        assert!(result.is_err(), "request succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
+    }
+
+    #[test]
     fn ollama_request_with_wrong_model_fails() {
         // Arrange
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
         let model = "doesntexist";
+        let pseudocode = VALID_PSEUDOCODE;
+
+        // Act
+        let request = OllamaRequest::new(model, pseudocode);
+        let result = request.send(&baseurl);
+
+        // Assert
+        assert!(result.is_err(), "request succeeded unexpectedly");
+        assert!(
+            matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+            "wrong error type returned: {result:?}"
+        );
+    }
+
+    #[test]
+    fn ollama_request_with_empty_model_fails() {
+        // Arrange
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let model = "";
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
