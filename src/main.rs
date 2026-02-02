@@ -1,48 +1,48 @@
 //! main.rs
 
+use std::env;
+use std::ffi::OsStr;
 use std::path::Path;
-use std::{env, process};
+use std::process::ExitCode;
 
 const PROGRAM: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 
-fn main() {
-    println!("{PROGRAM} {VERSION} - GenAI assistant for pseudocode analysis");
-    println!("Copyright (c) 2025-2026 {AUTHORS}");
-    println!();
+fn main() -> ExitCode {
+    eprintln!("{PROGRAM} {VERSION} - GenAI assistant for pseudocode analysis");
+    eprintln!("Copyright (c) 2025-2026 {AUTHORS}");
+    eprintln!();
 
     // Parse command line arguments
-    let args = env::args().collect::<Vec<_>>();
+    let mut args = env::args_os();
+    let argv0 = args.next().unwrap_or_else(|| PROGRAM.into());
+    let is_help = |a: &OsStr| a == OsStr::new("-h") || a == OsStr::new("--help");
 
-    let prog = Path::new(&args[0])
+    let prog = Path::new(&argv0)
         .file_name()
-        .unwrap()
-        .to_str()
+        .and_then(|s| s.to_str())
         .unwrap_or(PROGRAM);
 
-    let filename = match args.len() {
-        2 => &args[1],
-        _ => usage(prog),
+    let filename = match (args.next(), args.next()) {
+        (Some(arg), None) if !is_help(&arg) => arg,
+        _ => return usage(prog),
     };
-    if filename.starts_with('-') {
-        usage(prog);
-    }
 
     // Let's do it
-    match oneiromancer::run(Path::new(filename)) {
-        Ok(()) => (),
+    match oneiromancer::run(Path::new(&filename)) {
+        Ok(()) => ExitCode::SUCCESS,
         Err(err) => {
             eprintln!("\n[!] Error: {err:#}");
-            process::exit(1);
+            ExitCode::FAILURE
         }
     }
 }
 
 /// Print usage information and exit
-fn usage(prog: &str) -> ! {
-    println!("Usage:");
-    println!("{prog} <target_file>.c");
+fn usage(prog: &str) -> ExitCode {
+    eprintln!("Usage:");
+    eprintln!("{prog} <target_file>.c");
 
-    process::exit(0);
+    ExitCode::FAILURE
 }
