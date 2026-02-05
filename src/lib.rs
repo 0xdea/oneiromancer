@@ -28,9 +28,8 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     println!("[*] Analyzing pseudocode in `{}`", filepath.display());
     let file =
         File::open(filepath).with_context(|| format!("Failed to open `{}`", filepath.display()))?;
-    let mut reader = BufReader::new(file);
     let mut pseudocode = String::new();
-    reader
+    BufReader::new(file)
         .read_to_string(&mut pseudocode)
         .with_context(|| format!("Failed to read from `{}`", filepath.display()))?;
 

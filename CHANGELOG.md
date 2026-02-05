@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Improve buffered reader usage.
 * Improve command line parsing, error handling, and usage messages.
 * Improve tests and documentation.
 * Update copyright notice.
