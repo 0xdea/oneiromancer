@@ -55,14 +55,16 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     );
     print!("{function_description}");
 
-    // Apply variable renaming suggestions
+    // Apply variable renaming suggestions (this assumes LLM-suggested names are collision-safe 
+    // and thus the renaming order will not corrupt later replacements)
     println!("[-] Variable renaming suggestions:");
     for variable in analysis_results.variables() {
         let original_name = variable.original_name();
         let new_name = variable.new_name();
         println!("    {original_name}\t-> {new_name}");
 
-        let re = Regex::new(&format!(r"\b{original_name}\b")).context("Failed to compile regex")?;
+        let re = Regex::new(&format!(r"\b{}\b", regex::escape(original_name)))
+            .context("Failed to compile regex")?;
         pseudocode = re.replace_all(&pseudocode, new_name).into();
     }
 
