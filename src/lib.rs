@@ -79,9 +79,9 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         File::create_new(&outfilepath)
             .with_context(|| format!("Failed to create `{}`", outfilepath.display()))?,
     );
-    writer.write_all(function_description.as_bytes())?;
-    writer.write_all(pseudocode.as_bytes())?;
-    writer.flush()?;
+    writer.write_all(function_description.as_bytes()).context("Failed to write to file")?;
+    writer.write_all(pseudocode.as_bytes()).context("Failed to write to file")?;
+    writer.flush().context("Failed to flush the output stream")?;
 
     println!("[+] Done analyzing pseudocode");
     Ok(())

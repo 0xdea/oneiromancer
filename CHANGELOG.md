@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Introduce the `AUTHORS` constant.
+* Add context to errors in file writing.
 * Add two tests for `OllamaRequest`.
 
 ### Changed

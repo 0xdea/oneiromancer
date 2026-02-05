@@ -118,4 +118,5 @@ Tested on:
 * Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
 * Use custom types in the public API and implement a provider abstraction.
 * Implement a "minority report" protocol (i.e., make three queries and select the best responses).
+* Consider a refactor of variable renaming to prevent potential code corruption.
 * Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.
