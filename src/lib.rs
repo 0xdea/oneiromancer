@@ -191,9 +191,8 @@ pub fn analyze_file(
     // Open target pseudocode file for reading
     // Note: for easier testing, we could use a generic function together with `std::io::Cursor`
     let file = File::open(&filepath)?;
-    let mut reader = BufReader::new(file);
     let mut pseudocode = String::new();
-    reader.read_to_string(&mut pseudocode)?;
+    BufReader::new(file).read_to_string(&mut pseudocode)?;
 
     // Analyze `pseudocode`
     analyze_code(&pseudocode, config)
