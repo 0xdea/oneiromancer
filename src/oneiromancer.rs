@@ -71,8 +71,8 @@ impl OneiromancerConfig {
 impl Default for OneiromancerConfig {
     fn default() -> Self {
         Self {
-            baseurl: env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string()),
-            model: env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string()),
+            baseurl: env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned()),
+            model: env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned()),
         }
     }
 }
