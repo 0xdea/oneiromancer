@@ -218,8 +218,8 @@ mod tests {
     #[test]
     fn ollama_request_works() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
-        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
@@ -236,7 +236,7 @@ mod tests {
     fn ollama_request_with_wrong_url_fails() {
         // Arrange
         let baseurl = "http://127.0.0.1:6666";
-        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
@@ -255,7 +255,7 @@ mod tests {
     fn ollama_request_with_empty_url_fails() {
         // Arrange
         let baseurl = "";
-        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act
@@ -273,7 +273,7 @@ mod tests {
     #[test]
     fn ollama_request_with_wrong_model_fails() {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = "doesntexist";
         let pseudocode = VALID_PSEUDOCODE;
 
@@ -292,7 +292,7 @@ mod tests {
     #[test]
     fn ollama_request_with_empty_model_fails() {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = "";
         let pseudocode = VALID_PSEUDOCODE;
 
@@ -311,8 +311,8 @@ mod tests {
     #[test]
     fn ollama_request_with_empty_prompt_returns_an_empty_response() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
-        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = "";
 
         // Act
@@ -328,8 +328,8 @@ mod tests {
     #[test]
     fn analyze_code_works() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
-        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let config = OneiromancerConfig::new()
             .with_baseurl(baseurl)
             .with_model(model);
@@ -377,8 +377,8 @@ mod tests {
     #[test]
     fn analyze_file_works() -> anyhow::Result<()> {
         // Arrange
-        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_string());
-        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_string());
+        let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+        let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let config = OneiromancerConfig::new()
             .with_baseurl(baseurl)
             .with_model(model);
@@ -461,11 +461,12 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::expect_used, reason = "tests can use `expect`")]
     fn run_with_empty_file_fails() {
         // Arrange
         let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");
         let filepath = tmpdir.path().join("test.c");
-        File::create(&filepath).unwrap();
+        File::create(&filepath).expect("failed to create test file");
         let outfile = tmpdir.path().join("test.out.c");
 
         // Act
@@ -477,6 +478,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::expect_used, reason = "tests can use `expect`")]
     fn run_with_invalid_input_filepath_fails() {
         // Arrange
         let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");

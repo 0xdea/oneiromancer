@@ -12,6 +12,7 @@ pub const OLLAMA_MODEL: &str = "aidapal";
 
 /// Oneiromancer error type
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum OneiromancerError {
     /// Failure in reading the input file
     #[error(transparent)]
@@ -27,11 +28,12 @@ pub enum OneiromancerError {
 /// Oneiromancer configuration
 #[derive(Debug, Clone)]
 pub struct OneiromancerConfig {
+    /// Ollama API base URL
     baseurl: String,
+    /// Ollama model to use for analysis
     model: String,
 }
 
-#[allow(clippy::missing_const_for_fn)]
 impl OneiromancerConfig {
     /// Create a new `OneiromancerConfig` with default values
     #[must_use]
@@ -88,7 +90,6 @@ pub struct OneiromancerResults {
     variables: Vec<Variable>,
 }
 
-#[allow(clippy::missing_const_for_fn)]
 impl OneiromancerResults {
     /// Get the recommended function name
     #[must_use]
@@ -118,7 +119,6 @@ pub struct Variable {
     new_name: String,
 }
 
-#[allow(clippy::missing_const_for_fn)]
 impl Variable {
     /// Get the original name of the variable
     #[must_use]

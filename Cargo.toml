@@ -1,6 +1,6 @@
 [package]
 name = "oneiromancer"
-version = "0.6.8-alpha"
+version = "0.7.0-alpha"
 authors = ["Marco Ivaldi <raptor@0xdeadbeef.info>"]
 edition = "2024"
 description = "Reverse engineering assistant that uses a locally running LLM to aid with pseudocode analysis."
@@ -29,7 +29,22 @@ all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
 cargo = { level = "warn", priority = -1 }
-doc_markdown = "allow"
+# enable some restrictions
+unwrap_used = "warn"
+expect_used = "warn"
+panic = "warn"
+todo = "warn"
+dbg_macro = "warn"
+exhaustive_enums = "warn"
+redundant_type_annotations = "warn"
+str_to_string = "warn"
+missing_docs_in_private_items = "warn"
+unnecessary_safety_comment = "warn"
+unnecessary_safety_doc = "warn"
+multiple_unsafe_ops_per_block = "warn"
+allow_attributes_without_reason = "warn"
+# allow some lints
+# doc_markdown = "allow"
 multiple_crate_versions = "allow"
 
 [lints.rust]

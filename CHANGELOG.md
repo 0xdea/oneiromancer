@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Enable some lints in the `clippy::restrictions` category.
+
 ### Changed
 
 * Apply idalib-rust-style guidelines.
 * Optimize release profile options.
+* Improve doc comments.
 * Update dependencies.
 
 ## [0.6.7] - 2026-02-05
