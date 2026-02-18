@@ -44,7 +44,7 @@ unnecessary_safety_doc = "warn"
 multiple_unsafe_ops_per_block = "warn"
 allow_attributes_without_reason = "warn"
 # allow some lints
-# doc_markdown = "allow"
+doc_markdown = "allow"
 multiple_crate_versions = "allow"
 
 [lints.rust]
