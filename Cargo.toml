@@ -24,32 +24,6 @@ regex = "1.11"
 [dev-dependencies]
 tempfile = "3.19"
 
-[lints.clippy]
-all = { level = "warn", priority = -1 }
-pedantic = { level = "warn", priority = -1 }
-nursery = { level = "warn", priority = -1 }
-cargo = { level = "warn", priority = -1 }
-# enable some restrictions
-unwrap_used = "warn"
-expect_used = "warn"
-panic = "warn"
-todo = "warn"
-dbg_macro = "warn"
-exhaustive_enums = "warn"
-redundant_type_annotations = "warn"
-str_to_string = "warn"
-missing_docs_in_private_items = "warn"
-unnecessary_safety_comment = "warn"
-unnecessary_safety_doc = "warn"
-multiple_unsafe_ops_per_block = "warn"
-allow_attributes_without_reason = "warn"
-# allow some lints
-doc_markdown = "allow"
-multiple_crate_versions = "allow"
-
-[lints.rust]
-missing_docs = { level = "warn" }
-
 [profile.release]
 strip = true
 lto = true
@@ -59,3 +33,48 @@ panic = "abort"
 
 [profile.dev]
 debug = false
+
+[lints.rust]
+missing_docs = { level = "warn" }
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+# enable some restriction lints
+unwrap_used = "warn"
+expect_used = "warn"
+panic = "warn"
+todo = "warn"
+unimplemented = "warn"
+unreachable = "warn"
+dbg_macro = "warn"
+use_debug = "warn"
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+missing_assert_message = "warn"
+exhaustive_enums = "warn"
+exhaustive_structs = "warn"
+partial_pub_fields = "warn"
+redundant_type_annotations = "warn"
+str_to_string = "warn"
+create_dir = "warn"
+verbose_file_reads = "warn"
+multiple_inherent_impl = "warn"
+renamed_function_params = "warn"
+unused_trait_names = "warn"
+self_named_module_files = "warn"
+tests_outside_test_module = "warn"
+needless_raw_strings = "warn"
+unseparated_literal_suffix = "warn"
+semicolon_inside_block = "warn"
+missing_docs_in_private_items = "warn"
+doc_paragraphs_missing_punctuation = "warn"
+undocumented_unsafe_blocks = "warn"
+unnecessary_safety_comment = "warn"
+unnecessary_safety_doc = "warn"
+multiple_unsafe_ops_per_block = "warn"
+# allow some lints
+multiple_crate_versions = "allow"
+significant_drop_tightening = "allow"

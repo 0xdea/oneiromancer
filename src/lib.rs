@@ -2,10 +2,10 @@
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
 use std::fs::File;
-use std::io::{BufReader, BufWriter, Read, Write};
+use std::io::{BufReader, BufWriter, Read as _, Write as _};
 use std::path::Path;
 
-use anyhow::Context;
+use anyhow::Context as _;
 use regex::Regex;
 use spinners::{Spinner, Spinners};
 
@@ -461,7 +461,7 @@ mod tests {
     }
 
     #[test]
-    #[allow(clippy::expect_used, reason = "tests can use `expect`")]
+    #[expect(clippy::expect_used, reason = "tests can use `expect`")]
     fn run_with_empty_file_fails() {
         // Arrange
         let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");
@@ -478,7 +478,7 @@ mod tests {
     }
 
     #[test]
-    #[allow(clippy::expect_used, reason = "tests can use `expect`")]
+    #[expect(clippy::expect_used, reason = "tests can use `expect`")]
     fn run_with_invalid_input_filepath_fails() {
         // Arrange
         let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");

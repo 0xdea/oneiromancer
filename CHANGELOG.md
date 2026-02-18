@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Enable some lints in the `clippy::restrictions` category.
+* Enable some lints in the `clippy::restriction` category.
 
 ### Changed
 
