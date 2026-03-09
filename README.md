@@ -93,7 +93,8 @@ cargo build --release
    code <target_file>.out.c
    ```
 
-*Note: for best results, submit one function at a time to be analyzed by the LLM.*
+> [!TIP]
+> For best results, submit one function at a time to be analyzed by the LLM.
 
 ## Compatibility
 
