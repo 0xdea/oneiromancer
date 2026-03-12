@@ -22,24 +22,24 @@ results of the analysis.
 
 ## Features
 
-* Cross-platform support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on
+- Cross-platform support for the fine-tuned LLM [aidapal](https://huggingface.co/AverageBusinessUser/aidapal) based on
   `mistral-7b-instruct`.
-* Easy integration with the pseudocode extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
-* Code description, recommended function name, and variable renaming suggestions are printed on the terminal.
-* Improved pseudocode of each analyzed function is saved in a separate file for easy inspection.
-* External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudocode and then process analysis
+- Easy integration with the pseudocode extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
+- Code description, recommended function name, and variable renaming suggestions are printed on the terminal.
+- Improved pseudocode of each analyzed function is saved in a separate file for easy inspection.
+- External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudocode and then process analysis
   results.
 
 ## Blog post
 
-* <https://hnsecurity.it/blog/aiding-reverse-engineering-with-rust-and-a-local-llm>
+- <https://hnsecurity.it/blog/aiding-reverse-engineering-with-rust-and-a-local-llm>
 
 ## See also
 
-* <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>
-* <https://huggingface.co/AverageBusinessUser/aidapal>
-* <https://github.com/atredispartners/aidapal>
-* <https://plugins.hex-rays.com/atredispartners/aidapal>
+- <https://www.atredis.com/blog/2024/6/3/how-to-train-your-large-language-model>
+- <https://huggingface.co/AverageBusinessUser/aidapal>
+- <https://github.com/atredispartners/aidapal>
+- <https://plugins.hex-rays.com/atredispartners/aidapal>
 
 ## Installing
 
@@ -100,24 +100,24 @@ cargo build --release
 
 Tested on:
 
-* Apple macOS Sequoia 15.2 with Ollama 0.13.5
-* Ubuntu Linux 24.04.2 LTS with Ollama 0.13.5
-* Microsoft Windows 11 23H2 with Ollama 0.13.5
+- Apple macOS Sequoia 15.2 with Ollama 0.13.5
+- Ubuntu Linux 24.04.2 LTS with Ollama 0.13.5
+- Microsoft Windows 11 23H2 with Ollama 0.13.5
 
 ## Credits
 
-* Chris Bellows (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
+- Chris Bellows (@AverageBusinessUser) at Atredis Partners for his fine-tuned LLM `aidapal` <3
 
 ## Changelog
 
-* [CHANGELOG.md](CHANGELOG.md)
+- [CHANGELOG.md](CHANGELOG.md)
 
 ## TODO
 
-* Improve output file handling with versioning and/or an output directory.
-* Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
-* Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
-* Use custom types in the public API and implement a provider abstraction.
-* Implement a "minority report" protocol (i.e., make three queries and select the best responses).
-* Consider a refactor of variable renaming to prevent potential code corruption.
-* Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.
+- Improve output file handling with versioning and/or an output directory.
+- Implement other features of the IDAPython `aidapal` IDA Pro plugin (e.g., context).
+- Integrate with [haruspex](https://github.com/0xdea/haruspex) and [idalib](https://github.com/binarly-io/idalib).
+- Use custom types in the public API and implement a provider abstraction.
+- Implement a "minority report" protocol (i.e., make three queries and select the best responses).
+- Consider a refactor of variable renaming to prevent potential code corruption.
+- Investigate other use cases for the `aidapal` LLM and implement a modular architecture to plug in custom LLMs.
