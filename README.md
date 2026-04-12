@@ -3,7 +3,7 @@
 [![](https://img.shields.io/github/stars/0xdea/oneiromancer.svg?style=flat&color=yellow)](https://github.com/0xdea/oneiromancer)
 [![](https://img.shields.io/crates/v/oneiromancer?style=flat&color=green)](https://crates.io/crates/oneiromancer)
 [![](https://img.shields.io/crates/d/oneiromancer?style=flat&color=red)](https://crates.io/crates/oneiromancer)
-[![](https://img.shields.io/badge/ollama-0.20.4-violet)](https://ollama.com/)
+[![](https://img.shields.io/badge/ollama-0.20.5-violet)](https://ollama.com/)
 [![](https://img.shields.io/badge/twitter-%400xdea-blue.svg)](https://twitter.com/0xdea)
 [![](https://img.shields.io/badge/mastodon-%40raptor-purple.svg)](https://infosec.exchange/@raptor)
 [![build](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml/badge.svg)](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml)
@@ -100,9 +100,9 @@ cargo build --release
 
 Tested on:
 
-- Apple macOS Sequoia 15.2 with Ollama 0.20.4
-- Ubuntu Linux 24.04.2 LTS with Ollama 0.20.4
-- Microsoft Windows 11 23H2 with Ollama 0.20.4
+- Apple macOS Sequoia 15.2 with Ollama 0.20.5
+- Ubuntu Linux 24.04.2 LTS with Ollama 0.20.5
+- Microsoft Windows 11 23H2 with Ollama 0.20.5
 
 ## Credits
 
