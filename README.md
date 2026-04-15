@@ -110,7 +110,7 @@ Tested with Ollama 0.20.7 on:
 
 ## Changelog
 
-- [CHANGELOG.md](CHANGELOG.md)
+- [CHANGELOG.md](https://github.com/0xdea/oneiromancer/blob/master/CHANGELOG.md)
 
 ## TODO
 

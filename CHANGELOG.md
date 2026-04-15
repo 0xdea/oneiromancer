@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update dependencies.
 - Update documentation.
 
+### Fixed
+
+- Fix CHANGELOG link in README.
+
 ### Security
 
 - Pin action references to hashes and disable credential persistence in GitHub workflows.
