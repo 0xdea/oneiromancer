@@ -98,7 +98,7 @@ cargo build --release
 
 ## Compatibility
 
-Tested with Ollama 0.20.7 on:
+Tested with Ollama 0.21.2 on:
 
 - Apple macOS Tahoe 26.4.1
 - Ubuntu Linux 24.04.2 LTS
