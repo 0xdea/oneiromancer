@@ -100,7 +100,7 @@ cargo build --release
 
 Tested with Ollama 0.20.7 on:
 
-- Apple macOS Sequoia 15.7.4
+- Apple macOS Tahoe 26.4.1
 - Ubuntu Linux 24.04.2 LTS
 - Microsoft Windows 11 23H2
 
