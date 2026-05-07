@@ -34,10 +34,13 @@ panic = "abort"
 [profile.dev]
 debug = false
 
-[lints.rust]
+[lints]
+workspace = true
+
+[workspace.lints.rust]
 missing_docs = { level = "warn" }
 
-[lints.clippy]
+[workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
@@ -54,6 +57,10 @@ use_debug = "warn"
 allow_attributes = "warn"
 allow_attributes_without_reason = "warn"
 missing_assert_message = "warn"
+unused_result_ok = "warn"
+let_underscore_must_use = "warn"
+map_err_ignore = "warn"
+assertions_on_result_states = "warn"
 exhaustive_enums = "warn"
 exhaustive_structs = "warn"
 partial_pub_fields = "warn"
@@ -74,6 +81,8 @@ undocumented_unsafe_blocks = "warn"
 unnecessary_safety_comment = "warn"
 unnecessary_safety_doc = "warn"
 multiple_unsafe_ops_per_block = "warn"
+mem_forget = "warn"
+rc_mutex = "warn"
 # allow some lints
 doc_markdown = "allow"
 multiple_crate_versions = "allow"
