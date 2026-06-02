@@ -248,16 +248,18 @@ mod tests {
         let long_comment = "This is a very long function description that must be wrapped \
             because it far exceeds the seventy-six column limit imposed by the Phrack-style \
             formatting, so textwrap should split it across multiple lines.";
-        let json = format!(
-            r#"{{"function_name":"foo","comment":"{long_comment}","variables":[]}}"#
-        );
+        let json =
+            format!(r#"{{"function_name":"foo","comment":"{long_comment}","variables":[]}}"#);
         let results: OneiromancerResults = serde_json::from_str(&json)?;
         let desc = format_description(&results);
         for line in desc.lines() {
             assert!(line.len() <= 76, "line exceeds 76 columns: {line:?}");
         }
         let comment_lines = desc.lines().filter(|l| l.starts_with(" * ")).count();
-        assert!(comment_lines > 2, "comment was not wrapped into multiple lines");
+        assert!(
+            comment_lines > 2,
+            "comment was not wrapped into multiple lines"
+        );
         Ok(())
     }
 
@@ -556,7 +558,10 @@ mod tests {
 
         // Assert
         assert!(result.is_err(), "run succeeded unexpectedly");
-        assert!(outfile.metadata()?.len() == 0, "output file was overwritten");
+        assert!(
+            outfile.metadata()?.len() == 0,
+            "output file was overwritten"
+        );
         Ok(())
     }
 
