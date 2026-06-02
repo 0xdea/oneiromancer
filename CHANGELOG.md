@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add unit tests for helper functions.
+
 ### Changed
 
+- Extract `format_description` and `apply_renames` helper functions.
 - Fix some zizmor lints and update CI accordingly.
 
 ## [0.7.3] - 2026-05-22

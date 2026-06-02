@@ -43,29 +43,21 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     sp.stop_with_message("[+] Successfully analyzed pseudocode".into());
     println!();
 
-    // Create a function description in Phrack-style, wrapping to 76 columns
-    let options = textwrap::Options::new(76)
-        .initial_indent(" * ")
-        .subsequent_indent(" * ");
-    let function_description = format!(
-        "/*\n * {}()\n *\n{}\n */\n\n",
-        analysis_results.function_name(),
-        textwrap::fill(analysis_results.comment(), &options)
-    );
+    // Create a function description
+    let function_description = format_description(&analysis_results);
     print!("{function_description}");
 
-    // Apply variable renaming suggestions (this assumes LLM-suggested names are collision-safe
-    // and thus the renaming order will not corrupt later replacements)
+    // Apply variable renaming suggestions
     println!("[-] Variable renaming suggestions:");
     for variable in analysis_results.variables() {
-        let original_name = variable.original_name();
-        let new_name = variable.new_name();
-        println!("    {original_name}\t-> {new_name}");
-
-        let re = Regex::new(&format!(r"\b{}\b", regex::escape(original_name)))
-            .context("Failed to compile regex")?;
-        pseudocode = re.replace_all(&pseudocode, new_name).into();
+        println!(
+            "    {}\t-> {}",
+            variable.original_name(),
+            variable.new_name()
+        );
     }
+    let pseudocode = apply_renames(&pseudocode, analysis_results.variables())
+        .context("Failed to apply variable renames")?;
 
     // Save the improved pseudocode to an output file
     let outfilepath = filepath.with_extension("out.c");
@@ -204,6 +196,30 @@ pub fn analyze_file(
     analyze_code(&pseudocode, config)
 }
 
+/// Format `results` as a Phrack-style block comment, wrapping to 76 columns
+fn format_description(results: &OneiromancerResults) -> String {
+    let options = textwrap::Options::new(76)
+        .initial_indent(" * ")
+        .subsequent_indent(" * ");
+    format!(
+        "/*\n * {}()\n *\n{}\n */\n\n",
+        results.function_name(),
+        textwrap::fill(results.comment(), &options)
+    )
+}
+
+/// Apply variable renaming suggestions to `pseudocode` using whole-word regex substitution (this assumes
+/// LLM-suggested names are collision-safe so renaming order cannot corrupt later replacements)
+fn apply_renames(pseudocode: &str, variables: &[Variable]) -> anyhow::Result<String> {
+    let mut result = pseudocode.to_owned();
+    for variable in variables {
+        let re = Regex::new(&format!(r"\b{}\b", regex::escape(variable.original_name())))
+            .context("Failed to compile regex")?;
+        result = re.replace_all(&result, variable.new_name()).into();
+    }
+    Ok(result)
+}
+
 #[cfg(test)]
 mod tests {
     use std::{env, fs};
@@ -214,6 +230,44 @@ mod tests {
     const VALID_PSEUDOCODE: &str = r#"int main() { printf("Hello, world!"); }"#;
     const VALID_PSEUDOCODE_FILEPATH: &str = "./tests/data/hello.c";
     const EMPTY_PSEUDOCODE_FILEPATH: &str = "./tests/data/empty.c";
+
+    #[test]
+    fn format_description_produces_phrack_style_header() -> anyhow::Result<()> {
+        let results: OneiromancerResults = serde_json::from_str(
+            r#"{"function_name":"main","comment":"Entry point of the program.","variables":[]}"#,
+        )?;
+        let desc = format_description(&results);
+        assert!(desc.starts_with("/*\n * main()\n *\n"), "unexpected header");
+        assert!(desc.ends_with(" */\n\n"), "unexpected footer");
+        assert!(desc.contains("Entry point"), "comment missing from output");
+        Ok(())
+    }
+
+    #[test]
+    fn apply_renames_substitutes_whole_words() -> anyhow::Result<()> {
+        let variables: Vec<Variable> =
+            serde_json::from_str(r#"[{"original_name":"v1","new_name":"counter"}]"#)?;
+        let result = apply_renames("int v1 = 0; v1++;", &variables)?;
+        assert_eq!(result, "int counter = 0; counter++;");
+        Ok(())
+    }
+
+    #[test]
+    fn apply_renames_does_not_match_substrings() -> anyhow::Result<()> {
+        let variables: Vec<Variable> =
+            serde_json::from_str(r#"[{"original_name":"len","new_name":"length"}]"#)?;
+        let result = apply_renames("strlen(len)", &variables)?;
+        assert_eq!(result, "strlen(length)");
+        Ok(())
+    }
+
+    #[test]
+    fn apply_renames_with_no_variables_is_identity() -> anyhow::Result<()> {
+        let pseudocode = "int v1 = 0;";
+        let result = apply_renames(pseudocode, &[])?;
+        assert_eq!(result, pseudocode);
+        Ok(())
+    }
 
     #[test]
     fn ollama_request_works() -> anyhow::Result<()> {
