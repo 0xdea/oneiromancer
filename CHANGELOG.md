@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Extract `format_description` and `apply_renames` helper functions.
 - Fix some zizmor lints and update CI accordingly.
+- Update documentation.
+- Update dependencies.
 
 ## [0.7.3] - 2026-05-22
 
