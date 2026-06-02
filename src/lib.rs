@@ -244,6 +244,24 @@ mod tests {
     }
 
     #[test]
+    fn format_description_wraps_long_comment() -> anyhow::Result<()> {
+        let long_comment = "This is a very long function description that must be wrapped \
+            because it far exceeds the seventy-six column limit imposed by the Phrack-style \
+            formatting, so textwrap should split it across multiple lines.";
+        let json = format!(
+            r#"{{"function_name":"foo","comment":"{long_comment}","variables":[]}}"#
+        );
+        let results: OneiromancerResults = serde_json::from_str(&json)?;
+        let desc = format_description(&results);
+        for line in desc.lines() {
+            assert!(line.len() <= 76, "line exceeds 76 columns: {line:?}");
+        }
+        let comment_lines = desc.lines().filter(|l| l.starts_with(" * ")).count();
+        assert!(comment_lines > 2, "comment was not wrapped into multiple lines");
+        Ok(())
+    }
+
+    #[test]
     fn apply_renames_substitutes_whole_words() -> anyhow::Result<()> {
         let variables: Vec<Variable> =
             serde_json::from_str(r#"[{"original_name":"v1","new_name":"counter"}]"#)?;
@@ -266,6 +284,16 @@ mod tests {
         let pseudocode = "int v1 = 0;";
         let result = apply_renames(pseudocode, &[])?;
         assert_eq!(result, pseudocode);
+        Ok(())
+    }
+
+    #[test]
+    fn apply_renames_applies_multiple_variables_independently() -> anyhow::Result<()> {
+        let variables: Vec<Variable> = serde_json::from_str(
+            r#"[{"original_name":"v1","new_name":"index"},{"original_name":"v2","new_name":"count"}]"#,
+        )?;
+        let result = apply_renames("int v1 = 0; int v2 = 0; v1 += v2;", &variables)?;
+        assert_eq!(result, "int index = 0; int count = 0; index += count;");
         Ok(())
     }
 
@@ -511,6 +539,24 @@ mod tests {
             "output file {outfile:?} is empty"
         );
 
+        Ok(())
+    }
+
+    #[test]
+    fn run_fails_if_output_file_already_exists() -> anyhow::Result<()> {
+        // Arrange
+        let tmpdir = tempfile::tempdir()?;
+        let filepath = tmpdir.path().join("test.c");
+        fs::copy(VALID_PSEUDOCODE_FILEPATH, &filepath)?;
+        let outfile = tmpdir.path().join("test.out.c");
+        File::create(&outfile)?;
+
+        // Act
+        let result = run(&filepath);
+
+        // Assert
+        assert!(result.is_err(), "run succeeded unexpectedly");
+        assert!(outfile.metadata()?.len() == 0, "output file was overwritten");
         Ok(())
     }
 
