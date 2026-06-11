@@ -42,7 +42,7 @@ fn main() -> ExitCode {
     }
 }
 
-/// Prints usage information and exit.
+/// Prints usage information and exits.
 fn usage(prog: &str) -> ExitCode {
     eprintln!("Usage:");
     eprintln!("{prog} <target_file>.c");
