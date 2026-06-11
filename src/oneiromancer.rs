@@ -5,62 +5,62 @@ use std::env;
 use serde::Deserialize;
 use thiserror::Error;
 
-/// Default Ollama URL
+/// Default Ollama URL.
 pub const OLLAMA_BASEURL: &str = "http://127.0.0.1:11434";
-/// Default Ollama model
+/// Default Ollama model.
 pub const OLLAMA_MODEL: &str = "aidapal";
 
-/// Oneiromancer error type
+/// Oneiromancer error type.
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum OneiromancerError {
-    /// Failure in reading the input file
+    /// Failure in reading the input file.
     #[error(transparent)]
     FileReadFailed(#[from] std::io::Error),
-    /// Failure in querying Ollama API
+    /// Failure in querying Ollama API.
     #[error(transparent)]
     OllamaQueryFailed(#[from] ureq::Error),
-    /// Failure in parsing Ollama response
+    /// Failure in parsing Ollama response.
     #[error(transparent)]
     ResponseParseFailed(#[from] serde_json::Error),
 }
 
-/// Oneiromancer configuration
+/// Oneiromancer configuration.
 #[derive(Debug, Clone)]
 pub struct OneiromancerConfig {
-    /// Ollama API base URL
+    /// Ollama API base URL.
     baseurl: String,
-    /// Ollama model to use for analysis
+    /// Ollama model to use for analysis.
     model: String,
 }
 
 impl OneiromancerConfig {
-    /// Create a new `OneiromancerConfig` with default values
+    /// Creates a new `OneiromancerConfig` with default values.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Get the configured `baseurl`
+    /// Gets the configured `baseurl`.
     #[must_use]
     pub fn baseurl(&self) -> &str {
         &self.baseurl
     }
 
-    /// Get the configured `model`
+    /// Gets the configured `model`.
     #[must_use]
     pub fn model(&self) -> &str {
         &self.model
     }
 
-    /// Build an `OneiromancerConfig` with a custom `baseurl`
+    /// Builds an `OneiromancerConfig` with a custom `baseurl`.
     #[must_use]
     pub fn with_baseurl(mut self, baseurl: impl Into<String>) -> Self {
         self.baseurl = baseurl.into();
         self
     }
 
-    /// Build an `OneiromancerConfig` with a custom `model`
+    /// Builds an `OneiromancerConfig` with a custom `model`.
     #[must_use]
     pub fn with_model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
@@ -68,8 +68,8 @@ impl OneiromancerConfig {
     }
 }
 
-/// Set `baseurl` and `model` to the value of `OLLAMA_BASEURL` and `OLLAMA_MODEL`
-/// environment variables, if any, or fall back to hardcoded default values.
+/// Sets `baseurl` and `model` to the value of `OLLAMA_BASEURL` and `OLLAMA_MODEL`
+/// environment variables, if any, or falls back to hardcoded default values.
 impl Default for OneiromancerConfig {
     fn default() -> Self {
         Self {
@@ -79,54 +79,54 @@ impl Default for OneiromancerConfig {
     }
 }
 
-/// Pseudocode analysis results
+/// Pseudocode analysis results.
 #[derive(Deserialize, Debug, Clone)]
 pub struct OneiromancerResults {
-    /// Recommended function name
+    /// Recommended function name.
     function_name: String,
-    /// Function description
+    /// Function description.
     comment: String,
-    /// Variable renaming suggestions
+    /// Variable renaming suggestions.
     variables: Vec<Variable>,
 }
 
 impl OneiromancerResults {
-    /// Get the recommended function name
+    /// Gets the recommended function name.
     #[must_use]
     pub fn function_name(&self) -> &str {
         &self.function_name
     }
 
-    /// Get function description
+    /// Gets function description.
     #[must_use]
     pub fn comment(&self) -> &str {
         &self.comment
     }
 
-    /// Get variable renaming suggestions
+    /// Gets variable renaming suggestions.
     #[must_use]
     pub fn variables(&self) -> &[Variable] {
         &self.variables
     }
 }
 
-/// Variable renaming suggestion
+/// Variable renaming suggestion.
 #[derive(Deserialize, Debug, Clone)]
 pub struct Variable {
-    /// Original name of the variable
+    /// Original name of the variable.
     original_name: String,
-    /// Suggested name for the variable
+    /// Suggested name for the variable.
     new_name: String,
 }
 
 impl Variable {
-    /// Get the original name of the variable
+    /// Gets the original name of the variable.
     #[must_use]
     pub fn original_name(&self) -> &str {
         &self.original_name
     }
 
-    /// Get the suggested name for the variable
+    /// Gets the suggested name for the variable.
     #[must_use]
     pub fn new_name(&self) -> &str {
         &self.new_name

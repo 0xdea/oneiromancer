@@ -4,21 +4,21 @@ use serde::{Deserialize, Serialize};
 
 use crate::{OneiromancerError, OneiromancerResults};
 
-/// Ollama API request content
+/// Ollama API request content.
 #[derive(Serialize, Debug, Clone)]
 pub struct OllamaRequest<'a> {
-    /// Name of the model to use for the analysis
+    /// Name of the model to use for the analysis.
     model: &'a str,
-    /// Input prompt to send to the model
+    /// Input prompt to send to the model.
     prompt: &'a str,
-    /// Whether to stream the response or not (should be `false` for our purposes)
+    /// Whether to stream the response or not (should be `false` for our purposes).
     stream: bool,
-    /// Response format to use (should be `json` for our purposes)
+    /// Response format to use (should be `json` for our purposes).
     format: &'a str,
 }
 
 impl<'a> OllamaRequest<'a> {
-    /// Create a new `OllamaRequest`
+    /// Creates a new `OllamaRequest`.
     pub(crate) const fn new(model: &'a str, prompt: &'a str) -> Self {
         Self {
             model,
@@ -40,10 +40,10 @@ impl<'a> OllamaRequest<'a> {
     }
 }
 
-/// Ollama API response content
+/// Ollama API response.
 #[derive(Deserialize, Debug, Clone)]
 pub struct OllamaResponse {
-    /// Ollama API response content
+    /// Ollama API response content.
     pub(crate) response: String,
 }
 

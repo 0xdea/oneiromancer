@@ -17,14 +17,14 @@ pub use crate::oneiromancer::{
 mod ollama;
 mod oneiromancer;
 
-/// Submit pseudocode in `filepath` file to local LLM for analysis. Output analysis results to
-/// terminal and save improved pseudocode in `filepath` with an `out.c` extension.
+/// Submits pseudocode in `filepath` file to local LLM for analysis. Outputs analysis results to
+/// terminal and saves improved pseudocode in `filepath` with an `out.c` extension.
 ///
 /// ## Errors
 ///
 /// Returns success or a generic error in case something goes wrong.
 pub fn run(filepath: &Path) -> anyhow::Result<()> {
-    // Open the target pseudocode file for reading
+    // Open the target pseudocode file for reading.
     println!("[*] Analyzing pseudocode in `{}`", filepath.display());
     let file =
         File::open(filepath).with_context(|| format!("Failed to open `{}`", filepath.display()))?;
@@ -33,7 +33,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         .read_to_string(&mut pseudocode)
         .with_context(|| format!("Failed to read from `{}`", filepath.display()))?;
 
-    // Submit pseudocode to the local LLM for analysis
+    // Submit pseudocode to the local LLM for analysis.
     let mut sp = Spinner::new(
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
@@ -43,11 +43,11 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     sp.stop_with_message("[+] Successfully analyzed pseudocode".into());
     println!();
 
-    // Create a function description
+    // Create a function description.
     let function_description = format_description(&analysis_results);
     print!("{function_description}");
 
-    // Apply variable renaming suggestions
+    // Apply variable renaming suggestions.
     println!("[-] Variable renaming suggestions:");
     for variable in analysis_results.variables() {
         println!(
@@ -59,7 +59,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     let pseudocode = apply_renames(&pseudocode, analysis_results.variables())
         .context("Failed to apply variable renames")?;
 
-    // Save the improved pseudocode to an output file
+    // Save the improved pseudocode to an output file.
     let outfilepath = filepath.with_extension("out.c");
     println!();
     println!(
@@ -85,7 +85,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submit `pseudocode` to the local LLM via the Ollama API using the specified
+/// Submits `pseudocode` to the local LLM via the Ollama API using the specified
 /// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
 /// ## Errors
@@ -133,12 +133,12 @@ pub fn analyze_code(
     pseudocode: impl AsRef<str>,
     config: &OneiromancerConfig,
 ) -> Result<OneiromancerResults, OneiromancerError> {
-    // Send Ollama API request and parse response
+    // Send Ollama API request and parse response.
     let request = OllamaRequest::new(config.model(), pseudocode.as_ref());
     request.send(config.baseurl())?.parse()
 }
 
-/// Submit pseudocode in the `filepath` file to the local LLM via the Ollama API using the specified
+/// Submits pseudocode in the `filepath` file to the local LLM via the Ollama API using the specified
 /// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
 /// ## Errors
@@ -186,17 +186,17 @@ pub fn analyze_file(
     filepath: impl AsRef<Path>,
     config: &OneiromancerConfig,
 ) -> Result<OneiromancerResults, OneiromancerError> {
-    // Open target pseudocode file for reading
-    // Note: for easier testing, we could use a generic function together with `std::io::Cursor`
+    // Open target pseudocode file for reading.
+    // Note: for easier testing, we could use a generic function together with `std::io::Cursor`.
     let file = File::open(&filepath)?;
     let mut pseudocode = String::new();
     BufReader::new(file).read_to_string(&mut pseudocode)?;
 
-    // Analyze `pseudocode`
+    // Analyze `pseudocode`.
     analyze_code(&pseudocode, config)
 }
 
-/// Format `results` as a Phrack-style block comment, wrapping to 76 columns
+/// Formats `results` as a Phrack-style block comment, wrapping to 76 columns.
 fn format_description(results: &OneiromancerResults) -> String {
     let options = textwrap::Options::new(76)
         .initial_indent(" * ")
@@ -208,8 +208,8 @@ fn format_description(results: &OneiromancerResults) -> String {
     )
 }
 
-/// Apply variable renaming suggestions to `pseudocode` using whole-word regex substitution (this assumes
-/// LLM-suggested names are collision-safe so renaming order cannot corrupt later replacements)
+/// Applies variable renaming suggestions to `pseudocode` using whole-word regex substitution (this assumes
+/// LLM-suggested names are collision-safe so renaming order cannot corrupt later replacements).
 fn apply_renames(pseudocode: &str, variables: &[Variable]) -> anyhow::Result<String> {
     let mut result = pseudocode.to_owned();
     for variable in variables {
@@ -301,16 +301,16 @@ mod tests {
 
     #[test]
     fn ollama_request_works() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let request = OllamaRequest::new(&model, pseudocode);
         let response = request.send(&baseurl)?;
 
-        // Assert
+        // Assert.
         assert!(!response.response.is_empty(), "response is empty");
 
         Ok(())
@@ -318,16 +318,16 @@ mod tests {
 
     #[test]
     fn ollama_request_with_wrong_url_fails() {
-        // Arrange
+        // Arrange.
         let baseurl = "http://127.0.0.1:6666";
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let request = OllamaRequest::new(&model, pseudocode);
         let result = request.send(baseurl);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "request succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
@@ -337,16 +337,16 @@ mod tests {
 
     #[test]
     fn ollama_request_with_empty_url_fails() {
-        // Arrange
+        // Arrange.
         let baseurl = "";
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let request = OllamaRequest::new(&model, pseudocode);
         let result = request.send(baseurl);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "request succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
@@ -356,16 +356,16 @@ mod tests {
 
     #[test]
     fn ollama_request_with_wrong_model_fails() {
-        // Arrange
+        // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = "doesntexist";
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let request = OllamaRequest::new(model, pseudocode);
         let result = request.send(&baseurl);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "request succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
@@ -375,16 +375,16 @@ mod tests {
 
     #[test]
     fn ollama_request_with_empty_model_fails() {
-        // Arrange
+        // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = "";
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let request = OllamaRequest::new(model, pseudocode);
         let result = request.send(&baseurl);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "request succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
@@ -394,16 +394,16 @@ mod tests {
 
     #[test]
     fn ollama_request_with_empty_prompt_returns_an_empty_response() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let pseudocode = "";
 
-        // Act
+        // Act.
         let request = OllamaRequest::new(&model, pseudocode);
         let response = request.send(&baseurl)?;
 
-        // Assert
+        // Assert.
         assert!(response.response.is_empty(), "response is not empty");
 
         Ok(())
@@ -411,7 +411,7 @@ mod tests {
 
     #[test]
     fn analyze_code_works() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let config = OneiromancerConfig::new()
@@ -419,10 +419,10 @@ mod tests {
             .with_model(model);
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let results = analyze_code(pseudocode, &config)?;
 
-        // Assert
+        // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
 
         Ok(())
@@ -430,13 +430,13 @@ mod tests {
 
     #[test]
     fn analyze_code_with_default_parameters_works() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let pseudocode = VALID_PSEUDOCODE;
 
-        // Act
+        // Act.
         let results = analyze_code(pseudocode, &OneiromancerConfig::default())?;
 
-        // Assert
+        // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
 
         Ok(())
@@ -444,13 +444,13 @@ mod tests {
 
     #[test]
     fn analyze_code_with_empty_pseudocode_string_fails() {
-        // Arrange
+        // Arrange.
         let pseudocode = "";
 
-        // Act
+        // Act.
         let result = analyze_code(pseudocode, &OneiromancerConfig::default());
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "analysis succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::ResponseParseFailed(_))),
@@ -460,7 +460,7 @@ mod tests {
 
     #[test]
     fn analyze_file_works() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
         let config = OneiromancerConfig::new()
@@ -468,10 +468,10 @@ mod tests {
             .with_model(model);
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
-        // Act
+        // Act.
         let results = analyze_file(filepath, &config)?;
 
-        // Assert
+        // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
 
         Ok(())
@@ -479,13 +479,13 @@ mod tests {
 
     #[test]
     fn analyze_file_with_default_parameters_works() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
-        // Act
+        // Act.
         let results = analyze_file(filepath, &OneiromancerConfig::default())?;
 
-        // Assert
+        // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
 
         Ok(())
@@ -493,13 +493,13 @@ mod tests {
 
     #[test]
     fn analyze_file_with_empty_input_file_fails() {
-        // Arrange
+        // Arrange.
         let filepath = EMPTY_PSEUDOCODE_FILEPATH;
 
-        // Act
+        // Act.
         let result = analyze_file(filepath, &OneiromancerConfig::default());
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "analysis succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::ResponseParseFailed(_))),
@@ -509,13 +509,13 @@ mod tests {
 
     #[test]
     fn analyze_file_with_invalid_input_filepath_fails() {
-        // Arrange
+        // Arrange.
         let filepath = "./tests/data/invalid.c";
 
-        // Act
+        // Act.
         let result = analyze_file(filepath, &OneiromancerConfig::default());
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "analysis succeeded unexpectedly");
         assert!(
             matches!(result, Err(OneiromancerError::FileReadFailed(_))),
@@ -525,16 +525,16 @@ mod tests {
 
     #[test]
     fn run_works() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let tmpdir = tempfile::tempdir()?;
         let filepath = tmpdir.path().join("test.c");
         fs::copy(VALID_PSEUDOCODE_FILEPATH, &filepath)?;
         let outfile = tmpdir.path().join("test.out.c");
 
-        // Act
+        // Act.
         run(&filepath)?;
 
-        // Assert
+        // Assert.
         assert!(outfile.exists(), "output file {outfile:?} does not exist");
         assert!(
             outfile.metadata()?.len() > 0,
@@ -546,17 +546,17 @@ mod tests {
 
     #[test]
     fn run_fails_if_output_file_already_exists() -> anyhow::Result<()> {
-        // Arrange
+        // Arrange.
         let tmpdir = tempfile::tempdir()?;
         let filepath = tmpdir.path().join("test.c");
         fs::copy(VALID_PSEUDOCODE_FILEPATH, &filepath)?;
         let outfile = tmpdir.path().join("test.out.c");
         File::create(&outfile)?;
 
-        // Act
+        // Act.
         let result = run(&filepath);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "run succeeded unexpectedly");
         assert!(
             outfile.metadata()?.len() == 0,
@@ -568,16 +568,16 @@ mod tests {
     #[test]
     #[expect(clippy::expect_used, reason = "tests can use `expect`")]
     fn run_with_empty_file_fails() {
-        // Arrange
+        // Arrange.
         let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");
         let filepath = tmpdir.path().join("test.c");
         File::create(&filepath).expect("failed to create test file");
         let outfile = tmpdir.path().join("test.out.c");
 
-        // Act
+        // Act.
         let result = run(&filepath);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "run succeeded unexpectedly");
         assert!(!outfile.exists(), "output file {outfile:?} exists");
     }
@@ -585,15 +585,15 @@ mod tests {
     #[test]
     #[expect(clippy::expect_used, reason = "tests can use `expect`")]
     fn run_with_invalid_input_filepath_fails() {
-        // Arrange
+        // Arrange.
         let tmpdir = tempfile::tempdir().expect("failed to create temporary directory");
         let filepath = tmpdir.path().join("test.c");
         let outfile = tmpdir.path().join("test.out.c");
 
-        // Act
+        // Act.
         let result = run(&filepath);
 
-        // Assert
+        // Assert.
         assert!(result.is_err(), "run succeeded unexpectedly");
         assert!(!outfile.exists(), "output file {outfile:?} exists");
     }
