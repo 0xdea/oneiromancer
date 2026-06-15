@@ -23,15 +23,18 @@ mod oneiromancer;
 /// ## Errors
 ///
 /// Returns success or a generic error in case something goes wrong.
-pub fn run(filepath: &Path) -> anyhow::Result<()> {
+pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
     // Open the target pseudocode file for reading.
-    println!("[*] Analyzing pseudocode in `{}`", filepath.display());
-    let file =
-        File::open(filepath).with_context(|| format!("Failed to open `{}`", filepath.display()))?;
+    println!(
+        "[*] Analyzing pseudocode in `{}`",
+        filepath.as_ref().display()
+    );
+    let file = File::open(&filepath)
+        .with_context(|| format!("Failed to open `{}`", filepath.as_ref().display()))?;
     let mut pseudocode = String::new();
     BufReader::new(file)
         .read_to_string(&mut pseudocode)
-        .with_context(|| format!("Failed to read from `{}`", filepath.display()))?;
+        .with_context(|| format!("Failed to read from `{}`", filepath.as_ref().display()))?;
 
     // Submit pseudocode to the local LLM for analysis.
     let mut sp = Spinner::new(
@@ -60,7 +63,7 @@ pub fn run(filepath: &Path) -> anyhow::Result<()> {
         .context("Failed to apply variable renames")?;
 
     // Save the improved pseudocode to an output file.
-    let outfilepath = filepath.with_extension("out.c");
+    let outfilepath = filepath.as_ref().with_extension("out.c");
     println!();
     println!(
         "[*] Saving improved pseudocode in `{}`",

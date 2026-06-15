@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use `AsRef<Path>` bounds for all public functions that take a `Path` argument.
 - Improve comments.
 - Update dependencies.
 
