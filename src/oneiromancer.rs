@@ -35,7 +35,7 @@ pub struct OneiromancerConfig {
 }
 
 impl OneiromancerConfig {
-    /// Creates a new `OneiromancerConfig` with default values.
+    /// Creates a new [`OneiromancerConfig`] with default values.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -53,14 +53,14 @@ impl OneiromancerConfig {
         &self.model
     }
 
-    /// Builds an `OneiromancerConfig` with a custom `baseurl`.
+    /// Builds an [`OneiromancerConfig`] with a custom `baseurl`.
     #[must_use]
     pub fn with_baseurl(mut self, baseurl: impl Into<String>) -> Self {
         self.baseurl = baseurl.into();
         self
     }
 
-    /// Builds an `OneiromancerConfig` with a custom `model`.
+    /// Builds an [`OneiromancerConfig`] with a custom `model`.
     #[must_use]
     pub fn with_model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();

@@ -17,12 +17,12 @@ pub use crate::oneiromancer::{
 mod ollama;
 mod oneiromancer;
 
-/// Submits pseudocode in `filepath` file to local LLM for analysis. Outputs analysis results to
+/// Submits pseudocode in the `filepath` file to the local LLM for analysis. Outputs analysis results to
 /// terminal and saves improved pseudocode in `filepath` with an `out.c` extension.
 ///
-/// ## Errors
+/// # Errors
 ///
-/// Returns success or a generic error in case something goes wrong.
+/// Returns [`anyhow::Error`] in case something goes wrong with file I/O or analysis.
 pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
     // Open the target pseudocode file for reading.
     println!(
@@ -91,11 +91,13 @@ pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
 /// Submits `pseudocode` to the local LLM via the Ollama API using the specified
 /// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
-/// ## Errors
+/// Returns [`OneiromancerResults`] which contains the parsed LLM response.
 ///
-/// Returns [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
+/// # Errors
 ///
-/// ## Examples
+/// Returns the appropriate [`OneiromancerError`] in case something goes wrong with the analysis.
+///
+/// # Examples
 ///
 /// Basic usage (default Ollama base URL and model):
 /// ```
@@ -144,11 +146,13 @@ pub fn analyze_code(
 /// Submits pseudocode in the `filepath` file to the local LLM via the Ollama API using the specified
 /// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
 ///
-/// ## Errors
+/// Returns [`OneiromancerResults`] which contains the parsed LLM response.
 ///
-/// Returns [`OneiromancerResults`] or the appropriate [`OneiromancerError`] in case something goes wrong.
+/// # Errors
 ///
-/// ## Examples
+/// Returns the appropriate [`OneiromancerError`] in case something goes wrong with file I/O or analysis.
+///
+/// # Examples
 ///
 /// Basic usage (default Ollama base URL and model):
 /// ```
@@ -211,8 +215,9 @@ fn format_description(results: &OneiromancerResults) -> String {
     )
 }
 
-/// Applies variable renaming suggestions to `pseudocode` using whole-word regex substitution (this assumes
-/// LLM-suggested names are collision-safe so renaming order cannot corrupt later replacements).
+/// Applies variable renaming suggestions to `pseudocode` using whole-word regex substitution.
+///
+/// Assumes LLM-suggested names are collision-safe so renaming order cannot corrupt later replacements.
 fn apply_renames(pseudocode: &str, variables: &[Variable]) -> anyhow::Result<String> {
     let mut result = pseudocode.to_owned();
     for variable in variables {

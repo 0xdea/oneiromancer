@@ -18,7 +18,7 @@ pub struct OllamaRequest<'a> {
 }
 
 impl<'a> OllamaRequest<'a> {
-    /// Creates a new `OllamaRequest`.
+    /// Creates a new [`OllamaRequest`].
     pub(crate) const fn new(model: &'a str, prompt: &'a str) -> Self {
         Self {
             model,
@@ -28,9 +28,13 @@ impl<'a> OllamaRequest<'a> {
         }
     }
 
-    /// Sends an `OllamaRequest` to the `/api/generate` endpoint at `baseurl`.
+    /// Sends an [`OllamaRequest`] to the `/api/generate` endpoint at `baseurl`.
     ///
-    /// Returns an `OllamaResponse` or the appropriate `OneiromancerError` in case something goes wrong.
+    /// Returns an [`OllamaResponse`] which contains the LLM response.
+    ///
+    /// # Errors
+    ///
+    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with the request.
     pub(crate) fn send(&self, baseurl: &str) -> Result<OllamaResponse, OneiromancerError> {
         let url = format!("{}{}", baseurl.trim_end_matches('/'), "/api/generate");
         Ok(ureq::post(url)
@@ -48,9 +52,13 @@ pub struct OllamaResponse {
 }
 
 impl OllamaResponse {
-    /// Parses an `OllamaResponse` into an `OneiromancerResults` struct.
+    /// Parses an [`OllamaResponse`] into an [`OneiromancerResults`] struct.
     ///
-    /// Returns `OneiromancerResults` or the appropriate `OneiromancerError` in case something goes wrong.
+    /// Returns [`OneiromancerResults`] which contains the parsed LLM response.
+    ///
+    /// # Errors
+    ///
+    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with parsing.
     pub(crate) fn parse(&self) -> Result<OneiromancerResults, OneiromancerError> {
         Ok(serde_json::from_str(&self.response)?)
     }
