@@ -1,4 +1,4 @@
-//! main.rs
+//! main.rs.
 
 use std::env;
 use std::ffi::OsStr;

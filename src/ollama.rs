@@ -1,4 +1,4 @@
-//! Handle interactions with the Ollama API
+//! Handle interactions with the Ollama API.
 
 use serde::{Deserialize, Serialize};
 
@@ -48,10 +48,15 @@ impl<'a> OllamaRequest<'a> {
 #[derive(Deserialize, Debug, Clone)]
 pub struct OllamaResponse {
     /// Ollama API response content.
-    pub(crate) response: String,
+    response: String,
 }
 
 impl OllamaResponse {
+    /// Returns the raw response string from the Ollama API.
+    pub(crate) fn response(&self) -> &str {
+        &self.response
+    }
+
     /// Parses an [`OllamaResponse`] into an [`OneiromancerResults`] struct.
     ///
     /// Returns [`OneiromancerResults`] which contains the parsed LLM response.
@@ -60,6 +65,6 @@ impl OllamaResponse {
     ///
     /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with parsing.
     pub(crate) fn parse(&self) -> Result<OneiromancerResults, OneiromancerError> {
-        Ok(serde_json::from_str(&self.response)?)
+        Ok(serde_json::from_str(self.response())?)
     }
 }

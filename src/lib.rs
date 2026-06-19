@@ -1,4 +1,6 @@
-#![doc = include_str!("../README.md")]
+#![doc = env!("CARGO_PKG_DESCRIPTION")]
+#![doc = ""]
+#![cfg_attr(doc, doc = include_str!("../README.md"))]
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xdea/oneiromancer/master/.img/logo.png")]
 
 use std::fs::File;
@@ -10,6 +12,14 @@ use regex::Regex;
 use spinners::{Spinner, Spinners};
 
 use crate::ollama::OllamaRequest;
+#[expect(
+    clippy::pub_use,
+    reason = "`pub use` is the idiomatic way to flatten a public API"
+)]
+#[expect(
+    clippy::useless_attribute,
+    reason = "the `expect` attribute is actually useful here"
+)]
 pub use crate::oneiromancer::{
     OneiromancerConfig, OneiromancerError, OneiromancerResults, Variable,
 };
@@ -59,7 +69,7 @@ pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
             variable.new_name()
         );
     }
-    let pseudocode = apply_renames(&pseudocode, analysis_results.variables())
+    pseudocode = apply_renames(&pseudocode, analysis_results.variables())
         .context("Failed to apply variable renames")?;
 
     // Save the improved pseudocode to an output file.
@@ -229,6 +239,7 @@ fn apply_renames(pseudocode: &str, variables: &[Variable]) -> anyhow::Result<Str
 }
 
 #[cfg(test)]
+#[expect(clippy::panic_in_result_fn, reason = "panics are allowed in test code")]
 mod tests {
     use std::{env, fs};
 
@@ -319,7 +330,7 @@ mod tests {
         let response = request.send(&baseurl)?;
 
         // Assert.
-        assert!(!response.response.is_empty(), "response is empty");
+        assert!(!response.response().is_empty(), "response is empty");
 
         Ok(())
     }
@@ -412,7 +423,7 @@ mod tests {
         let response = request.send(&baseurl)?;
 
         // Assert.
-        assert!(response.response.is_empty(), "response is not empty");
+        assert!(response.response().is_empty(), "response is not empty");
 
         Ok(())
     }

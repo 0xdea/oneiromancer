@@ -1,6 +1,6 @@
-//! Collect pseudocode analysis results and handle errors
+//! Collect pseudocode analysis results and handle errors.
 
-use std::env;
+use std::{env, io};
 
 use serde::Deserialize;
 use thiserror::Error;
@@ -16,7 +16,7 @@ pub const OLLAMA_MODEL: &str = "aidapal";
 pub enum OneiromancerError {
     /// Failure in reading the input file.
     #[error(transparent)]
-    FileReadFailed(#[from] std::io::Error),
+    FileReadFailed(#[from] io::Error),
     /// Failure in querying Ollama API.
     #[error(transparent)]
     OllamaQueryFailed(#[from] ureq::Error),
