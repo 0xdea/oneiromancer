@@ -11,7 +11,6 @@ use anyhow::Context as _;
 use regex::Regex;
 use spinners::{Spinner, Spinners};
 
-use crate::ollama::OllamaRequest;
 #[expect(
     clippy::pub_use,
     reason = "`pub use` is the idiomatic way to flatten a public API"
@@ -20,9 +19,7 @@ use crate::ollama::OllamaRequest;
     clippy::useless_attribute,
     reason = "the `expect` attribute is actually useful here"
 )]
-pub use crate::oneiromancer::{
-    OneiromancerConfig, OneiromancerError, OneiromancerResults, Variable,
-};
+pub use crate::oneiromancer::{Oneiromancer, OneiromancerError, OneiromancerResults, Variable};
 
 mod ollama;
 mod oneiromancer;
@@ -51,7 +48,8 @@ pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
         Spinners::SimpleDotsScrolling,
         "Querying the Oneiromancer".into(),
     );
-    let analysis_results = analyze_code(&pseudocode, &OneiromancerConfig::default())
+    let analysis_results = Oneiromancer::new()
+        .analyze_code(&pseudocode)
         .context("Failed to analyze pseudocode")?;
     sp.stop_with_message("[+] Successfully analyzed pseudocode".into());
     println!();
@@ -98,121 +96,6 @@ pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Submits `pseudocode` to the local LLM via the Ollama API using the specified
-/// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
-///
-/// Returns [`OneiromancerResults`] which contains the parsed LLM response.
-///
-/// # Errors
-///
-/// Returns the appropriate [`OneiromancerError`] in case something goes wrong with the analysis.
-///
-/// # Examples
-///
-/// Basic usage (default Ollama base URL and model):
-/// ```
-/// # fn main() -> anyhow::Result<()> {
-/// use oneiromancer::{OneiromancerConfig, analyze_code};
-///
-/// let pseudocode = r#"int main() { printf("Hello, world!"); }"#;
-///
-/// let results = analyze_code(&pseudocode, &OneiromancerConfig::default())?;
-///
-/// dbg!(results.function_name());
-/// dbg!(results.comment());
-/// dbg!(results.variables());
-/// # Ok(())
-/// # }
-/// ```
-///
-/// Advanced usage (explicit Ollama base URL and model):
-/// ```
-/// # fn main() -> anyhow::Result<()> {
-/// use oneiromancer::{OneiromancerConfig, analyze_code};
-///
-/// let pseudocode = r#"int main() { printf("Hello, world!"); }"#;
-///
-/// let config = OneiromancerConfig::new()
-///     .with_baseurl("http://127.0.0.1:11434")
-///     .with_model("aidapal");
-/// let results = analyze_code(&pseudocode, &config)?;
-///
-/// dbg!(results.function_name());
-/// dbg!(results.comment());
-/// dbg!(results.variables());
-/// # Ok(())
-/// # }
-/// ```
-///
-pub fn analyze_code(
-    pseudocode: impl AsRef<str>,
-    config: &OneiromancerConfig,
-) -> Result<OneiromancerResults, OneiromancerError> {
-    // Send Ollama API request and parse response.
-    let request = OllamaRequest::new(config.model(), pseudocode.as_ref());
-    request.send(config.baseurl())?.parse()
-}
-
-/// Submits pseudocode in the `filepath` file to the local LLM via the Ollama API using the specified
-/// [`OneiromancerConfig`] (or [`OneiromancerConfig::default()`] to use default values).
-///
-/// Returns [`OneiromancerResults`] which contains the parsed LLM response.
-///
-/// # Errors
-///
-/// Returns the appropriate [`OneiromancerError`] in case something goes wrong with file I/O or analysis.
-///
-/// # Examples
-///
-/// Basic usage (default Ollama base URL and model):
-/// ```
-/// # fn main() -> anyhow::Result<()> {
-/// use oneiromancer::{OneiromancerConfig, analyze_file};
-///
-/// let filepath = "./tests/data/hello.c";
-///
-/// let results = analyze_file(&filepath, &OneiromancerConfig::default())?;
-///
-/// dbg!(results.function_name());
-/// dbg!(results.comment());
-/// dbg!(results.variables());
-/// # Ok(())
-/// # }
-/// ```
-///
-/// Advanced usage (explicit Ollama base URL and model):
-/// ```
-/// # fn main() -> anyhow::Result<()> {
-/// use oneiromancer::{OneiromancerConfig, analyze_file};
-///
-/// let filepath = "./tests/data/hello.c";
-///
-/// let config = OneiromancerConfig::new()
-///     .with_baseurl("http://127.0.0.1:11434")
-///     .with_model("aidapal");
-/// let results = analyze_file(&filepath, &config)?;
-///
-/// dbg!(results.function_name());
-/// dbg!(results.comment());
-/// dbg!(results.variables());
-/// # Ok(())
-/// # }
-/// ```
-///
-pub fn analyze_file(
-    filepath: impl AsRef<Path>,
-    config: &OneiromancerConfig,
-) -> Result<OneiromancerResults, OneiromancerError> {
-    // Open target pseudocode file for reading.
-    // Note: for easier testing, we could use a generic function together with `std::io::Cursor`.
-    let file = File::open(&filepath)?;
-    let mut pseudocode = String::new();
-    BufReader::new(file).read_to_string(&mut pseudocode)?;
-
-    // Analyze `pseudocode`.
-    analyze_code(&pseudocode, config)
-}
-
 /// Formats `results` as a Phrack-style block comment, wrapping to 76 columns.
 fn format_description(results: &OneiromancerResults) -> String {
     let options = textwrap::Options::new(76)
@@ -244,6 +127,7 @@ mod tests {
     use std::{env, fs};
 
     use super::*;
+    use crate::ollama::OllamaRequest;
     use crate::oneiromancer::{OLLAMA_BASEURL, OLLAMA_MODEL};
 
     const VALID_PSEUDOCODE: &str = r#"int main() { printf("Hello, world!"); }"#;
@@ -433,13 +317,13 @@ mod tests {
         // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
-        let config = OneiromancerConfig::new()
-            .with_baseurl(baseurl)
-            .with_model(model);
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act.
-        let results = analyze_code(pseudocode, &config)?;
+        let results = Oneiromancer::new()
+            .with_baseurl(baseurl)
+            .with_model(model)
+            .analyze_code(pseudocode)?;
 
         // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
@@ -453,7 +337,7 @@ mod tests {
         let pseudocode = VALID_PSEUDOCODE;
 
         // Act.
-        let results = analyze_code(pseudocode, &OneiromancerConfig::default())?;
+        let results = Oneiromancer::new().analyze_code(pseudocode)?;
 
         // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
@@ -467,7 +351,7 @@ mod tests {
         let pseudocode = "";
 
         // Act.
-        let result = analyze_code(pseudocode, &OneiromancerConfig::default());
+        let result = Oneiromancer::new().analyze_code(pseudocode);
 
         // Assert.
         assert!(result.is_err(), "analysis succeeded unexpectedly");
@@ -482,13 +366,13 @@ mod tests {
         // Arrange.
         let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
         let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
-        let config = OneiromancerConfig::new()
-            .with_baseurl(baseurl)
-            .with_model(model);
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
         // Act.
-        let results = analyze_file(filepath, &config)?;
+        let results = Oneiromancer::new()
+            .with_baseurl(baseurl)
+            .with_model(model)
+            .analyze_file(filepath)?;
 
         // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
@@ -502,7 +386,7 @@ mod tests {
         let filepath = VALID_PSEUDOCODE_FILEPATH;
 
         // Act.
-        let results = analyze_file(filepath, &OneiromancerConfig::default())?;
+        let results = Oneiromancer::new().analyze_file(filepath)?;
 
         // Assert.
         assert!(!results.comment().is_empty(), "description is empty");
@@ -516,7 +400,7 @@ mod tests {
         let filepath = EMPTY_PSEUDOCODE_FILEPATH;
 
         // Act.
-        let result = analyze_file(filepath, &OneiromancerConfig::default());
+        let result = Oneiromancer::new().analyze_file(filepath);
 
         // Assert.
         assert!(result.is_err(), "analysis succeeded unexpectedly");
@@ -532,7 +416,7 @@ mod tests {
         let filepath = "./tests/data/invalid.c";
 
         // Act.
-        let result = analyze_file(filepath, &OneiromancerConfig::default());
+        let result = Oneiromancer::new().analyze_file(filepath);
 
         // Assert.
         assert!(result.is_err(), "analysis succeeded unexpectedly");

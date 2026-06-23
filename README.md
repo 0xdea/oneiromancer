@@ -3,7 +3,7 @@
 [![](https://img.shields.io/github/stars/0xdea/oneiromancer.svg?style=flat&color=yellow)](https://github.com/0xdea/oneiromancer)
 [![](https://img.shields.io/crates/v/oneiromancer?style=flat&color=green)](https://crates.io/crates/oneiromancer)
 [![](https://img.shields.io/crates/d/oneiromancer?style=flat&color=red)](https://crates.io/crates/oneiromancer)
-[![](https://img.shields.io/badge/ollama-0.21.2-violet)](https://ollama.com/)
+[![](https://img.shields.io/badge/ollama-0.30.10-violet)](https://ollama.com/)
 [![](https://img.shields.io/badge/twitter-%400xdea-blue.svg)](https://twitter.com/0xdea)
 [![](https://img.shields.io/badge/mastodon-%40raptor-purple.svg)](https://infosec.exchange/@raptor)
 [![build](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml/badge.svg)](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml)
@@ -27,8 +27,7 @@ results of the analysis.
 - Easy integration with the pseudocode extractor [haruspex](https://github.com/0xdea/haruspex) and popular IDEs.
 - Code description, recommended function name, and variable renaming suggestions are printed on the terminal.
 - Improved pseudocode of each analyzed function is saved in a separate file for easy inspection.
-- External crates can invoke [`analyze_code`] or [`analyze_file`] to analyze pseudocode and then process analysis
-  results.
+- External crates can invoke [`analyze_code`](`Oneiromancer::analyze_code`) or [`analyze_file`](`Oneiromancer::analyze_file`) to analyze pseudocode and then process analysis results.
 
 ## Blog post
 
@@ -98,7 +97,7 @@ cargo build --release
 
 ## Compatibility
 
-Tested with Ollama 0.21.2 on:
+Tested with Ollama 0.30.10 on:
 
 - Apple macOS Tahoe 26.4.1
 - Ubuntu Linux 24.04.2 LTS
