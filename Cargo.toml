@@ -22,6 +22,7 @@ textwrap = { version = "0.16", features = ["smawk"] }
 regex = "1.11"
 
 [dev-dependencies]
+httpmock = "0.8"
 tempfile = "3.19"
 
 [profile.release]

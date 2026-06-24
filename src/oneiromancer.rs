@@ -68,11 +68,11 @@ impl Oneiromancer {
     /// # Examples
     ///
     /// Basic usage (default Ollama base URL and model):
-    /// ```
+    /// ```no_run
     /// # fn main() -> anyhow::Result<()> {
     /// use oneiromancer::Oneiromancer;
     ///
-    /// let pseudocode = r#"int main() { printf("Hello, world!"); }"#;
+    /// let pseudocode = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
     ///
     /// let results = Oneiromancer::new().analyze_code(pseudocode)?;
     ///
@@ -84,11 +84,11 @@ impl Oneiromancer {
     /// ```
     ///
     /// Advanced usage (explicit Ollama base URL and model):
-    /// ```
+    /// ```no_run
     /// # fn main() -> anyhow::Result<()> {
     /// use oneiromancer::Oneiromancer;
     ///
-    /// let pseudocode = r#"int main() { printf("Hello, world!"); }"#;
+    /// let pseudocode = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
     ///
     /// let results = Oneiromancer::new()
     ///     .with_baseurl("http://127.0.0.1:11434")
@@ -121,7 +121,7 @@ impl Oneiromancer {
     /// # Examples
     ///
     /// Basic usage (default Ollama base URL and model):
-    /// ```
+    /// ```no_run
     /// # fn main() -> anyhow::Result<()> {
     /// use oneiromancer::Oneiromancer;
     ///
@@ -137,7 +137,7 @@ impl Oneiromancer {
     /// ```
     ///
     /// Advanced usage (explicit Ollama base URL and model):
-    /// ```
+    /// ```no_run
     /// # fn main() -> anyhow::Result<()> {
     /// use oneiromancer::Oneiromancer;
     ///

@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add integration tests with a mocked Ollama API.
+- Add `test` job to CI.
+
 ### Changed
 
 - Refactor the public API to use a provider abstraction (breaking change).
 - Use `AsRef<Path>` bounds for all public functions that take a `Path` argument.
 - Enable all clippy restriction lints and fix any resulting issues.
+- Reorganize unit tests into separate `helpers` (pure logic) and `api` (Ollama-dependent) submodules.
 - Improve comments.
 - Update dependencies.
 

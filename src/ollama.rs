@@ -68,3 +68,114 @@ impl OllamaResponse {
         Ok(serde_json::from_str(self.response())?)
     }
 }
+
+#[cfg(test)]
+#[expect(clippy::panic_in_result_fn, reason = "panics are allowed in test code")]
+mod tests {
+    /// Tests for the Ollama-dependent public API.
+    mod api {
+        use std::env;
+
+        use super::super::OllamaRequest;
+        use crate::OneiromancerError;
+        use crate::oneiromancer::{OLLAMA_BASEURL, OLLAMA_MODEL};
+
+        const VALID_PSEUDOCODE: &str = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
+
+        #[test]
+        #[ignore = "requires a live Ollama instance"]
+        fn ollama_request_works() -> anyhow::Result<()> {
+            let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+            let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
+            let pseudocode = VALID_PSEUDOCODE;
+
+            let request = OllamaRequest::new(&model, pseudocode);
+            let response = request.send(&baseurl)?;
+
+            assert!(!response.response().is_empty(), "response is empty");
+
+            Ok(())
+        }
+
+        #[test]
+        fn ollama_request_with_wrong_url_fails() {
+            let baseurl = "http://127.0.0.1:6666";
+            let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
+            let pseudocode = VALID_PSEUDOCODE;
+
+            let request = OllamaRequest::new(&model, pseudocode);
+            let result = request.send(baseurl);
+
+            assert!(result.is_err(), "request succeeded unexpectedly");
+            assert!(
+                matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+                "wrong error type returned: {result:?}"
+            );
+        }
+
+        #[test]
+        fn ollama_request_with_empty_url_fails() {
+            let baseurl = "";
+            let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
+            let pseudocode = VALID_PSEUDOCODE;
+
+            let request = OllamaRequest::new(&model, pseudocode);
+            let result = request.send(baseurl);
+
+            assert!(result.is_err(), "request succeeded unexpectedly");
+            assert!(
+                matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+                "wrong error type returned: {result:?}"
+            );
+        }
+
+        #[test]
+        #[ignore = "requires a live Ollama instance"]
+        fn ollama_request_with_wrong_model_fails() {
+            let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+            let model = "doesntexist";
+            let pseudocode = VALID_PSEUDOCODE;
+
+            let request = OllamaRequest::new(model, pseudocode);
+            let result = request.send(&baseurl);
+
+            assert!(result.is_err(), "request succeeded unexpectedly");
+            assert!(
+                matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+                "wrong error type returned: {result:?}"
+            );
+        }
+
+        #[test]
+        #[ignore = "requires a live Ollama instance"]
+        fn ollama_request_with_empty_model_fails() {
+            let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+            let model = "";
+            let pseudocode = VALID_PSEUDOCODE;
+
+            let request = OllamaRequest::new(model, pseudocode);
+            let result = request.send(&baseurl);
+
+            assert!(result.is_err(), "request succeeded unexpectedly");
+            assert!(
+                matches!(result, Err(OneiromancerError::OllamaQueryFailed(_))),
+                "wrong error type returned: {result:?}"
+            );
+        }
+
+        #[test]
+        #[ignore = "requires a live Ollama instance"]
+        fn ollama_request_with_empty_prompt_returns_an_empty_response() -> anyhow::Result<()> {
+            let baseurl = env::var("OLLAMA_BASEURL").unwrap_or_else(|_| OLLAMA_BASEURL.to_owned());
+            let model = env::var("OLLAMA_MODEL").unwrap_or_else(|_| OLLAMA_MODEL.to_owned());
+            let pseudocode = "";
+
+            let request = OllamaRequest::new(&model, pseudocode);
+            let response = request.send(&baseurl)?;
+
+            assert!(response.response().is_empty(), "response is not empty");
+
+            Ok(())
+        }
+    }
+}
