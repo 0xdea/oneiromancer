@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enable all clippy restriction lints and fix any resulting issues.
 - Reorganize unit tests into separate `helpers` (pure logic) and `api` (Ollama-dependent) submodules.
 - Improve comments.
+- Update documentation.
 - Update dependencies.
 
 ## [0.7.4] - 2026-06-02

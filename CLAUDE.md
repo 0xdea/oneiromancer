@@ -29,7 +29,13 @@ Configuration via environment variables:
 - `OLLAMA_BASEURL` — Ollama server URL (default: `http://127.0.0.1:11434`)
 - `OLLAMA_MODEL` — model name (default: `aidapal`)
 
-Tests split into two categories: the `format_description` and `apply_renames` helpers are tested without Ollama (pure logic); everything else (`ollama_request_*`, `analyze_*`, `run_*`) requires a live Ollama instance. Test fixtures live in `tests/data/` (`hello.c`, `empty.c`).
+Most tests require a live Ollama instance and are marked `#[ignore = "requires a live Ollama instance"]`; run `cargo test` to execute only non-Ollama tests. Test fixtures live in `tests/data/` (`hello.c`, `empty.c`).
+
+Tests are organised into three locations:
+- `src/lib.rs` `mod tests::helpers` — pure logic tests for `format_description` and `apply_renames` (no Ollama)
+- `src/lib.rs` `mod tests::api` — `analyze_*` and `run_*` tests (most need Ollama)
+- `src/ollama.rs` `mod tests` — `ollama_request_*` tests (most need Ollama)
+- `tests/integration.rs` — mock-server integration tests using `httpmock` (no Ollama)
 
 ## Architecture
 
@@ -37,10 +43,10 @@ Single Rust crate (edition 2024) that exposes both a binary and a public library
 
 **Entry points:**
 - `src/main.rs` — CLI: reads one `.c` file argument, calls `oneiromancer::run()`
-- `src/lib.rs` — public API: `run()`, `analyze_code()`, `analyze_file()`
+- `src/lib.rs` — public API: re-exports `Oneiromancer`, `OneiromancerError`, `OneiromancerResults`, `Variable`; defines `run()` and private helpers
 
 **Module responsibilities:**
-- `src/oneiromancer.rs` — `OneiromancerConfig` (URL + model, reads env vars), `OneiromancerResults` (deserialized LLM output: function name, comment, variable list), `OneiromancerError`
+- `src/oneiromancer.rs` — `Oneiromancer` struct (builder pattern: `with_baseurl`, `with_model`; methods: `analyze_code`, `analyze_file`), `OneiromancerResults`, `OneiromancerError`, `Variable`; reads `OLLAMA_BASEURL`/`OLLAMA_MODEL` env vars in `Default` impl
 - `src/ollama.rs` — `OllamaRequest`/`OllamaResponse`: serializes the prompt, POSTs to `/api/generate` with `stream: false, format: "json"`, parses response back to `OneiromancerResults`
 
 **Private helpers in `src/lib.rs`:**
@@ -51,7 +57,7 @@ Single Rust crate (edition 2024) that exposes both a binary and a public library
 ```
 CLI arg (.c file)
   → lib::run()
-    → analyze_code(pseudocode, config)
+    → Oneiromancer::new().analyze_code(pseudocode)
       → OllamaRequest::send() → POST /api/generate
       → OllamaResponse::parse() → OneiromancerResults
     → format_description()   (Phrack-style, 76-col wrap)
