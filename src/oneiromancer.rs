@@ -31,30 +31,18 @@ impl Oneiromancer {
         Self::default()
     }
 
-    /// Builds an [`Oneiromancer`] client with a custom `baseurl`.
+    /// Sets a custom Ollama API base URL.
     #[must_use]
-    pub fn with_baseurl(mut self, baseurl: impl Into<String>) -> Self {
+    pub fn baseurl(mut self, baseurl: impl Into<String>) -> Self {
         self.baseurl = baseurl.into();
         self
     }
 
-    /// Builds an [`Oneiromancer`] client with a custom `model`.
+    /// Sets a custom Ollama model.
     #[must_use]
-    pub fn with_model(mut self, model: impl Into<String>) -> Self {
+    pub fn model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
         self
-    }
-
-    /// Gets the configured Ollama API base URL.
-    #[must_use]
-    pub fn baseurl(&self) -> &str {
-        &self.baseurl
-    }
-
-    /// Gets the configured Ollama model.
-    #[must_use]
-    pub fn model(&self) -> &str {
-        &self.model
     }
 
     /// Submits `pseudocode` to the local LLM via the Ollama API.
@@ -91,8 +79,8 @@ impl Oneiromancer {
     /// let pseudocode = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
     ///
     /// let results = Oneiromancer::new()
-    ///     .with_baseurl("http://127.0.0.1:11434")
-    ///     .with_model("aidapal")
+    ///     .baseurl("http://127.0.0.1:11434")
+    ///     .model("aidapal")
     ///     .analyze_code(pseudocode)?;
     ///
     /// dbg!(results.function_name());
@@ -144,8 +132,8 @@ impl Oneiromancer {
     /// let filepath = "./tests/data/hello.c";
     ///
     /// let results = Oneiromancer::new()
-    ///     .with_baseurl("http://127.0.0.1:11434")
-    ///     .with_model("aidapal")
+    ///     .baseurl("http://127.0.0.1:11434")
+    ///     .model("aidapal")
     ///     .analyze_file(filepath)?;
     ///
     /// dbg!(results.function_name());

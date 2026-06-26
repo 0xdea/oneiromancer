@@ -46,7 +46,7 @@ Single Rust crate (edition 2024) that exposes both a binary and a public library
 - `src/lib.rs` — public API: re-exports `Oneiromancer`, `OneiromancerError`, `OneiromancerResults`, `Variable`; defines `run()` and private helpers
 
 **Module responsibilities:**
-- `src/oneiromancer.rs` — `Oneiromancer` struct (builder pattern: `with_baseurl`, `with_model`; methods: `analyze_code`, `analyze_file`), `OneiromancerResults`, `OneiromancerError`, `Variable`; reads `OLLAMA_BASEURL`/`OLLAMA_MODEL` env vars in `Default` impl
+- `src/oneiromancer.rs` — `Oneiromancer` struct (builder pattern: `baseurl`, `model`; methods: `analyze_code`, `analyze_file`), `OneiromancerResults`, `OneiromancerError`, `Variable`; reads `OLLAMA_BASEURL`/`OLLAMA_MODEL` env vars in `Default` impl
 - `src/ollama.rs` — `OllamaRequest`/`OllamaResponse`: serializes the prompt, POSTs to `/api/generate` with `stream: false, format: "json"`, parses response back to `OneiromancerResults`
 
 **Private helpers in `src/lib.rs`:**

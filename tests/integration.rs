@@ -22,8 +22,8 @@ const MOCK_MALFORMED_RESPONSE: &str = r#"{"response":"not valid json"}"#;
 /// Returns an [`Oneiromancer`] instance configured to use the given mock server.
 fn client(server: &MockServer) -> Oneiromancer {
     Oneiromancer::new()
-        .with_baseurl(server.base_url())
-        .with_model("test-model")
+        .baseurl(server.base_url())
+        .model("test-model")
 }
 
 #[test]

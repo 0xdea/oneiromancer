@@ -237,8 +237,8 @@ mod tests {
             let pseudocode = VALID_PSEUDOCODE;
 
             let results = Oneiromancer::new()
-                .with_baseurl(baseurl)
-                .with_model(model)
+                .baseurl(baseurl)
+                .model(model)
                 .analyze_code(pseudocode)?;
 
             assert!(!results.comment().is_empty(), "description is empty");
@@ -280,8 +280,8 @@ mod tests {
             let filepath = VALID_PSEUDOCODE_FILEPATH;
 
             let results = Oneiromancer::new()
-                .with_baseurl(baseurl)
-                .with_model(model)
+                .baseurl(baseurl)
+                .model(model)
                 .analyze_file(filepath)?;
 
             assert!(!results.comment().is_empty(), "description is empty");

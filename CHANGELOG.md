@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Rename `with_baseurl` and `with_model` to `baseurl` and `model`, and remove getter methods (breaking change).
 - Update documentation.
 - Update dependencies.
 
