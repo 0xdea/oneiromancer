@@ -25,33 +25,33 @@ pub struct Oneiromancer {
 }
 
 impl Oneiromancer {
-    /// Creates a new [`Oneiromancer`] with default values.
+    /// Creates a new [`Oneiromancer`] client with default values.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Builds an [`Oneiromancer`] with a custom `baseurl`.
+    /// Builds an [`Oneiromancer`] client with a custom `baseurl`.
     #[must_use]
     pub fn with_baseurl(mut self, baseurl: impl Into<String>) -> Self {
         self.baseurl = baseurl.into();
         self
     }
 
-    /// Builds an [`Oneiromancer`] with a custom `model`.
+    /// Builds an [`Oneiromancer`] client with a custom `model`.
     #[must_use]
     pub fn with_model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
         self
     }
 
-    /// Gets the configured `baseurl`.
+    /// Gets the configured Ollama API base URL.
     #[must_use]
     pub fn baseurl(&self) -> &str {
         &self.baseurl
     }
 
-    /// Gets the configured `model`.
+    /// Gets the configured Ollama model.
     #[must_use]
     pub fn model(&self) -> &str {
         &self.model

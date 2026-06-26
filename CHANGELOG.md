@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Update documentation.
+- Update dependencies.
+
 ## [0.8.0] - 2026-06-24
 
 ### Added
@@ -14,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Refactor the public API to use a provider abstraction (breaking change).
+- Refactor the public API to use a client abstraction with a builder pattern (breaking change).
 - Use `AsRef<Path>` bounds for all public functions that take a `Path` argument.
 - Enable all clippy restriction lints and fix any resulting issues.
 - Reorganize unit tests into separate `helpers` (pure logic) and `api` (Ollama-dependent) submodules.
