@@ -57,7 +57,6 @@ impl Oneiromancer {
     ///
     /// Basic usage (default Ollama base URL and model):
     /// ```no_run
-    /// # fn main() -> anyhow::Result<()> {
     /// use oneiromancer::Oneiromancer;
     ///
     /// let pseudocode = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
@@ -67,13 +66,11 @@ impl Oneiromancer {
     /// dbg!(results.function_name());
     /// dbg!(results.comment());
     /// dbg!(results.variables());
-    /// # Ok(())
-    /// # }
+    /// # Ok::<(), anyhow::Error>(())
     /// ```
     ///
     /// Advanced usage (explicit Ollama base URL and model):
     /// ```no_run
-    /// # fn main() -> anyhow::Result<()> {
     /// use oneiromancer::Oneiromancer;
     ///
     /// let pseudocode = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
@@ -86,8 +83,7 @@ impl Oneiromancer {
     /// dbg!(results.function_name());
     /// dbg!(results.comment());
     /// dbg!(results.variables());
-    /// # Ok(())
-    /// # }
+    /// # Ok::<(), anyhow::Error>(())
     /// ```
     ///
     pub fn analyze_code(

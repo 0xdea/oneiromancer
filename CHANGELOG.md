@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve doctests that return a `Result`.
 - Update documentation.
 - Update dependencies.
 
