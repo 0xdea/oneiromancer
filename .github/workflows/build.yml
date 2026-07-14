@@ -37,12 +37,16 @@ jobs:
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: rustfmt
         run: cargo fmt --all --check
-      - name: clippy
-        run: cargo clippy --all-targets -- -D warnings
-      - name: test
-        run: cargo test
       - name: build
-        run: cargo build
+        run: cargo build --locked
+      - name: clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
+      - name: doc
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --no-deps --locked
+      - name: test
+        run: cargo test --locked
       - name: semver-checks
         uses: obi1kenobi/cargo-semver-checks-action@5b298c9520f7096a4683c0bd981a7ac5a7e249ae # v2.8
 
@@ -60,7 +64,7 @@ jobs:
       - name: sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: build
-        run: cargo build
+        run: cargo build --locked
 
   build-windows:
     name: build-windows
@@ -76,7 +80,7 @@ jobs:
       - name: sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: build
-        run: cargo build
+        run: cargo build --locked
 
   zizmor:
     name: zizmor
