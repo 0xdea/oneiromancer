@@ -33,6 +33,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
         with:
           components: rustfmt, clippy
+          cache-directories: ~/.cargo/advisory-db
       - name: sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: rustfmt
@@ -41,6 +42,12 @@ jobs:
         run: cargo build --locked
       - name: clippy
         run: cargo clippy --all-targets --locked -- -D warnings
+      - name: install cargo-audit
+        uses: taiki-e/install-action@7572810d7dd469b651bb7793945692cf78da5dd7 # v2.85.0
+        with:
+          tool: cargo-audit
+      - name: audit
+        run: cargo audit
       - name: doc
         env:
           RUSTDOCFLAGS: -D warnings
