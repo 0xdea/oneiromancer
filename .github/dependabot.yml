@@ -7,6 +7,8 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: chore
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: github-actions
     directory: /
@@ -15,6 +17,8 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: ci
+    cooldown:
+      default-days: 7
     groups:
       actions-dependencies:
         applies-to: version-updates
