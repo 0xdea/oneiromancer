@@ -1,5 +1,9 @@
-/target
-.cargo-ok
+# Build artifacts
+/target/
+
+# OS
 .DS_Store
-.idea
-.zed
+
+# Editors
+.idea/
+.zed/
