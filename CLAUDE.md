@@ -16,6 +16,8 @@ cargo build --release
 # Lint and format (must pass CI)
 cargo fmt --all --check
 cargo clippy --all-targets -- -D warnings
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+cargo audit
 
 # Tests (require a running Ollama instance; see below)
 cargo test
