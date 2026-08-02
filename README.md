@@ -29,7 +29,7 @@ results of the analysis.
 - Improved pseudocode of each analyzed function is saved in a separate file for easy inspection.
 - External crates can invoke [`analyze_code`](`Oneiromancer::analyze_code`) or [`analyze_file`](`Oneiromancer::analyze_file`) to analyze pseudocode and then process analysis results.
 
-## Blog post
+## Article
 
 - <https://hnsecurity.it/blog/aiding-reverse-engineering-with-rust-and-a-local-llm>
 
