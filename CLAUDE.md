@@ -10,17 +10,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build
-cargo build
-cargo build --release
+cargo build --locked
+cargo build --release --locked
 
 # Lint and format (must pass CI)
 cargo fmt --all --check
-cargo clippy --all-targets -- -D warnings
-RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+cargo clippy --all-targets --locked -- -D warnings
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --locked
 cargo audit
 
 # Tests (require a running Ollama instance; see below)
-cargo test
+cargo test --locked
 ```
 
 ## Development Requirements
@@ -28,12 +28,14 @@ cargo test
 Tests and the binary itself require a running [Ollama](https://ollama.com) instance (v0.21.2+) with the `aidapal` model loaded.
 
 Configuration via environment variables:
+
 - `OLLAMA_BASEURL` — Ollama server URL (default: `http://127.0.0.1:11434`)
 - `OLLAMA_MODEL` — model name (default: `aidapal`)
 
 Most tests require a live Ollama instance and are marked `#[ignore = "requires a live Ollama instance"]`; run `cargo test` to execute only non-Ollama tests. Test fixtures live in `tests/data/` (`hello.c`, `empty.c`).
 
 Tests are organised into three locations:
+
 - `src/lib.rs` `mod tests::helpers` — pure logic tests for `format_description` and `apply_renames` (no Ollama)
 - `src/lib.rs` `mod tests::api` — `analyze_*` and `run_*` tests (most need Ollama)
 - `src/ollama.rs` `mod tests` — `ollama_request_*` tests (most need Ollama)
@@ -44,18 +46,22 @@ Tests are organised into three locations:
 Single Rust crate (edition 2024) that exposes both a binary and a public library API.
 
 **Entry points:**
+
 - `src/main.rs` — CLI: reads one `.c` file argument, calls `oneiromancer::run()`
 - `src/lib.rs` — public API: re-exports `Oneiromancer`, `OneiromancerError`, `OneiromancerResults`, `Variable`; defines `run()` and private helpers
 
 **Module responsibilities:**
+
 - `src/oneiromancer.rs` — `Oneiromancer` struct (builder pattern: `baseurl`, `model`; methods: `analyze_code`, `analyze_file`), `OneiromancerResults`, `OneiromancerError`, `Variable`; reads `OLLAMA_BASEURL`/`OLLAMA_MODEL` env vars in `Default` impl
 - `src/ollama.rs` — `OllamaRequest`/`OllamaResponse`: serializes the prompt, POSTs to `/api/generate` with `stream: false, format: "json"`, parses response back to `OneiromancerResults`
 
 **Private helpers in `src/lib.rs`:**
+
 - `format_description(results)` — formats a Phrack-style `/* ... */` block comment, wrapping to 76 columns
 - `apply_renames(pseudocode, variables)` — applies whole-word regex substitutions; assumes LLM-suggested names are collision-safe so order cannot corrupt later replacements
 
 **Data flow:**
+
 ```
 CLI arg (.c file)
   → lib::run()

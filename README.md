@@ -45,7 +45,7 @@ results of the analysis.
 The easiest way to get the latest release is via [crates.io](https://crates.io/crates/oneiromancer):
 
 ```sh
-cargo install oneiromancer
+cargo install oneiromancer --locked
 ```
 
 To install as a library, run the following command in your project directory:
@@ -61,7 +61,7 @@ Alternatively, you can build from [source](https://github.com/0xdea/oneiromancer
 ```sh
 git clone https://github.com/0xdea/oneiromancer
 cd oneiromancer
-cargo build --release
+cargo build --release --locked
 ```
 
 ## Configuration

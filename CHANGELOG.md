@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use the `--locked` flag for all suitable `cargo` commands.
 - Update dependencies.
 
 ## [0.9.1] - 2026-08-13
