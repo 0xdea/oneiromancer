@@ -43,7 +43,7 @@ jobs:
       - name: clippy
         run: cargo clippy --all-targets --locked -- -D warnings
       - name: install cargo-audit
-        uses: taiki-e/install-action@b6ff580856c41316412a0b9b60540fbc6f8c82cc # v2.86.7
+        uses: taiki-e/install-action@0758d235715de2f3551eacc980d9ae8fce9342c3 # v2.87.3
         with:
           tool: cargo-audit
       - name: audit
@@ -99,6 +99,6 @@ jobs:
         with:
           persist-credentials: false
       - name: zizmor
-        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
+        uses: zizmorcore/zizmor-action@70fb788f84895a7701f5643d103d587e460b5c99 # v0.6.3
         with:
           advanced-security: false
