@@ -40,6 +40,9 @@ workspace = true
 
 [workspace.lints.rust]
 missing_docs = { level = "warn" }
+elided_lifetimes_in_paths = { level = "warn" }
+bare_trait_objects = { level = "warn" }
+explicit_outlives_requirements = { level = "warn" }
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
