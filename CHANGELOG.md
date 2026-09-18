@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use `CARGO_BIN_NAME` instead of `CARGO_PKG_NAME` for the program name.
 - Use the `--locked` flag for all suitable `cargo` commands.
 - Update dependencies.
 
