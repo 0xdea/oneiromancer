@@ -20,11 +20,11 @@ fn main() -> ExitCode {
     // Parse command line arguments.
     let mut args = env::args_os();
     let argv0 = args.next().unwrap_or_else(|| PROGRAM.into());
-    let is_help = |a: &OsStr| a == OsStr::new("-h") || a == OsStr::new("--help");
+    let is_help = |arg: &OsStr| matches!(arg.to_str(), Some("-h" | "--help"));
 
     let prog = Path::new(&argv0)
         .file_name()
-        .and_then(|s| s.to_str())
+        .and_then(|string| string.to_str())
         .unwrap_or(PROGRAM);
 
     let filename = match (args.next(), args.next()) {
@@ -33,7 +33,7 @@ fn main() -> ExitCode {
     };
 
     // Let's do it.
-    match oneiromancer::run(Path::new(&filename)) {
+    match oneiromancer::run(&filename) {
         Ok(()) => ExitCode::SUCCESS,
         Err(err) => {
             eprintln!("\n[!] Error: {err:#}");

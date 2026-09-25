@@ -159,7 +159,7 @@ mod tests {
             for line in desc.lines() {
                 assert!(line.len() <= 76, "line exceeds 76 columns: {line:?}");
             }
-            let comment_lines = desc.lines().filter(|l| l.starts_with(" * ")).count();
+            let comment_lines = desc.lines().filter(|line| line.starts_with(" * ")).count();
             assert!(
                 comment_lines > 2,
                 "comment was not wrapped into multiple lines"
