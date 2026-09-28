@@ -24,7 +24,7 @@ fn main() -> ExitCode {
 
     let prog = Path::new(&argv0)
         .file_name()
-        .and_then(|string| string.to_str())
+        .and_then(OsStr::to_str)
         .unwrap_or(PROGRAM);
 
     let filename = match (args.next(), args.next()) {
