@@ -34,7 +34,8 @@ impl<'a> OllamaRequest<'a> {
     ///
     /// # Errors
     ///
-    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with the request.
+    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong
+    /// with the request.
     pub(crate) fn send(&self, baseurl: &str) -> Result<OllamaResponse, OneiromancerError> {
         let url = format!("{}{}", baseurl.trim_end_matches('/'), "/api/generate");
         Ok(ureq::post(url)
@@ -63,7 +64,8 @@ impl OllamaResponse {
     ///
     /// # Errors
     ///
-    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with parsing.
+    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong
+    /// with parsing.
     pub(crate) fn parse(&self) -> Result<OneiromancerResults, OneiromancerError> {
         Ok(serde_json::from_str(self.response())?)
     }

@@ -15,11 +15,13 @@ use oneiromancer::{Oneiromancer, OneiromancerError};
 
 const VALID_PSEUDOCODE: &str = r#"int main() { int v1 = 0; printf("Hello, world!"); }"#;
 
-// The `response` field is an escaped JSON string that deserializes to [`OneiromancerResults`].
+// The `response` field is an escaped JSON string that deserializes to
+// [`OneiromancerResults`].
 const MOCK_VALID_RESPONSE: &str = r#"{"response":"{\"function_name\":\"main\",\"comment\":\"Entry point of the program.\",\"variables\":[{\"original_name\":\"v1\",\"new_name\":\"counter\"}]}"}"#;
 const MOCK_MALFORMED_RESPONSE: &str = r#"{"response":"not valid json"}"#;
 
-/// Returns an [`Oneiromancer`] instance configured to use the given mock server.
+/// Returns an [`Oneiromancer`] instance configured to use the given mock
+/// server.
 fn client(server: &MockServer) -> Oneiromancer {
     Oneiromancer::new()
         .baseurl(server.base_url())

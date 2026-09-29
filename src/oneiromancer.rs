@@ -51,7 +51,8 @@ impl Oneiromancer {
     ///
     /// # Errors
     ///
-    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with the analysis.
+    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong
+    /// with the analysis.
     ///
     /// # Examples
     ///
@@ -94,13 +95,15 @@ impl Oneiromancer {
         request.send(&self.baseurl)?.parse()
     }
 
-    /// Submits pseudocode in the `filepath` file to the local LLM via the Ollama API.
+    /// Submits pseudocode in the `filepath` file to the local LLM via the Ollama
+    /// API.
     ///
     /// Returns [`OneiromancerResults`] which contains the parsed LLM response.
     ///
     /// # Errors
     ///
-    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong with file I/O or analysis.
+    /// Returns the appropriate [`OneiromancerError`] in case something goes wrong
+    /// with file I/O or analysis.
     ///
     /// # Examples
     ///
@@ -150,8 +153,9 @@ impl Oneiromancer {
     }
 }
 
-/// Sets `baseurl` and `model` to the value of `OLLAMA_BASEURL` and `OLLAMA_MODEL`
-/// environment variables, if any, or falls back to hardcoded default values.
+/// Sets `baseurl` and `model` to the value of `OLLAMA_BASEURL` and
+/// `OLLAMA_MODEL` environment variables, if any, or falls back to hardcoded
+/// default values.
 impl Default for Oneiromancer {
     fn default() -> Self {
         Self {

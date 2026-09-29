@@ -24,12 +24,14 @@ pub use crate::oneiromancer::{Oneiromancer, OneiromancerError, OneiromancerResul
 mod ollama;
 mod oneiromancer;
 
-/// Submits pseudocode in the `filepath` file to the local LLM for analysis. Outputs analysis results to
-/// terminal and saves improved pseudocode in `filepath` with an `out.c` extension.
+/// Submits pseudocode in the `filepath` file to the local LLM for analysis.
+/// Outputs analysis results to terminal and saves improved pseudocode in
+/// `filepath` with an `out.c` extension.
 ///
 /// # Errors
 ///
-/// Returns [`anyhow::Error`] in case something goes wrong with file I/O or analysis.
+/// Returns [`anyhow::Error`] in case something goes wrong with file I/O or
+/// analysis.
 pub fn run(filepath: impl AsRef<Path>) -> anyhow::Result<()> {
     // Open the target pseudocode file for reading.
     println!(
@@ -108,9 +110,11 @@ fn format_description(results: &OneiromancerResults) -> String {
     )
 }
 
-/// Applies variable renaming suggestions to `pseudocode` using whole-word regex substitution.
+/// Applies variable renaming suggestions to `pseudocode` using whole-word regex
+/// substitution.
 ///
-/// Assumes LLM-suggested names are collision-safe so renaming order cannot corrupt later replacements.
+/// Assumes LLM-suggested names are collision-safe so renaming order cannot
+/// corrupt later replacements.
 fn apply_renames(pseudocode: &str, variables: &[Variable]) -> anyhow::Result<String> {
     let mut result = pseudocode.to_owned();
     for variable in variables {
