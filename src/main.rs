@@ -1,4 +1,4 @@
-//! main.rs.
+//! Command-line entry point for `oneiromancer`.
 
 use std::env;
 use std::ffi::OsStr;
