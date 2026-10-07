@@ -9,7 +9,7 @@ repository = "https://github.com/0xdea/oneiromancer"
 license = "MIT"
 keywords = ["reverse-engineering", "pseudocode", "vuln-dev", "ollama", "aidapal"]
 categories = ["security", "artificial-intelligence", "command-line-utilities"]
-exclude = [".cargo/*", ".github/*", ".img/*", ".gitignore", ".taplo.toml", "tests/*"]
+exclude = [".cargo/*", ".github/*", ".img/*", ".gitignore", ".taplo.toml", "CLAUDE.md", "tests/*"]
 
 [dependencies]
 anyhow = "1.0"
