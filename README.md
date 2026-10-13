@@ -59,7 +59,7 @@ cargo add oneiromancer
 Alternatively, you can build from [source](https://github.com/0xdea/oneiromancer):
 
 ```sh
-git clone https://github.com/0xdea/oneiromancer
+git clone --depth 1 https://github.com/0xdea/oneiromancer
 cd oneiromancer
 cargo build --release --locked
 ```
