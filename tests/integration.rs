@@ -5,10 +5,6 @@
     clippy::tests_outside_test_module,
     reason = "no need to have a test module for integration tests in `/tests`"
 )]
-#![expect(
-    clippy::default_numeric_fallback,
-    reason = "numeric literals in test code don't have to be annotated with a type suffix"
-)]
 
 use httpmock::prelude::*;
 use oneiromancer::{Oneiromancer, OneiromancerError};
