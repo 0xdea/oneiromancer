@@ -19,22 +19,26 @@ cargo clippy --all-targets --locked -- -D warnings
 RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --locked
 cargo audit
 
-# Tests (require a running Ollama instance; see below)
+# Tests (Ollama-dependent tests are #[ignore]d; add -- --include-ignored to run them against a live instance)
 cargo test --locked
 ```
 
+CI (`.github/workflows/build.yml`) runs fmt, build, clippy, audit, doc, test, and `cargo-semver-checks` on Linux, builds only on macOS and Windows, and runs `zizmor` against the workflows in a separate job.
+
 ## Development Requirements
 
-Tests and the binary itself require a running [Ollama](https://ollama.com) instance (v0.21.2+) with the `aidapal` model loaded.
+The binary and the ignored tests require a running [Ollama](https://ollama.com) instance (tested with v0.32.9) with the `aidapal` model loaded.
 
 Configuration via environment variables:
 
 - `OLLAMA_BASEURL` — Ollama server URL (default: `http://127.0.0.1:11434`)
 - `OLLAMA_MODEL` — model name (default: `aidapal`)
 
+`.cargo/config.toml` sets both variables, plus `RUST_TEST_THREADS=1` (Ollama tests run one at a time), for all cargo invocations.
+
 Most tests require a live Ollama instance and are marked `#[ignore = "requires a live Ollama instance"]`; run `cargo test` to execute only non-Ollama tests. Test fixtures live in `tests/data/` (`hello.c`, `empty.c`).
 
-Tests are organised into three locations:
+Tests are organised into four locations:
 
 - `src/lib.rs` `mod tests::helpers` — pure logic tests for `format_description` and `apply_renames` (no Ollama)
 - `src/lib.rs` `mod tests::api` — `analyze_*` and `run_*` tests (most need Ollama)
@@ -47,7 +51,7 @@ Single Rust crate (edition 2024) that exposes both a binary and a public library
 
 **Entry points:**
 
-- `src/main.rs` — CLI: reads one `.c` file argument, calls `oneiromancer::run()`
+- `src/main.rs` — CLI: reads one `.c` file argument (`-h`/`--help` prints usage), calls `oneiromancer::run()`
 - `src/lib.rs` — public API: re-exports `Oneiromancer`, `OneiromancerError`, `OneiromancerResults`, `Variable`; defines `run()` and private helpers
 
 **Module responsibilities:**
@@ -70,12 +74,12 @@ CLI arg (.c file)
       → OllamaResponse::parse() → OneiromancerResults
     → format_description()   (Phrack-style, 76-col wrap)
     → apply_renames()        (whole-word regex substitution)
-    → write improved pseudocode to <filename>.out.c
+    → write description + improved pseudocode to <stem>.out.c (fails if it already exists)
 ```
 
 ## Workspace Lint Policy
 
-`Cargo.toml` enables strict workspace lints including `missing_docs`, plus clippy restriction lints. `unwrap()`, `expect()`, and `panic!()` in library code will generate warnings — use `?` and `thiserror`/`anyhow` instead.
+`Cargo.toml` `[workspace.lints]` (inherited via `[lints] workspace = true`) enables `missing_docs` and clippy `all`/`pedantic`/`nursery`/`cargo`/`restriction` at `warn`, minus an explicit allowlist. `unwrap()`, `expect()`, and `panic!()` in library code will generate warnings — use `?` and `thiserror`/`anyhow` instead.
 
 ## Release Profile
 
