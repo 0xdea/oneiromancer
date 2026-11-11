@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Run tests on macOS and Windows in CI.
+
 ### Fixed
 
 - Fall back to uncached builds in CI when sccache fails to start.
