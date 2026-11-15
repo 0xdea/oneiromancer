@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Run tests on macOS and Windows in CI.
+- Enable Cargo lints and fail CI on their warnings.
 
 ### Fixed
 

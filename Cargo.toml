@@ -74,3 +74,11 @@ default_numeric_fallback = "allow"
 use_debug = "allow"
 doc_markdown = "allow"
 multiple_crate_versions = "allow"
+
+[workspace.lints.cargo]
+default = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+restriction = { level = "warn", priority = -1 }
+# allow some lints
+non_snake_case_packages = "allow"
+non_snake_case_features = "allow"

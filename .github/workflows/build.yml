@@ -50,6 +50,8 @@ jobs:
       - name: build
         run: cargo build --locked
       - name: clippy
+        env:
+          CARGO_BUILD_WARNINGS: deny
         run: cargo clippy --all-targets --locked -- -D warnings
       - name: install cargo-audit
         uses: taiki-e/install-action@b80e2bb2635f28eb98b9fce1e2f0887e1535c6b2 # v2.90.0

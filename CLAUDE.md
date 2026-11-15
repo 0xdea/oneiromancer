@@ -15,7 +15,7 @@ cargo build --release --locked
 
 # Lint and format (must pass CI)
 cargo fmt --all --check
-cargo clippy --all-targets --locked -- -D warnings
+CARGO_BUILD_WARNINGS=deny cargo clippy --all-targets --locked -- -D warnings
 RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --locked
 cargo audit
 
@@ -79,7 +79,7 @@ CLI arg (.c file)
 
 ## Workspace Lint Policy
 
-`Cargo.toml` `[workspace.lints]` (inherited via `[lints] workspace = true`) enables `missing_docs` and clippy `all`/`pedantic`/`nursery`/`cargo`/`restriction` at `warn`, minus an explicit allowlist. `unwrap()`, `expect()`, and `panic!()` in library code will generate warnings — use `?` and `thiserror`/`anyhow` instead.
+`Cargo.toml` `[workspace.lints]` (inherited via `[lints] workspace = true`) enables `missing_docs` and clippy `all`/`pedantic`/`nursery`/`cargo`/`restriction` at `warn`, minus an explicit allowlist. `[workspace.lints.cargo]` likewise enables Cargo's `default`, `pedantic`, and `restriction` lint groups (manifest checks such as unused dependencies), minus the snake_case naming lints, which contradict the kebab-case ones. `unwrap()`, `expect()`, and `panic!()` in library code will generate warnings — use `?` and `thiserror`/`anyhow` instead.
 
 ## Release Profile
 
