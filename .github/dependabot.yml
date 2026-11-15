@@ -4,6 +4,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: friday
     open-pull-requests-limit: 10
     commit-message:
       prefix: chore
@@ -14,6 +15,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: friday
     open-pull-requests-limit: 10
     commit-message:
       prefix: ci
