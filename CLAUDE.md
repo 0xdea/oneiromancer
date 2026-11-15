@@ -79,7 +79,7 @@ CLI arg (.c file)
 
 ## Workspace Lint Policy
 
-`Cargo.toml` `[workspace.lints]` (inherited via `[lints] workspace = true`) enables `missing_docs` and clippy `all`/`pedantic`/`nursery`/`cargo`/`restriction` at `warn`, minus an explicit allowlist. `[workspace.lints.cargo]` likewise enables Cargo's `default`, `pedantic`, and `restriction` lint groups (manifest checks such as unused dependencies), minus the snake_case naming lints, which contradict the kebab-case ones. `unwrap()`, `expect()`, and `panic!()` in library code will generate warnings — use `?` and `thiserror`/`anyhow` instead.
+`Cargo.toml` `[workspace.lints]` (inherited via `[lints] workspace = true`) enables `missing_docs` and clippy `all`/`pedantic`/`nursery`/`cargo`/`restriction` at `warn`, minus an explicit allowlist. `[workspace.lints.cargo]` likewise enables Cargo's `default`, `pedantic`, and `restriction` lint groups (manifest checks such as unused dependencies), minus the snake_case naming lints, which contradict the kebab-case ones. `unwrap()`, `expect()`, and `panic!()` in library code will generate warnings — use `?` and `thiserror`/`anyhow` instead. `clippy.toml` allows `unwrap()`, `expect()`, `panic!()`, and indexing in tests, so they need no suppression there.
 
 ## Release Profile
 

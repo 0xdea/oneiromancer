@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Run tests on macOS and Windows in CI.
 - Enable Cargo lints and fail CI on their warnings.
+- Allow `unwrap`, `expect`, `panic!`, and indexing in tests via `clippy.toml`.
+- Wrap integration tests in `#[cfg(test)]` modules.
 
 ### Fixed
 

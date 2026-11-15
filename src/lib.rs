@@ -127,7 +127,6 @@ fn apply_renames(pseudocode: &str, variables: &[Variable]) -> anyhow::Result<Str
 
 #[cfg(test)]
 #[expect(clippy::panic_in_result_fn, reason = "panics are allowed in test code")]
-#[expect(clippy::expect_used, reason = "tests can use `expect`")]
 mod tests {
     /// Pure logic tests.
     mod helpers {
