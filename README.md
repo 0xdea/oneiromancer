@@ -5,7 +5,7 @@
 [![](https://img.shields.io/crates/d/oneiromancer?style=flat&color=red)](https://crates.io/crates/oneiromancer)
 [![](https://img.shields.io/badge/ollama-0.32.9-purple)](https://ollama.com/)
 [![](https://img.shields.io/badge/mastodon-%40raptor-blue.svg)](https://infosec.exchange/@raptor)
-[![build](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml/badge.svg)](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml)
+[![build](https://img.shields.io/github/actions/workflow/status/0xdea/oneiromancer/build.yml?label=build)](https://github.com/0xdea/oneiromancer/actions/workflows/build.yml)
 [![doc](https://img.shields.io/docsrs/oneiromancer)](https://docs.rs/oneiromancer)
 
 > "A large fraction of the flaws in software development are due to programmers not fully understanding all the possible
