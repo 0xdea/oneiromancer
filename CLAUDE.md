@@ -23,7 +23,7 @@ cargo audit
 cargo test --locked
 ```
 
-CI (`.github/workflows/build.yml`) runs fmt, build, clippy, audit, doc, test, and `cargo-semver-checks` on Linux, builds only on macOS and Windows, and runs `zizmor` against the workflows in a separate job.
+CI (`.github/workflows/build.yml`) runs fmt, build, clippy, audit, doc, test, and `cargo-semver-checks` on Linux, builds and tests on macOS and Windows, and runs `zizmor` against the workflows in a separate job.
 
 ## Development Requirements
 
